@@ -1,0 +1,60 @@
+[
+  {
+    "id": "admin-1",
+    "email": "admin@demo.com",
+    "password": "$2b$10$chZB9wtDq0LFs/p5IDy1dOgraHLqcbC9czO33sBcS.sJvaDMvq1M2",
+    "name": "Admin User",
+    "role": "admin",
+    "phoneNumber": "+1 (555) 000-0001",
+    "isApproved": true,
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "owner-1",
+    "email": "owner@demo.com",
+    "password": "$2b$10$chZB9wtDq0LFs/p5IDy1dOgraHLqcbC9czO33sBcS.sJvaDMvq1M2",
+    "name": "John Smith",
+    "role": "dojo_owner",
+    "phoneNumber": "+1 (555) 111-0001",
+    "isApproved": true,
+    "dojoId": "dojo-1",
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "student-1",
+    "email": "student@demo.com",
+    "password": "$2b$10$chZB9wtDq0LFs/p5IDy1dOgraHLqcbC9czO33sBcS.sJvaDMvq1M2",
+    "name": "Alex Martinez",
+    "role": "student",
+    "phoneNumber": "+1 (555) 444-0001",
+    "isApproved": true,
+    "dojoId": "dojo-1",
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "player-1",
+    "email": "player@demo.com",
+    "password": "$2b$10$chZB9wtDq0LFs/p5IDy1dOgraHLqcbC9czO33sBcS.sJvaDMvq1M2",
+    "name": "Sarah Johnson",
+    "role": "player",
+    "phoneNumber": "+1 (555) 222-0001",
+    "isApproved": true,
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "coach-1",
+    "email": "coach@demo.com",
+    "password": "$2b$10$chZB9wtDq0LFs/p5IDy1dOgraHLqcbC9czO33sBcS.sJvaDMvq1M2",
+    "name": "Mike Chen",
+    "role": "coach",
+    "phoneNumber": "+1 (555) 333-0001",
+    "isApproved": true,
+    "dojoId": "dojo-2",
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  }
+]

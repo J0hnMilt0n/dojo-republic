@@ -1,0 +1,94 @@
+[
+  {
+    "id": "tournament-1",
+    "name": "Spring Karate Championship 2026",
+    "description": "Annual spring championship featuring kata and kumite competitions for all age groups.",
+    "organizerId": "coach-1",
+    "organizerType": "coach",
+    "martialArt": "Karate",
+    "startDate": "2026-04-15T09:00:00.000Z",
+    "endDate": "2026-04-16T18:00:00.000Z",
+    "registrationDeadline": "2026-04-01T23:59:59.000Z",
+    "venue": "City Sports Complex",
+    "city": "Boston",
+    "country": "USA",
+    "categories": [
+      {
+        "id": "cat-1",
+        "name": "Kata",
+        "ageGroup": "18+",
+        "gender": "mixed"
+      },
+      {
+        "id": "cat-2",
+        "name": "Kumite",
+        "ageGroup": "18+",
+        "gender": "male",
+        "weightClass": "Lightweight (< 60kg)"
+      },
+      {
+        "id": "cat-3",
+        "name": "Kumite",
+        "ageGroup": "18+",
+        "gender": "female",
+        "weightClass": "Lightweight (< 60kg)"
+      }
+    ],
+    "rules": "WKF official rules apply. All participants must wear approved protective gear.",
+    "contactEmail": "coach@demo.com",
+    "contactPhone": "+1 (555) 333-0001",
+    "maxParticipants": 200,
+    "registrationFee": 50,
+    "isApproved": true,
+    "isPublished": true,
+    "participants": [],
+    "results": [],
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "tournament-2",
+    "name": "Junior Karate League - Summer Edition",
+    "description": "Youth focused tournament for ages 6-17. Perfect for young martial artists to gain competition experience.",
+    "organizerId": "owner-1",
+    "organizerType": "dojo_owner",
+    "martialArt": "Karate",
+    "startDate": "2026-07-20T10:00:00.000Z",
+    "endDate": "2026-07-20T17:00:00.000Z",
+    "registrationDeadline": "2026-07-10T23:59:59.000Z",
+    "venue": "Youth Sports Arena",
+    "city": "Miami",
+    "country": "USA",
+    "categories": [
+      {
+        "id": "cat-4",
+        "name": "Kata",
+        "ageGroup": "6-8",
+        "gender": "mixed"
+      },
+      {
+        "id": "cat-5",
+        "name": "Kata",
+        "ageGroup": "9-11",
+        "gender": "mixed"
+      },
+      {
+        "id": "cat-6",
+        "name": "Kumite",
+        "ageGroup": "12-14",
+        "gender": "male"
+      }
+    ],
+    "rules": "Safety first. All participants must have parental consent.",
+    "contactEmail": "owner@demo.com",
+    "contactPhone": "+1 (555) 111-0001",
+    "maxParticipants": 100,
+    "registrationFee": 30,
+    "isApproved": true,
+    "isPublished": true,
+    "participants": [],
+    "results": [],
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  }
+]

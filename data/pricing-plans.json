@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "name": "Basic Tournament Hosting",
+    "type": "tournament_hosting",
+    "features": [
+      "Up to 50 participants",
+      "Basic scoreboard",
+      "3 categories"
+    ],
+    "price": 5000
+  },
+  {
+    "id": "2",
+    "name": "Standard Tournament Hosting",
+    "type": "tournament_hosting",
+    "features": [
+      "Up to 200 participants",
+      "Live scoreboard",
+      "10 categories",
+      "Result reports"
+    ],
+    "price": 15000
+  },
+  {
+    "id": "3",
+    "name": "Premium Tournament Hosting",
+    "type": "tournament_hosting",
+    "features": [
+      "Unlimited participants",
+      "Live streaming support",
+      "Unlimited categories",
+      "Advanced analytics",
+      "Certificate generation"
+    ],
+    "price": 30000
+  }
+]

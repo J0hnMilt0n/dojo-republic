@@ -1,0 +1,26 @@
+[
+  {
+    "id": "achievement-1",
+    "playerId": "player-profile-1",
+    "tournamentName": "National Karate Championship 2024",
+    "category": "Kata - Women Senior",
+    "position": "gold",
+    "year": 2024,
+    "date": "2024-08-15",
+    "isApproved": true,
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "achievement-2",
+    "playerId": "player-profile-1",
+    "tournamentName": "State Karate Open 2023",
+    "category": "Kumite - Women -68kg",
+    "position": "silver",
+    "year": 2023,
+    "date": "2023-11-20",
+    "isApproved": true,
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  }
+]

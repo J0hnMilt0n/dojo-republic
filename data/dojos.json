@@ -1,0 +1,151 @@
+[
+  {
+    "id": "dojo-1",
+    "name": "Dragon Warrior Karate Dojo",
+    "ownerId": "owner-1",
+    "description": "Premier karate training facility with experienced instructors and state-of-the-art equipment.",
+    "martialArts": [
+      "Karate",
+      "Kickboxing"
+    ],
+    "address": "123 Main Street",
+    "city": "New York",
+    "country": "USA",
+    "phoneNumber": "+1 (555) 100-0001",
+    "email": "info@dragonwarrior.com",
+    "website": "https://dragonwarrior.com",
+    "images": [],
+    "pricing": [
+      {
+        "name": "Monthly Membership",
+        "price": 150,
+        "duration": "1 month",
+        "description": "Unlimited classes"
+      },
+      {
+        "name": "Annual Membership",
+        "price": 1500,
+        "duration": "1 year",
+        "description": "Best value - 2 months free"
+      }
+    ],
+    "schedule": [
+      {
+        "day": "Monday",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "className": "Adult Karate",
+        "instructor": "John Smith"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "className": "Adult Karate",
+        "instructor": "John Smith"
+      },
+      {
+        "day": "Saturday",
+        "startTime": "10:00",
+        "endTime": "11:30",
+        "className": "Kids Karate",
+        "instructor": "John Smith"
+      }
+    ],
+    "isApproved": true,
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "dojo-2",
+    "name": "Phoenix Martial Arts Academy",
+    "ownerId": "coach-1",
+    "description": "Traditional martial arts training with modern techniques. Focus on discipline and character building.",
+    "martialArts": [
+      "Karate",
+      "Taekwondo",
+      "Judo"
+    ],
+    "address": "456 Oak Avenue",
+    "city": "Los Angeles",
+    "country": "USA",
+    "phoneNumber": "+1 (555) 200-0002",
+    "email": "contact@phoenixma.com",
+    "images": [],
+    "pricing": [
+      {
+        "name": "Beginner Package",
+        "price": 120,
+        "duration": "1 month",
+        "description": "2 classes per week"
+      },
+      {
+        "name": "Advanced Package",
+        "price": 180,
+        "duration": "1 month",
+        "description": "Unlimited classes"
+      }
+    ],
+    "schedule": [
+      {
+        "day": "Tuesday",
+        "startTime": "17:00",
+        "endTime": "18:30",
+        "className": "Karate Basics",
+        "instructor": "Mike Chen"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "17:00",
+        "endTime": "18:30",
+        "className": "Karate Basics",
+        "instructor": "Mike Chen"
+      }
+    ],
+    "isApproved": true,
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  },
+  {
+    "id": "dojo-3",
+    "name": "Tiger Strike Karate Center",
+    "ownerId": "owner-1",
+    "description": "Competition-focused training center producing championship athletes.",
+    "martialArts": [
+      "Karate",
+      "MMA"
+    ],
+    "address": "789 Pine Road",
+    "city": "Chicago",
+    "country": "USA",
+    "phoneNumber": "+1 (555) 300-0003",
+    "email": "info@tigerstrike.com",
+    "images": [],
+    "pricing": [
+      {
+        "name": "Standard",
+        "price": 140,
+        "duration": "1 month",
+        "description": "Regular training"
+      },
+      {
+        "name": "Competition",
+        "price": 200,
+        "duration": "1 month",
+        "description": "Competition prep included"
+      }
+    ],
+    "schedule": [
+      {
+        "day": "Monday",
+        "startTime": "19:00",
+        "endTime": "20:30",
+        "className": "Competition Training",
+        "instructor": "John Smith"
+      }
+    ],
+    "isApproved": true,
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  }
+]

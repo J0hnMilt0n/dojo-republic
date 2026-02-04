@@ -1,0 +1,19 @@
+[
+  {
+    "id": "player-profile-1",
+    "userId": "player-1",
+    "name": "Sarah Johnson",
+    "age": 22,
+    "dateOfBirth": "2002-03-15",
+    "gender": "female",
+    "beltCategory": "Black Belt 2nd Dan",
+    "dojoId": "dojo-1",
+    "city": "New York",
+    "country": "USA",
+    "weight": 65,
+    "height": 170,
+    "achievements": [],
+    "createdAt": "2026-01-21T13:15:49.100Z",
+    "updatedAt": "2026-01-21T13:15:49.100Z"
+  }
+]
