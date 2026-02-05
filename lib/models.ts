@@ -184,12 +184,14 @@ const OrderSchema = new Schema<Order>({
 const StudentSchema = new Schema<Student>({
   userId: String,
   name: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: String,
   age: { type: Number, required: true },
-  gender: { type: String, required: true },
+  gender: String,
   dojoId: { type: String, required: true },
   beltLevel: { type: String, required: true },
   parentId: String,
-  enrollmentDate: { type: String, required: true },
+  enrollmentDate: { type: String, default: () => new Date().toISOString() },
   isActive: { type: Boolean, default: true },
   createdAt: { type: String, default: () => new Date().toISOString() },
   updatedAt: { type: String, default: () => new Date().toISOString() },
@@ -221,6 +223,14 @@ const EnquirySchema = new Schema<Enquiry>({
   updatedAt: { type: String, default: () => new Date().toISOString() },
 });
 
+// Session Schema
+const SessionSchema = new Schema({
+  sessionId: { type: String, required: true, unique: true },
+  userId: { type: String, required: true },
+  expiresAt: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
 // Export models
 export const UserModel = models.User || model<User>('User', UserSchema);
 export const DojoModel = models.Dojo || model<Dojo>('Dojo', DojoSchema);
@@ -232,3 +242,4 @@ export const OrderModel = models.Order || model<Order>('Order', OrderSchema);
 export const StudentModel = models.Student || model<Student>('Student', StudentSchema);
 export const AttendanceModel = models.Attendance || model<Attendance>('Attendance', AttendanceSchema);
 export const EnquiryModel = models.Enquiry || model<Enquiry>('Enquiry', EnquirySchema);
+export const SessionModel = models.Session || model('Session', SessionSchema);

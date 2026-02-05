@@ -10,6 +10,8 @@ export default function AttendancePage() {
   const [attendance, setAttendance] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
 
   useEffect(() => {
     checkAuth();
@@ -62,6 +64,25 @@ export default function AttendancePage() {
   };
 
   const stats = getAttendanceStats();
+
+  const handleEditAttendance = (record: any) => {
+    setEditingRecord({ ...record });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingRecord) return;
+
+    const updatedAttendance = attendance.map(record =>
+      record.id === editingRecord.id || 
+      (record.studentName === editingRecord.studentName && record.date === editingRecord.date)
+        ? editingRecord 
+        : record
+    );
+    setAttendance(updatedAttendance);
+    setShowEditModal(false);
+    setEditingRecord(null);
+  };
 
   if (loading) {
     return (
@@ -214,7 +235,10 @@ export default function AttendancePage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900">
+                        <button 
+                          onClick={() => handleEditAttendance(record)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
                           Edit
                         </button>
                       </td>
@@ -225,6 +249,71 @@ export default function AttendancePage() {
             </table>
           </div>
         </div>
+
+        {/* Edit Attendance Modal */}
+        {showEditModal && editingRecord && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Attendance</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Student Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editingRecord.studentName}
+                    disabled
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status *
+                  </label>
+                  <select
+                    value={editingRecord.status}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, status: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  >
+                    <option value="present">Present</option>
+                    <option value="absent">Absent</option>
+                    <option value="late">Late</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editingRecord.notes || ''}
+                    onChange={(e) => setEditingRecord({ ...editingRecord, notes: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Add any notes..."
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingRecord(null);
+                  }}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

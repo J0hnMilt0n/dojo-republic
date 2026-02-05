@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Trophy, Calendar, MapPin, Users, Plus, Edit2, Trash2 } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 export default function DashboardTournamentsPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [tournaments, setTournaments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,7 @@ export default function DashboardTournamentsPage() {
 
   const fetchTournaments = async () => {
     try {
-      const res = await fetch('/api/tournaments');
+      const res = await fetch('/api/tournaments?myTournaments=true');
       if (res.ok) {
         const data = await res.json();
         const userTournaments = data.tournaments || [];
@@ -84,10 +86,11 @@ export default function DashboardTournamentsPage() {
         setDeletingTournament(null);
       } else {
         console.error('Failed to delete tournament');
+        showToast('Failed to delete tournament', 'error');
       }
     } catch (error) {
       console.error('Error deleting tournament:', error);
-      alert('Error deleting tournament');
+      showToast('Error deleting tournament', 'error');
     }
   };
 
@@ -104,13 +107,14 @@ export default function DashboardTournamentsPage() {
         await fetchTournaments();
         setShowCreateModal(false);
         setEditingTournament(null);
-        alert(`Tournament ${editingTournament ? 'updated' : 'created'} successfully`);
+        showToast(`Tournament ${editingTournament ? 'updated' : 'created'} successfully`, 'success');
       } else {
-        alert(`Failed to ${editingTournament ? 'update' : 'create'} tournament`);
+        const errorData = await res.json();
+        showToast(errorData.error || `Failed to ${editingTournament ? 'update' : 'create'} tournament`, 'error');
       }
     } catch (error) {
       console.error('Error saving tournament:', error);
-      alert('Error saving tournament');
+      showToast('Error saving tournament', 'error');
     }
   };
 
@@ -304,11 +308,14 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
     name: tournament?.name || '',
     description: tournament?.description || '',
     startDate: tournament?.startDate?.split('T')[0] || '',
+    endDate: tournament?.endDate?.split('T')[0] || '',
     venue: tournament?.venue || '',
     city: tournament?.city || '',
     country: tournament?.country || '',
     maxParticipants: tournament?.maxParticipants || 100,
     registrationFee: tournament?.registrationFee || 0,
+    rules: tournament?.rules || '',
+    contactPhone: tournament?.contactPhone || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -364,6 +371,21 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date *
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={formData.endDate}
+                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Venue *
@@ -434,6 +456,34 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Contact Phone *
+              </label>
+              <input
+                type="tel"
+                required
+                value={formData.contactPhone}
+                onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                placeholder="+1 (555) 123-4567"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tournament Rules *
+              </label>
+              <textarea
+                required
+                rows={4}
+                value={formData.rules}
+                onChange={(e) => setFormData({ ...formData, rules: e.target.value })}
+                placeholder="Enter tournament rules and regulations..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              />
             </div>
 
             <div className="flex justify-end space-x-3 pt-4">

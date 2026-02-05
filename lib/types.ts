@@ -191,8 +191,10 @@ export interface Student {
   id: string;
   userId?: string;
   name: string;
+  email: string;
+  phone?: string;
   age: number;
-  gender: string;
+  gender?: string;
   dojoId: string;
   beltLevel: string;
   parentId?: string;

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, Clock, Users, Plus, Edit2, Trash2 } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 interface ClassSchedule {
   id: string;
@@ -19,10 +20,26 @@ interface ClassSchedule {
 
 export default function SchedulePage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [schedule, setSchedule] = useState<ClassSchedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [editingClass, setEditingClass] = useState<ClassSchedule | null>(null);
+  const [deletingClass, setDeletingClass] = useState<ClassSchedule | null>(null);
+  const [newClass, setNewClass] = useState({
+    className: '',
+    instructor: '',
+    day: 'Monday',
+    time: '16:00',
+    duration: 60,
+    level: 'Beginner',
+    maxStudents: 20,
+    room: 'Main Dojo',
+  });
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -142,6 +159,74 @@ export default function SchedulePage() {
     setSchedule(mockSchedule);
   };
 
+  const handleAddClass = () => {
+    if (!newClass.className || !newClass.instructor) {
+      showToast('Please fill in all required fields', 'warning');
+      return;
+    }
+
+    const classItem: ClassSchedule = {
+      id: (schedule.length + 1).toString(),
+      className: newClass.className,
+      instructor: newClass.instructor,
+      day: newClass.day,
+      time: newClass.time,
+      duration: newClass.duration,
+      level: newClass.level,
+      maxStudents: newClass.maxStudents,
+      currentStudents: 0,
+      room: newClass.room,
+    };
+
+    setSchedule([...schedule, classItem]);
+    setShowAddModal(false);
+    setNewClass({
+      className: '',
+      instructor: '',
+      day: 'Monday',
+      time: '16:00',
+      duration: 60,
+      level: 'Beginner',
+      maxStudents: 20,
+      room: 'Main Dojo',
+    });
+  };
+
+  const handleEditClass = (classItem: ClassSchedule) => {
+    setEditingClass(classItem);
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingClass) return;
+    
+    if (!editingClass.className || !editingClass.instructor) {
+      showToast('Please fill in all required fields', 'warning');
+      return;
+    }
+
+    const updatedSchedule = schedule.map(item =>
+      item.id === editingClass.id ? editingClass : item
+    );
+    setSchedule(updatedSchedule);
+    setShowEditModal(false);
+    setEditingClass(null);
+  };
+
+  const handleDeleteClass = (classItem: ClassSchedule) => {
+    setDeletingClass(classItem);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingClass) return;
+    
+    const updatedSchedule = schedule.filter(item => item.id !== deletingClass.id);
+    setSchedule(updatedSchedule);
+    setShowDeleteModal(false);
+    setDeletingClass(null);
+  };
+
   const getFilteredSchedule = () => {
     if (selectedDay === 'all') return schedule;
     return schedule.filter(item => item.day === selectedDay);
@@ -185,7 +270,10 @@ export default function SchedulePage() {
                 <p className="text-gray-600 mt-1">Manage your dojo's class schedule</p>
               </div>
             </div>
-            <button className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition">
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition"
+            >
               <Plus className="w-5 h-5" />
               <span>Add Class</span>
             </button>
@@ -317,10 +405,16 @@ export default function SchedulePage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button className="text-blue-600 hover:text-blue-900 mr-3">
+                        <button 
+                          onClick={() => handleEditClass(item)}
+                          className="text-blue-600 hover:text-blue-900 mr-3"
+                        >
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button className="text-gray-600 hover:text-gray-900">
+                        <button 
+                          onClick={() => handleDeleteClass(item)}
+                          className="text-red-600 hover:text-red-900"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
@@ -331,6 +425,329 @@ export default function SchedulePage() {
             </table>
           </div>
         </div>
+
+        {/* Add Class Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Class</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Class Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={newClass.className}
+                    onChange={(e) => setNewClass({ ...newClass, className: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    placeholder="e.g., Beginner Karate"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Instructor *
+                  </label>
+                  <input
+                    type="text"
+                    value={newClass.instructor}
+                    onChange={(e) => setNewClass({ ...newClass, instructor: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    placeholder="Instructor name"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Day *
+                    </label>
+                    <select
+                      value={newClass.day}
+                      onChange={(e) => setNewClass({ ...newClass, day: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    >
+                      <option value="Monday">Monday</option>
+                      <option value="Tuesday">Tuesday</option>
+                      <option value="Wednesday">Wednesday</option>
+                      <option value="Thursday">Thursday</option>
+                      <option value="Friday">Friday</option>
+                      <option value="Saturday">Saturday</option>
+                      <option value="Sunday">Sunday</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Time *
+                    </label>
+                    <input
+                      type="time"
+                      value={newClass.time}
+                      onChange={(e) => setNewClass({ ...newClass, time: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Duration (minutes) *
+                    </label>
+                    <input
+                      type="number"
+                      value={newClass.duration}
+                      onChange={(e) => setNewClass({ ...newClass, duration: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                      min="15"
+                      step="15"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Level *
+                    </label>
+                    <select
+                      value={newClass.level}
+                      onChange={(e) => setNewClass({ ...newClass, level: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    >
+                      <option value="Kids">Kids</option>
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                      <option value="All Levels">All Levels</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Max Students *
+                    </label>
+                    <input
+                      type="number"
+                      value={newClass.maxStudents}
+                      onChange={(e) => setNewClass({ ...newClass, maxStudents: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                      min="1"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Room
+                    </label>
+                    <input
+                      type="text"
+                      value={newClass.room}
+                      onChange={(e) => setNewClass({ ...newClass, room: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                      placeholder="e.g., Main Dojo"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setNewClass({
+                      className: '',
+                      instructor: '',
+                      day: 'Monday',
+                      time: '16:00',
+                      duration: 60,
+                      level: 'Beginner',
+                      maxStudents: 20,
+                      room: 'Main Dojo',
+                    });
+                  }}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddClass}
+                  className="px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-black transition"
+                >
+                  Add Class
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Class Modal */}
+        {showEditModal && editingClass && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Class</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Class Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingClass.className}
+                    onChange={(e) => setEditingClass({ ...editingClass, className: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    placeholder="e.g., Beginner Karate"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Instructor *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingClass.instructor}
+                    onChange={(e) => setEditingClass({ ...editingClass, instructor: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    placeholder="Instructor name"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Day *
+                    </label>
+                    <select
+                      value={editingClass.day}
+                      onChange={(e) => setEditingClass({ ...editingClass, day: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    >
+                      <option value="Monday">Monday</option>
+                      <option value="Tuesday">Tuesday</option>
+                      <option value="Wednesday">Wednesday</option>
+                      <option value="Thursday">Thursday</option>
+                      <option value="Friday">Friday</option>
+                      <option value="Saturday">Saturday</option>
+                      <option value="Sunday">Sunday</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Time *
+                    </label>
+                    <input
+                      type="time"
+                      value={editingClass.time}
+                      onChange={(e) => setEditingClass({ ...editingClass, time: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Duration (minutes) *
+                    </label>
+                    <input
+                      type="number"
+                      value={editingClass.duration}
+                      onChange={(e) => setEditingClass({ ...editingClass, duration: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                      min="15"
+                      step="15"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Level *
+                    </label>
+                    <select
+                      value={editingClass.level}
+                      onChange={(e) => setEditingClass({ ...editingClass, level: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    >
+                      <option value="Kids">Kids</option>
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                      <option value="All Levels">All Levels</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Max Students *
+                    </label>
+                    <input
+                      type="number"
+                      value={editingClass.maxStudents}
+                      onChange={(e) => setEditingClass({ ...editingClass, maxStudents: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                      min="1"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Room
+                    </label>
+                    <input
+                      type="text"
+                      value={editingClass.room || ''}
+                      onChange={(e) => setEditingClass({ ...editingClass, room: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                      placeholder="e.g., Main Dojo"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingClass(null);
+                  }}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-black transition"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && deletingClass && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+                <Trash2 className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+                Delete Class
+              </h3>
+              <p className="text-gray-600 text-center mb-6">
+                Are you sure you want to delete <span className="font-semibold">{deletingClass.className}</span>? This action cannot be undone.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeletingClass(null);
+                  }}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="flex-1 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition font-medium"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

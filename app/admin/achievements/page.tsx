@@ -11,9 +11,11 @@ import {
   Search,
   Filter
 } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 export default function AdminAchievementsPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [achievements, setAchievements] = useState<any[]>([]);
   const [filteredAchievements, setFilteredAchievements] = useState<any[]>([]);
@@ -111,14 +113,14 @@ export default function AdminAchievementsPage() {
       });
 
       if (res.ok) {
-        alert('Achievement approved successfully');
+        showToast('Achievement approved successfully', 'success');
         await fetchAchievements();
       } else {
-        alert('Failed to approve achievement');
+        showToast('Failed to approve achievement', 'error');
       }
     } catch (error) {
       console.error('Error approving achievement:', error);
-      alert('Failed to approve achievement');
+      showToast('Failed to approve achievement', 'error');
     }
   };
 
@@ -137,14 +139,14 @@ export default function AdminAchievementsPage() {
       });
 
       if (res.ok) {
-        alert('Achievement rejected');
+        showToast('Achievement rejected', 'info');
         await fetchAchievements();
       } else {
-        alert('Failed to reject achievement');
+        showToast('Failed to reject achievement', 'error');
       }
     } catch (error) {
       console.error('Error rejecting achievement:', error);
-      alert('Failed to reject achievement');
+      showToast('Failed to reject achievement', 'error');
     }
   };
 

@@ -14,9 +14,11 @@ import {
   Filter
 } from 'lucide-react';
 import { Tournament } from '@/lib/types';
+import { useToast } from '@/components/ToastProvider';
 
 export default function AdminTournamentsPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [filteredTournaments, setFilteredTournaments] = useState<Tournament[]>([]);
@@ -99,14 +101,14 @@ export default function AdminTournamentsPage() {
       });
 
       if (res.ok) {
-        alert('Tournament approved successfully');
+        showToast('Tournament approved successfully', 'success');
         await fetchTournaments();
       } else {
-        alert('Failed to approve tournament');
+        showToast('Failed to approve tournament', 'error');
       }
     } catch (error) {
       console.error('Error approving tournament:', error);
-      alert('Failed to approve tournament');
+      showToast('Failed to approve tournament', 'error');
     }
   };
 
@@ -124,14 +126,14 @@ export default function AdminTournamentsPage() {
       });
 
       if (res.ok) {
-        alert('Tournament rejected');
+        showToast('Tournament rejected', 'info');
         await fetchTournaments();
       } else {
-        alert('Failed to reject tournament');
+        showToast('Failed to reject tournament', 'error');
       }
     } catch (error) {
       console.error('Error rejecting tournament:', error);
-      alert('Failed to reject tournament');
+      showToast('Failed to reject tournament', 'error');
     }
   };
 

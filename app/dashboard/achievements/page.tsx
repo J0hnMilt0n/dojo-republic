@@ -2,13 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Award, Trophy, Medal, Star, Target, TrendingUp, Calendar } from 'lucide-react';
+import { Award, Trophy, Medal, Star, Target, TrendingUp, Calendar, X } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 export default function AchievementsPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [achievements, setAchievements] = useState<any[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newAchievement, setNewAchievement] = useState({
+    title: '',
+    description: '',
+    category: 'tournaments',
+    earnedDate: new Date().toISOString().split('T')[0],
+  });
 
   useEffect(() => {
     checkAuth();
@@ -110,6 +119,40 @@ export default function AchievementsPage() {
     setAchievements(mockAchievements);
   };
 
+  const handleAddAchievement = () => {
+    if (!newAchievement.title || !newAchievement.description) {
+      showToast('Please fill in all required fields', 'warning');
+      return;
+    }
+
+    const achievement = {
+      id: achievements.length + 1,
+      title: newAchievement.title,
+      description: newAchievement.description,
+      icon: newAchievement.category === 'tournaments' ? 'trophy' : newAchievement.category === 'training' ? 'award' : 'star',
+      earned: true,
+      earnedDate: newAchievement.earnedDate,
+      category: newAchievement.category,
+      userAdded: true, // Mark as user-added so we can delete it
+    };
+
+    setAchievements([...achievements, achievement]);
+    setShowAddModal(false);
+    setNewAchievement({
+      title: '',
+      description: '',
+      category: 'tournaments',
+      earnedDate: new Date().toISOString().split('T')[0],
+    });
+  };
+
+  const handleDeleteAchievement = (achievementId: number) => {
+    if (confirm('Are you sure you want to delete this achievement?')) {
+      const updatedAchievements = achievements.filter(a => a.id !== achievementId);
+      setAchievements(updatedAchievements);
+    }
+  };
+
   const getIcon = (iconName: string, earned: boolean) => {
     const className = `w-8 h-8 ${earned ? 'text-yellow-500' : 'text-gray-400'}`;
     switch (iconName) {
@@ -159,6 +202,13 @@ export default function AchievementsPage() {
                 <p className="text-gray-600 mt-1">Track your progress and milestones</p>
               </div>
             </div>
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition"
+            >
+              <Trophy className="w-5 h-5" />
+              <span>Add Achievement</span>
+            </button>
           </div>
         </div>
 
@@ -196,12 +246,21 @@ export default function AchievementsPage() {
           {achievements.map((achievement) => (
             <div
               key={achievement.id}
-              className={`bg-white rounded-lg shadow-md p-6 transition-all ${
+              className={`bg-white rounded-lg shadow-md p-6 transition-all relative ${
                 achievement.earned
                   ? 'border-2 border-yellow-400 hover:shadow-xl'
                   : 'border-2 border-gray-200 opacity-75'
               }`}
             >
+              {achievement.userAdded && (
+                <button
+                  onClick={() => handleDeleteAchievement(achievement.id)}
+                  className="absolute top-3 right-3 text-gray-400 hover:text-red-600 transition"
+                  title="Delete achievement"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
               <div className="flex items-start space-x-4">
                 <div className={`p-3 rounded-lg ${
                   achievement.earned ? 'bg-yellow-100' : 'bg-gray-100'
@@ -245,6 +304,88 @@ export default function AchievementsPage() {
             </div>
           ))}
         </div>
+
+        {/* Add Achievement Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Achievement</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    value={newAchievement.title}
+                    onChange={(e) => setNewAchievement({ ...newAchievement, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    placeholder="Achievement title"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description *
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={newAchievement.description}
+                    onChange={(e) => setNewAchievement({ ...newAchievement, description: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    placeholder="What did you achieve?"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Category *
+                  </label>
+                  <select
+                    value={newAchievement.category}
+                    onChange={(e) => setNewAchievement({ ...newAchievement, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  >
+                    <option value="tournaments">Tournaments</option>
+                    <option value="training">Training</option>
+                    <option value="community">Community</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date Achieved *
+                  </label>
+                  <input
+                    type="date"
+                    value={newAchievement.earnedDate}
+                    onChange={(e) => setNewAchievement({ ...newAchievement, earnedDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setNewAchievement({
+                      title: '',
+                      description: '',
+                      category: 'tournaments',
+                      earnedDate: new Date().toISOString().split('T')[0],
+                    });
+                  }}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddAchievement}
+                  className="px-4 py-2 text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 transition"
+                >
+                  Add Achievement
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

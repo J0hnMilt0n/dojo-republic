@@ -12,7 +12,7 @@ import {
 export async function GET(request: NextRequest) {
   try {
     const sessionId = request.cookies.get('session')?.value;
-    const user = getUserFromSession(sessionId);
+    const user = await getUserFromSession(sessionId);
     requireRole(user, ['admin']);
 
     // Get all data

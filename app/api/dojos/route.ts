@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     await connectDB();
     
     const sessionId = request.cookies.get('session')?.value;
-    const user = getUserFromSession(sessionId);
+    const user = await getUserFromSession(sessionId);
     requireRole(user, ['dojo_owner', 'admin']);
 
     const body = await request.json();
@@ -123,7 +123,7 @@ export async function PATCH(request: NextRequest) {
     await connectDB();
     
     const sessionId = request.cookies.get('session')?.value;
-    const user = getUserFromSession(sessionId);
+    const user = await getUserFromSession(sessionId);
     
     const body = await request.json();
     const { id, isApproved, ...updates } = body;

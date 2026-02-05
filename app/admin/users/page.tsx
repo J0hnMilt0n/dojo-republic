@@ -12,9 +12,11 @@ import {
   Search,
   Filter
 } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 export default function AdminUsersPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
@@ -51,15 +53,57 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      // Note: This endpoint needs to be created in your API
       const res = await fetch('/api/admin/users');
       if (res.ok) {
         const data = await res.json();
-        setUsers(data.users);
-        setFilteredUsers(data.users);
+        setUsers(data.users || []);
+        setFilteredUsers(data.users || []);
+      } else {
+        const error = await res.json();
+        console.error('Failed to fetch users:', error);
+        showToast(error.error || 'Failed to fetch users', 'error');
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
+      showToast('Error loading users', 'error');
+    }
+  };
+
+  const handleApproveUser = async (userId: string) => {
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, isApproved: true }),
+      });
+      if (res.ok) {
+        showToast('User approved successfully', 'success');
+        await fetchUsers();
+      } else {
+        showToast('Failed to approve user', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to approve user:', error);
+      showToast('Error approving user', 'error');
+    }
+  };
+
+  const handleRejectUser = async (userId: string) => {
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, isApproved: false }),
+      });
+      if (res.ok) {
+        showToast('User rejected', 'info');
+        await fetchUsers();
+      } else {
+        showToast('Failed to reject user', 'error');
+      }
+    } catch (error) {
+      console.error('Failed to reject user:', error);
+      showToast('Error rejecting user', 'error');
     }
   };
 
@@ -182,6 +226,9 @@ export default function AdminUsersPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Joined
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -226,6 +273,28 @@ export default function AdminUsersPage() {
                         <span className="text-sm text-gray-600">
                           {new Date(usr.createdAt).toLocaleDateString()}
                         </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {!usr.isApproved ? (
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleApproveUser(usr.id)}
+                              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none"
+                            >
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => handleRejectUser(usr.id)}
+                              className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none"
+                            >
+                              <XCircle className="w-3 h-3 mr-1" />
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-500">-</span>
+                        )}
                       </td>
                     </tr>
                   ))}

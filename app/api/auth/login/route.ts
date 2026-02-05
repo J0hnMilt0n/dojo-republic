@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     const userId = user._id.toString();
     // Create session
-    const sessionId = createSession(userId);
+    const sessionId = await createSession(userId);
 
     // Set cookie
     const response = NextResponse.json({
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Login failed' },
+      { error: error.message || 'Login failed' },
       { status: 500 }
     );
   }

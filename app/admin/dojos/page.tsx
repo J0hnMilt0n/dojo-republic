@@ -15,9 +15,11 @@ import {
   Filter
 } from 'lucide-react';
 import { Dojo } from '@/lib/types';
+import { useToast } from '@/components/ToastProvider';
 
 export default function AdminDojosPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [dojos, setDojos] = useState<Dojo[]>([]);
   const [filteredDojos, setFilteredDojos] = useState<Dojo[]>([]);
@@ -102,14 +104,14 @@ export default function AdminDojosPage() {
       });
 
       if (res.ok) {
-        alert('Dojo approved successfully');
+        showToast('Dojo approved successfully', 'success');
         await fetchDojos();
       } else {
-        alert('Failed to approve dojo');
+        showToast('Failed to approve dojo', 'error');
       }
     } catch (error) {
       console.error('Error approving dojo:', error);
-      alert('Failed to approve dojo');
+      showToast('Failed to approve dojo', 'error');
     }
   };
 
@@ -127,14 +129,14 @@ export default function AdminDojosPage() {
       });
 
       if (res.ok) {
-        alert('Dojo rejected');
+        showToast('Dojo rejected', 'info');
         await fetchDojos();
       } else {
-        alert('Failed to reject dojo');
+        showToast('Failed to reject dojo', 'error');
       }
     } catch (error) {
       console.error('Error rejecting dojo:', error);
-      alert('Failed to reject dojo');
+      showToast('Failed to reject dojo', 'error');
     }
   };
 
