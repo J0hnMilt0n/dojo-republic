@@ -232,7 +232,7 @@ export default function AnalyticsPage() {
                 { student: 'David Wilson', achievement: 'Blue Belt', date: '2026-01-10' },
               ].map((item, index) => (
                 <div key={index} className="flex items-start space-x-3 pb-3 border-b border-gray-100 last:border-0">
-                  <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center shrink-0">
                     <Trophy className="w-5 h-5 text-yellow-600" />
                   </div>
                   <div className="flex-1">
@@ -251,3 +251,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+

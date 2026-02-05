@@ -79,7 +79,7 @@ export default function PlayerDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white py-8">
+      <section className="bg-linear-to-r from-yellow-600 to-orange-600 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/players"
@@ -119,7 +119,7 @@ export default function PlayerDetailPage() {
                       key={achievement.id}
                       className="border border-gray-200 rounded-lg p-4 flex items-start space-x-4"
                     >
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {achievement.position === 'gold' && (
                           <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
                             <Trophy className="w-6 h-6 text-white" />
@@ -199,7 +199,7 @@ export default function PlayerDetailPage() {
 
                 {/* Location */}
                 <div className="flex items-start">
-                  <MapPin className="w-5 h-5 text-gray-400 mr-2 mt-1 flex-shrink-0" />
+                  <MapPin className="w-5 h-5 text-gray-400 mr-2 mt-1 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-500">Location</p>
                     <p className="text-lg text-gray-900">

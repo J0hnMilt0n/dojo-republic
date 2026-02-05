@@ -3,7 +3,7 @@ import { Trophy, Users, Target, Heart } from 'lucide-react';
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
-      <section className="relative bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-24 overflow-hidden">
+      <section className="relative bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-24 overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl"></div>
@@ -94,7 +94,7 @@ export default function AboutPage() {
           </p>
           <a
             href="/auth/register"
-            className="inline-block bg-gradient-to-r from-red-600 to-red-800 text-white px-12 py-5 rounded-xl font-semibold text-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform"
+            className="inline-block bg-linear-to-r from-red-600 to-red-800 text-white px-12 py-5 rounded-xl font-semibold text-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform"
           >
             Get Started Today
           </a>
@@ -106,7 +106,7 @@ export default function AboutPage() {
 
 function ValueCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="group text-center bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+    <div className="group text-center bg-linear-to-br from-white to-gray-50 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
       <div className="inline-flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">{icon}</div>
       <h3 className="text-2xl font-bold text-gray-900 mb-4">{title}</h3>
       <p className="text-gray-600 leading-relaxed">{description}</p>
@@ -116,9 +116,10 @@ function ValueCard({ icon, title, description }: { icon: React.ReactNode; title:
 
 function FeatureCard({ title, description }: { title: string; description: string }) {
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-100 hover:border-red-200">
+    <div className="bg-linear-to-br from-white to-gray-50 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-100 hover:border-red-200">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">{title}</h3>
       <p className="text-gray-600 leading-relaxed">{description}</p>
     </div>
   );
 }
+

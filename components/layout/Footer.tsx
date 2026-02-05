@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'luci
 
 export default function Footer() {
   return (
-    <footer className="relative bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white overflow-hidden">
+    <footer className="relative bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
@@ -98,15 +98,15 @@ export default function Footer() {
             <h3 className="text-lg font-bold mb-6">Contact Us</h3>
             <ul className="space-y-4">
               <li className="flex items-start space-x-2 text-gray-300">
-                <Mail className="w-5 h-5 mt-0.5 flex-shrink-0 text-red-500" />
+                <Mail className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
                 <span className="text-sm font-light">info@dojorepublic.com</span>
               </li>
               <li className="flex items-start space-x-2 text-gray-300">
-                <Phone className="w-5 h-5 mt-0.5 flex-shrink-0 text-red-500" />
+                <Phone className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
                 <span className="text-sm font-light">+1 (555) 123-4567</span>
               </li>
               <li className="flex items-start space-x-2 text-gray-300">
-                <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0 text-red-500" />
+                <MapPin className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
                 <span className="text-sm font-light">123 Martial Arts Way, Sports City</span>
               </li>
             </ul>
@@ -129,3 +129,4 @@ export default function Footer() {
     </footer>
   );
 }
+

@@ -82,8 +82,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newTournament: Tournament = {
-      id: generateId(),
+    await connectDB();
+
+    const tournamentData = {
       name,
       description,
       organizerId: user!.id,
@@ -106,13 +107,18 @@ export async function POST(request: NextRequest) {
       isPublished: user!.role === 'admin',
       participants: [],
       results: [],
-      createdAt: getCurrentTimestamp(),
-      updatedAt: getCurrentTimestamp(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    tournamentsDB.create(newTournament);
+    const createdTournament = await TournamentModel.create(tournamentData);
+    const tournament = {
+      ...createdTournament.toObject(),
+      id: createdTournament._id.toString(),
+      _id: undefined
+    };
 
-    return NextResponse.json({ tournament: newTournament }, { status: 201 });
+    return NextResponse.json({ tournament }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || 'Failed to create tournament' },
@@ -120,3 +126,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

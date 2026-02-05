@@ -245,7 +245,7 @@ export default function AdminTournamentsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-start text-sm text-gray-600">
-                          <MapPin className="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" />
+                          <MapPin className="w-4 h-4 mr-1 mt-0.5 shrink-0" />
                           <div>
                             <p>{tournament.city}</p>
                             <p className="text-gray-500">{tournament.country}</p>
@@ -311,3 +311,4 @@ export default function AdminTournamentsPage() {
     </div>
   );
 }
+

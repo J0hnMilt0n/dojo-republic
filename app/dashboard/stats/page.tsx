@@ -141,7 +141,7 @@ export default function StatsPage() {
                 <div key={index} className="flex-1 flex flex-col items-center">
                   <div className="relative w-full">
                     <div
-                      className="w-full bg-gradient-to-t from-gray-900 to-gray-700 rounded-t hover:from-black hover:to-gray-900 transition cursor-pointer"
+                      className="w-full bg-linear-to-t from-gray-900 to-gray-700 rounded-t hover:from-black hover:to-gray-900 transition cursor-pointer"
                       style={{ height: `${(item.hours / 30) * 200}px` }}
                       title={`${item.hours} hours`}
                     >
@@ -225,7 +225,7 @@ export default function StatsPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
           <div className="space-y-4">
             <div className="flex items-start space-x-4 pb-4 border-b border-gray-200">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                 <Calendar className="w-5 h-5 text-green-600" />
               </div>
               <div className="flex-1">
@@ -236,7 +236,7 @@ export default function StatsPage() {
             </div>
 
             <div className="flex items-start space-x-4 pb-4 border-b border-gray-200">
-              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center shrink-0">
                 <Trophy className="w-5 h-5 text-yellow-600" />
               </div>
               <div className="flex-1">
@@ -247,7 +247,7 @@ export default function StatsPage() {
             </div>
 
             <div className="flex items-start space-x-4 pb-4 border-b border-gray-200">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                 <Award className="w-5 h-5 text-blue-600" />
               </div>
               <div className="flex-1">
@@ -258,7 +258,7 @@ export default function StatsPage() {
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center shrink-0">
                 <Users className="w-5 h-5 text-purple-600" />
               </div>
               <div className="flex-1">
@@ -273,3 +273,4 @@ export default function StatsPage() {
     </div>
   );
 }
+

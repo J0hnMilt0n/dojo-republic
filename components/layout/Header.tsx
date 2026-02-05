@@ -117,7 +117,7 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="bg-gradient-to-r from-red-600 to-red-800 text-white px-5 py-2.5 rounded-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 font-semibold shadow-lg hover:shadow-red-500/50 hover:scale-105 transform"
+                  className="bg-linear-to-r from-red-600 to-red-800 text-white px-5 py-2.5 rounded-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 font-semibold shadow-lg hover:shadow-red-500/50 hover:scale-105 transform"
                 >
                   Sign Up
                 </Link>
@@ -215,7 +215,7 @@ export default function Header() {
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="block bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 rounded-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 text-center font-semibold"
+                    className="block bg-linear-to-r from-red-600 to-red-800 text-white px-4 py-2 rounded-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 text-center font-semibold"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Sign Up
@@ -229,3 +229,4 @@ export default function Header() {
     </header>
   );
 }
+

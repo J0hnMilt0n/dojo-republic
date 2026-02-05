@@ -171,7 +171,7 @@ export default function AchievementsPage() {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
             <div
-              className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-4 rounded-full transition-all duration-500"
+              className="bg-linear-to-r from-yellow-400 to-yellow-600 h-4 rounded-full transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
@@ -249,3 +249,4 @@ export default function AchievementsPage() {
     </div>
   );
 }
+

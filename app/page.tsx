@@ -28,13 +28,13 @@ export default function HomePage() {
       </div>
       
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white overflow-hidden flex items-center">
+      <section className="relative min-h-screen bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white overflow-hidden flex items-center">
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
         
         {/* Karate Fighter Silhouettes Background */}
         <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -49,7 +49,7 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-5 leading-tight tracking-tight">
-              Welcome to <span className="bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">Dojo Republic</span>
+              Welcome to <span className="bg-linear-to-r from-red-400 to-red-600 bg-clip-text text-transparent">Dojo Republic</span>
             </h1>
             <p className="text-lg sm:text-xl mb-3 text-gray-200 max-w-3xl mx-auto font-light">
               The Home of Combat Sports
@@ -60,7 +60,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-5 justify-center">
               <Link
                 href="/dojos"
-                className="bg-gradient-to-r from-red-600 to-red-800 text-white px-8 py-3 rounded-xl font-semibold text-base hover:from-red-700 hover:to-red-900 transition-all duration-300 shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform"
+                className="bg-linear-to-r from-red-600 to-red-800 text-white px-8 py-3 rounded-xl font-semibold text-base hover:from-red-700 hover:to-red-900 transition-all duration-300 shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform"
               >
                 Find a Dojo
               </Link>
@@ -76,7 +76,7 @@ export default function HomePage() {
       </section>
 
       {/* Founder Vision Quote Section */}
-      <section className="relative min-h-screen py-24 bg-gradient-to-br from-[#0D131F] via-[#171C32] to-[#0D131F] text-white overflow-hidden">
+      <section className="relative min-h-screen py-24 bg-linear-to-br from-[#0D131F] via-[#171C32] to-[#0D131F] text-white overflow-hidden">
         {/* Subtle decorative background */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
@@ -111,14 +111,14 @@ export default function HomePage() {
               <p className="text-lg text-gray-400 font-medium">
                 — Founder & CEO, Dojo Republic
               </p>
-              <div className="h-1 w-32 bg-gradient-to-r from-red-600 to-red-800 mx-auto mt-4 rounded-full"></div>
+              <div className="h-1 w-32 bg-linear-to-r from-red-600 to-red-800 mx-auto mt-4 rounded-full"></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="relative py-28 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      <section className="relative py-28 bg-linear-to-b from-gray-50 to-white overflow-hidden">
         {/* Karate Fighter Patterns */}
         <div className="absolute inset-0 opacity-5 pointer-events-none">
           <div className="absolute top-1/4 right-10 animate-float-slow">
@@ -164,7 +164,7 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-24 bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white overflow-hidden">
+      <section className="relative py-24 bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
@@ -192,7 +192,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-b from-white via-gray-50 to-white">
+      <section className="py-16 bg-linear-to-b from-white via-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-5 tracking-tight">
             Ready to Join Dojo Republic?
@@ -203,13 +203,13 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link
               href="/auth/register"
-              className="bg-gradient-to-r from-[#E63946] to-[#D62828] text-white px-8 py-3 rounded-xl font-semibold text-base hover:from-[#D62828] hover:to-[#C91F27] transition-all duration-300 shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform"
+              className="bg-linear-to-r from-[#E63946] to-[#D62828] text-white px-8 py-3 rounded-xl font-semibold text-base hover:from-[#D62828] hover:to-[#C91F27] transition-all duration-300 shadow-2xl hover:shadow-red-500/50 hover:scale-105 transform"
             >
               Get Started
             </Link>
             <Link
               href="/about"
-              className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-900 px-8 py-3 rounded-xl font-semibold text-base hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-lg hover:scale-105 transform"
+              className="bg-linear-to-r from-gray-100 to-gray-200 text-gray-900 px-8 py-3 rounded-xl font-semibold text-base hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-lg hover:scale-105 transform"
             >
               Learn More
             </Link>
@@ -222,9 +222,9 @@ export default function HomePage() {
 
 function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
   return (
-    <div className="group relative bg-gradient-to-br from-white to-gray-50 p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200 hover:scale-105 transform">
+    <div className="group relative bg-linear-to-br from-white to-gray-50 p-10 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200 hover:scale-105 transform">
       {/* Gradient accent on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-red-600/0 group-hover:from-red-500/5 group-hover:to-red-600/5 rounded-2xl transition-all duration-300"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-red-500/0 to-red-600/0 group-hover:from-red-500/5 group-hover:to-red-600/5 rounded-2xl transition-all duration-300"></div>
       
       <div className="relative">
         <div className="mb-5 transform group-hover:scale-110 transition-transform duration-300">{icon}</div>
@@ -238,7 +238,7 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
 function StatCard({ number, label }: { number: string; label: string }) {
   return (
     <div className="group">
-      <div className="text-4xl sm:text-5xl font-extrabold mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-red-600 transition-all duration-300">{number}</div>
+      <div className="text-4xl sm:text-5xl font-extrabold mb-2 bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-red-600 transition-all duration-300">{number}</div>
       <div className="text-base sm:text-lg text-gray-300 font-light tracking-wide">{label}</div>
     </div>
   );
@@ -278,3 +278,4 @@ function KarateAnimations({ scrollY }: { scrollY: number }) {
 }
 
 // Inline SVG Components removed - using CDN instead
+

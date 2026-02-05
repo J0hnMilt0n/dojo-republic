@@ -57,7 +57,7 @@ export default function LiveScorecardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white p-4">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 to-gray-800 text-white p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -276,3 +276,4 @@ function ScoreControl({
     </div>
   );
 }
+

@@ -82,7 +82,7 @@ export default function TournamentDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-8">
+      <section className="bg-linear-to-r from-orange-600 to-red-600 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/tournaments"
@@ -146,7 +146,7 @@ export default function TournamentDetailPage() {
               <div className="space-y-4">
                 {/* Dates */}
                 <div className="flex items-start">
-                  <Calendar className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <Calendar className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Event Date</p>
                     <p className="text-sm text-gray-600">
@@ -159,7 +159,7 @@ export default function TournamentDetailPage() {
 
                 {/* Registration Deadline */}
                 <div className="flex items-start">
-                  <Clock className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <Clock className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Registration Deadline</p>
                     <p className="text-sm text-gray-600">
@@ -170,7 +170,7 @@ export default function TournamentDetailPage() {
 
                 {/* Location */}
                 <div className="flex items-start">
-                  <MapPin className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <MapPin className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Venue</p>
                     <p className="text-sm text-gray-600">
@@ -183,7 +183,7 @@ export default function TournamentDetailPage() {
 
                 {/* Participants */}
                 <div className="flex items-start">
-                  <Users className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <Users className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Participants</p>
                     <p className="text-sm text-gray-600">
@@ -196,7 +196,7 @@ export default function TournamentDetailPage() {
 
                 {/* Registration Fee */}
                 <div className="flex items-start">
-                  <DollarSign className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <DollarSign className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Registration Fee</p>
                     <p className="text-sm text-gray-600">

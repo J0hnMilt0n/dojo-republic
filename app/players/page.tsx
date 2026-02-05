@@ -30,13 +30,13 @@ export default function PlayersPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-24 overflow-hidden">
+      <section className="relative bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-24 overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">Featured Athletes</h1>
@@ -47,7 +47,7 @@ export default function PlayersPage() {
       </section>
 
       {/* Players Grid */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-20 bg-linear-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {loading ? (
             <div className="text-center py-12">
@@ -78,11 +78,11 @@ function PlayerCard({ player }: { player: PlayerProfile }) {
 
   return (
     <Link href={`/players/${player.id}`}>
-      <div className="group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200 hover:scale-105 transform overflow-hidden cursor-pointer">
+      <div className="group relative bg-linear-to-br from-white to-gray-50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200 hover:scale-105 transform overflow-hidden cursor-pointer">
         {/* Gradient accent on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-red-600/0 group-hover:from-red-500/5 group-hover:to-red-600/5 rounded-2xl transition-all duration-300"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-red-500/0 to-red-600/0 group-hover:from-red-500/5 group-hover:to-red-600/5 rounded-2xl transition-all duration-300"></div>
         
-        <div className="h-48 bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] flex items-center justify-center relative overflow-hidden">
+        <div className="h-48 bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] flex items-center justify-center relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-0 right-0 w-24 h-24 bg-red-500 rounded-full blur-2xl"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500 rounded-full blur-2xl"></div>
@@ -99,7 +99,7 @@ function PlayerCard({ player }: { player: PlayerProfile }) {
           </div>
 
           <div className="flex items-center justify-between mb-4">
-            <span className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-800 text-white text-xs font-semibold rounded-lg">
+            <span className="px-4 py-2 bg-linear-to-r from-red-600 to-red-800 text-white text-xs font-semibold rounded-lg">
               {player.beltCategory}
             </span>
             <span className="text-sm text-gray-600 font-light">Age {player.age}</span>
@@ -114,3 +114,4 @@ function PlayerCard({ player }: { player: PlayerProfile }) {
     </Link>
   );
 }
+

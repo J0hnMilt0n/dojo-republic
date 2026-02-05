@@ -81,7 +81,7 @@ export default function DojoDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-gray-900 to-black text-white py-8">
+      <section className="bg-linear-to-r from-gray-900 to-black text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/dojos"
@@ -210,7 +210,7 @@ export default function DojoDetailPage() {
               <div className="space-y-4">
                 {/* Address */}
                 <div className="flex items-start">
-                  <MapPin className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <MapPin className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Address</p>
                     <p className="text-sm text-gray-600">
@@ -223,7 +223,7 @@ export default function DojoDetailPage() {
 
                 {/* Phone */}
                 <div className="flex items-start">
-                  <Phone className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <Phone className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Phone</p>
                     <a
@@ -237,7 +237,7 @@ export default function DojoDetailPage() {
 
                 {/* Email */}
                 <div className="flex items-start">
-                  <Mail className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <Mail className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Email</p>
                     <a
@@ -252,7 +252,7 @@ export default function DojoDetailPage() {
                 {/* Website */}
                 {dojo.website && (
                   <div className="flex items-start">
-                    <Globe className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <Globe className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-gray-900">Website</p>
                       <a
