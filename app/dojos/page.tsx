@@ -62,7 +62,7 @@ export default function DojosPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-20 overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full blur-3xl"></div>
@@ -163,12 +163,12 @@ export default function DojosPage() {
 
 function DojoCard({ dojo }: { dojo: Dojo }) {
   return (
-    <Link href={`/dojos/${dojo.id}`}>
-      <div className="group bg-linear-to-br from-white to-gray-50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer hover:scale-105 border border-gray-100 hover:border-red-200">
+    <Link href={`/dojos/${dojo.id}`} className="block">
+      <div className="group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer hover:scale-105 border border-gray-100 hover:border-red-200">
         {/* Gradient accent on hover */}
-        <div className="absolute inset-0 bg-linear-to-br from-red-500/0 to-red-600/0 group-hover:from-red-500/5 group-hover:to-red-600/5 rounded-2xl transition-all duration-300"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-red-600/0 group-hover:from-red-500/5 group-hover:to-red-600/5 rounded-2xl transition-all duration-300 pointer-events-none"></div>
         
-        <div className="h-48 bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] flex items-center justify-center relative">
+        <div className="h-48 bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] flex items-center justify-center relative">
           <span className="text-white text-4xl font-bold">
             {dojo.name.charAt(0)}
           </span>
@@ -190,7 +190,7 @@ function DojoCard({ dojo }: { dojo: Dojo }) {
             {dojo.martialArts.slice(0, 3).map((ma) => (
               <span
                 key={ma}
-                className="px-3 py-1 bg-linear-to-r from-red-600 to-red-800 text-white text-xs font-semibold rounded-full"
+                className="px-3 py-1 bg-gradient-to-r from-red-600 to-red-800 text-white text-xs font-semibold rounded-full"
               >
                 {ma}
               </span>

@@ -170,3 +170,41 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
+// DELETE dojo
+export async function DELETE(request: NextRequest) {
+  try {
+    await connectDB();
+    
+    const sessionId = request.cookies.get('session')?.value;
+    const user = await getUserFromSession(sessionId);
+    requireRole(user, ['admin', 'dojo_owner']);
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Dojo ID required' }, { status: 400 });
+    }
+
+    const dojo = await DojoModel.findById(id).lean();
+    if (!dojo) {
+      return NextResponse.json({ error: 'Dojo not found' }, { status: 404 });
+    }
+
+    // Check ownership
+    if (user!.role !== 'admin' && dojo.ownerId !== user!.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    await DojoModel.findByIdAndDelete(id);
+
+    return NextResponse.json({ message: 'Dojo deleted successfully' });
+  } catch (error: any) {
+    console.error('Failed to delete dojo:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to delete dojo' },
+      { status: 500 }
+    );
+  }
+}
+

@@ -24,14 +24,21 @@ export default function DojoDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDojo();
+    if (params.id) {
+      fetchDojo();
+    }
   }, [params.id]);
 
   const fetchDojo = async () => {
     try {
-      const res = await fetch('/api/dojos');
+      // Fetch all approved dojos and find the specific one
+      const res = await fetch('/api/dojos?approved=true');
+      if (!res.ok) {
+        throw new Error('Failed to fetch dojo');
+      }
+      
       const data = await res.json();
-      const foundDojo = data.dojos.find((d: Dojo) => d.id === params.id);
+      const foundDojo = data.dojos.find((d: Dojo) => d.id === params.id || d.id === String(params.id));
       
       if (foundDojo) {
         setDojo(foundDojo);
@@ -81,7 +88,7 @@ export default function DojoDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section className="bg-linear-to-r from-gray-900 to-black text-white py-8">
+      <section className="bg-gradient-to-r from-gray-900 to-black text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/dojos"
