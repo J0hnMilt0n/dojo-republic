@@ -101,6 +101,10 @@ export async function POST(request: NextRequest) {
       isApproved: user!.role === 'admin', // Auto-approve if admin
     });
 
+    // Update user's dojoId
+    const { UserModel } = await import('@/lib/models');
+    await UserModel.findByIdAndUpdate(user!.id, { dojoId: newDojo._id.toString() });
+
     const formattedDojo = {
       ...newDojo.toObject(),
       id: newDojo._id.toString(),

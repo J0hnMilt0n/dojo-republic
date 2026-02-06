@@ -51,7 +51,7 @@ export default function ContactPage() {
                   <input
                     type="tel"
                     className="w-full px-5 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-600 focus:border-red-600 transition"
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="+44 7440 133748"
                   />
                 </div>
                 <div>
@@ -104,7 +104,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2 text-lg">Phone</h3>
-                    <p className="text-gray-600 font-medium">+1 (555) 123-4567</p>
+                    <p className="text-gray-600 font-medium">+44 7440 133748</p>
                     <p className="text-gray-600 font-medium">+1 (555) 987-6543</p>
                   </div>
                 </div>

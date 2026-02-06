@@ -87,5 +87,5 @@ export const siteConfig = {
   description: 'The Home of Combat Sports - A unified platform for martial arts dojos, athletes, tournaments, and more.',
   url: 'https://dojorepublic.com',
   email: 'info@dojorepublic.com',
-  phone: '+1 (555) 123-4567',
+  phone: '+44 7440 133748',
 };
