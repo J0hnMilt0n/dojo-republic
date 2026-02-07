@@ -14,12 +14,24 @@ export async function GET(request: NextRequest) {
     const martialArt = searchParams.get('martialArt');
     const approved = searchParams.get('approved');
 
+    // Check if user is admin
+    const sessionId = request.cookies.get('session')?.value;
+    const user = sessionId ? await getUserFromSession(sessionId) : null;
+    const isAdmin = user?.role === 'admin';
+
     let query: any = {};
 
-    // Filter by approval status (public views only see approved)
-    if (approved === 'true' || !searchParams.has('approved')) {
+    // Filter by approval status (public views only see approved, admins see all)
+    if (!isAdmin) {
+      if (approved === 'true' || !searchParams.has('approved')) {
+        query.isApproved = true;
+      }
+    } else if (approved === 'true') {
       query.isApproved = true;
+    } else if (approved === 'false') {
+      query.isApproved = false;
     }
+    // If admin and no approved param, show all dojos
 
     // Filter by city
     if (city) {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
 
 export default function Header() {
@@ -10,20 +10,29 @@ export default function Header() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [pathname]); // Re-check auth when pathname changes
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch('/api/auth/me', { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
+      } else {
+        setUser(null);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -34,7 +43,6 @@ export default function Header() {
       await fetch('/api/auth/logout', { method: 'POST' });
       setUser(null);
       router.push('/');
-      router.refresh();
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -74,6 +82,9 @@ export default function Header() {
             <Link href="/marketplace" className="text-gray-700 hover:text-red-600 transition font-medium">
               Marketplace
             </Link>
+            <Link href="/pricing" className="text-gray-700 hover:text-red-600 transition font-medium">
+              Pricing
+            </Link>
             <Link href="/about" className="text-gray-700 hover:text-red-600 transition font-medium">
               About
             </Link>
@@ -85,7 +96,10 @@ export default function Header() {
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             {loading ? (
-              <div className="w-20 h-8 bg-gray-100 animate-pulse rounded-lg"></div>
+              <div className="flex items-center space-x-4">
+                <div className="w-24 h-8 bg-gray-100 animate-pulse rounded-lg"></div>
+                <div className="w-20 h-8 bg-gray-100 animate-pulse rounded-lg"></div>
+              </div>
             ) : user ? (
               <>
                 <Link
@@ -164,6 +178,13 @@ export default function Header() {
               onClick={() => setIsMenuOpen(false)}
             >
               Marketplace
+            </Link>
+            <Link
+              href="/pricing"
+              className="block text-gray-700 hover:text-gray-900 transition"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
             </Link>
             <Link
               href="/about"

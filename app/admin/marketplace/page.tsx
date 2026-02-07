@@ -12,9 +12,11 @@ import {
   Search,
   Filter
 } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 export default function AdminMarketplacePage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [sellers, setSellers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
@@ -51,8 +53,7 @@ export default function AdminMarketplacePage() {
 
   const fetchSellers = async () => {
     try {
-      // Note: This endpoint needs to be created or updated
-      const res = await fetch('/api/products?type=sellers');
+      const res = await fetch('/api/sellers');
       if (res.ok) {
         const data = await res.json();
         setSellers(data.sellers || []);
@@ -71,6 +72,86 @@ export default function AdminMarketplacePage() {
       }
     } catch (error) {
       console.error('Failed to fetch products:', error);
+    }
+  };
+
+  const handleApproveProduct = async (productId: string) => {
+    try {
+      const res = await fetch('/api/products/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, isApproved: true }),
+      });
+
+      if (res.ok) {
+        showToast('Product approved successfully', 'success');
+        await fetchProducts();
+      } else {
+        showToast('Failed to approve product', 'error');
+      }
+    } catch (error) {
+      console.error('Error approving product:', error);
+      showToast('Error approving product', 'error');
+    }
+  };
+
+  const handleRejectProduct = async (productId: string) => {
+    try {
+      const res = await fetch('/api/products/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, isApproved: false }),
+      });
+
+      if (res.ok) {
+        showToast('Product rejected', 'success');
+        await fetchProducts();
+      } else {
+        showToast('Failed to reject product', 'error');
+      }
+    } catch (error) {
+      console.error('Error rejecting product:', error);
+      showToast('Error rejecting product', 'error');
+    }
+  };
+
+  const handleApproveSeller = async (sellerId: string) => {
+    try {
+      const res = await fetch('/api/sellers/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sellerId, isApproved: true }),
+      });
+
+      if (res.ok) {
+        showToast('Seller approved successfully', 'success');
+        await fetchSellers();
+      } else {
+        showToast('Failed to approve seller', 'error');
+      }
+    } catch (error) {
+      console.error('Error approving seller:', error);
+      showToast('Error approving seller', 'error');
+    }
+  };
+
+  const handleRejectSeller = async (sellerId: string) => {
+    try {
+      const res = await fetch('/api/sellers/approve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sellerId, isApproved: false }),
+      });
+
+      if (res.ok) {
+        showToast('Seller rejected', 'success');
+        await fetchSellers();
+      } else {
+        showToast('Failed to reject seller', 'error');
+      }
+    } catch (error) {
+      console.error('Error rejecting seller:', error);
+      showToast('Error rejecting seller', 'error');
     }
   };
 
@@ -164,17 +245,35 @@ export default function AdminMarketplacePage() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {sellers.map((seller) => (
-                      <div key={seller.id} className="border border-gray-200 rounded-lg p-4">
+                      <div key={seller.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
                         <div className="flex items-start justify-between mb-3">
                           <h3 className="font-semibold text-gray-900">{seller.businessName}</h3>
-                          {seller.isApproved ? (
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                          ) : (
-                            <XCircle className="w-5 h-5 text-orange-600" />
-                          )}
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            seller.isApproved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                          }`}>
+                            {seller.isApproved ? 'Approved' : 'Pending'}
+                          </span>
                         </div>
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2">{seller.description}</p>
-                        <p className="text-xs text-gray-500">{seller.email}</p>
+                        <p className="text-xs text-gray-500 mb-3">{seller.email}</p>
+                        {!seller.isApproved && (
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleApproveSeller(seller.id)}
+                              className="flex-1 flex items-center justify-center space-x-1 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition text-sm"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              <span>Approve</span>
+                            </button>
+                            <button
+                              onClick={() => handleRejectSeller(seller.id)}
+                              className="flex-1 flex items-center justify-center space-x-1 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition text-sm"
+                            >
+                              <XCircle className="w-4 h-4" />
+                              <span>Reject</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -190,20 +289,39 @@ export default function AdminMarketplacePage() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {products.map((product) => (
-                      <div key={product.id} className="border border-gray-200 rounded-lg p-4">
+                      <div key={product.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
                         <div className="flex items-start justify-between mb-3">
                           <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                          {product.isApproved ? (
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                          ) : (
-                            <XCircle className="w-5 h-5 text-orange-600" />
-                          )}
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            product.isApproved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                          }`}>
+                            {product.isApproved ? 'Approved' : 'Pending'}
+                          </span>
                         </div>
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
-                        <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-500 mb-3">Category: {product.category}</p>
+                        <div className="flex items-center justify-between mb-3">
                           <span className="text-lg font-bold text-gray-900">${product.price}</span>
                           <span className="text-xs text-gray-500">Stock: {product.stock}</span>
                         </div>
+                        {!product.isApproved && (
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleApproveProduct(product.id)}
+                              className="flex-1 flex items-center justify-center space-x-1 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition text-sm"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              <span>Approve</span>
+                            </button>
+                            <button
+                              onClick={() => handleRejectProduct(product.id)}
+                              className="flex-1 flex items-center justify-center space-x-1 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition text-sm"
+                            >
+                              <XCircle className="w-4 h-4" />
+                              <span>Reject</span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

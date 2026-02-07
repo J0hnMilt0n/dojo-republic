@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import { ShoppingCart, Search, Filter } from 'lucide-react';
 import { Product } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
+import { useToast } from '@/components/ToastProvider';
 
 export default function MarketplacePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const { showToast } = useToast();
 
   useEffect(() => {
     fetchProducts();
@@ -32,6 +34,37 @@ export default function MarketplacePage() {
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleAddToCart = (product: Product) => {
+    // Get existing cart from localStorage
+    const existingCart = localStorage.getItem('cart');
+    let cart = existingCart ? JSON.parse(existingCart) : [];
+    
+    // Check if product already in cart
+    const existingItemIndex = cart.findIndex((item: any) => item.id === product.id);
+    
+    if (existingItemIndex > -1) {
+      // Increment quantity
+      cart[existingItemIndex].quantity += 1;
+      showToast(`Increased ${product.name} quantity to ${cart[existingItemIndex].quantity}`, 'success');
+    } else {
+      // Add new item
+      cart.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        sellerId: product.sellerId
+      });
+      showToast(`${product.name} added to cart`, 'success');
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Dispatch custom event for cart updates
+    window.dispatchEvent(new Event('cartUpdated'));
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -85,7 +118,11 @@ export default function MarketplacePage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onAddToCart={handleAddToCart}
+                />
               ))}
             </div>
           )}
@@ -95,7 +132,7 @@ export default function MarketplacePage() {
   );
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: (product: Product) => void }) {
   return (
     <div className="group relative bg-linear-to-br from-white to-gray-50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200 hover:scale-105 transform overflow-hidden">
       {/* Gradient accent on hover */}
@@ -121,7 +158,11 @@ function ProductCard({ product }: { product: Product }) {
           <span className="text-2xl font-extrabold text-gray-900">
             {formatCurrency(product.price)}
           </span>
-          <button className="bg-linear-to-r from-red-600 to-red-800 text-white px-5 py-2.5 rounded-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 text-sm font-semibold shadow-lg hover:shadow-red-500/50 hover:scale-105 transform">
+          <button 
+            onClick={() => onAddToCart(product)}
+            disabled={product.stock === 0}
+            className="bg-linear-to-r from-red-600 to-red-800 text-white px-5 py-2.5 rounded-lg hover:from-red-700 hover:to-red-900 transition-all duration-300 text-sm font-semibold shadow-lg hover:shadow-red-500/50 hover:scale-105 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
             Add to Cart
           </button>
         </div>

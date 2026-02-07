@@ -70,6 +70,17 @@ async function seedData() {
       createdAt: timestamp,
       updatedAt: timestamp,
     },
+    {
+      id: 'seller-1',
+      email: 'seller@demo.com',
+      password: await hashPassword('password123'),
+      name: 'Emily Martinez',
+      role: 'seller',
+      phoneNumber: '+1 (555) 444-0001',
+      isApproved: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
   ];
 
   // Dojos
@@ -262,6 +273,103 @@ async function seedData() {
     },
   ];
 
+  // Sellers
+  const sellers = [
+    {
+      id: 'seller-1-profile',
+      userId: 'seller-1',
+      businessName: 'Martial Arts Gear Pro',
+      description: 'Premium martial arts equipment and apparel. Official supplier for tournaments and dojos.',
+      address: '456 Commerce Blvd, Los Angeles, CA 90001',
+      phoneNumber: '+1 (555) 777-0001',
+      email: 'seller@demo.com',
+      logo: '',
+      isApproved: true,
+      commissionRate: 10,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+  ];
+
+  // Products
+  const products = [
+    {
+      id: 'product-1',
+      sellerId: 'seller-1',
+      name: 'Professional Karate Gi - White',
+      description: 'High-quality 100% cotton karate gi. Perfect for training and competitions. Lightweight and breathable.',
+      category: 'Gi',
+      price: 89.99,
+      stock: 50,
+      images: [],
+      specifications: {
+        material: '100% Cotton',
+        weight: '12oz',
+        sizes: 'XS, S, M, L, XL, XXL',
+      },
+      isApproved: true,
+      isActive: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+    {
+      id: 'product-2',
+      sellerId: 'seller-1',
+      name: 'Competition Karate Belt Set',
+      description: 'Complete belt set from white to black. Made from durable cotton with reinforced stitching.',
+      category: 'Belt',
+      price: 149.99,
+      stock: 30,
+      images: [],
+      specifications: {
+        material: 'Cotton',
+        length: '280cm',
+        width: '4cm',
+      },
+      isApproved: true,
+      isActive: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+    {
+      id: 'product-3',
+      sellerId: 'seller-1',
+      name: 'Sparring Gloves - Red',
+      description: 'Professional sparring gloves with foam padding. Thumb protection and secure velcro wrist strap.',
+      category: 'Gloves',
+      price: 45.99,
+      stock: 75,
+      images: [],
+      specifications: {
+        material: 'Synthetic Leather',
+        padding: 'High-density foam',
+        sizes: 'S, M, L, XL',
+      },
+      isApproved: true,
+      isActive: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+    {
+      id: 'product-4',
+      sellerId: 'seller-1',
+      name: 'Protective Headgear',
+      description: 'Lightweight protective headgear for sparring. Excellent visibility and ventilation.',
+      category: 'Protective Gear',
+      price: 69.99,
+      stock: 40,
+      images: [],
+      specifications: {
+        material: 'Vinyl outer, foam padding',
+        sizes: 'S, M, L',
+      },
+      isApproved: true,
+      isActive: true,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+  ];
+
   // Pricing Plans
   const pricingPlans = [
     {
@@ -302,8 +410,8 @@ async function seedData() {
   writeData('matches.json', []);
   writeData('students.json', []);
   writeData('attendance.json', []);
-  writeData('products.json', []);
-  writeData('sellers.json', []);
+  writeData('products.json', products);
+  writeData('sellers.json', sellers);
   writeData('orders.json', []);
   writeData('enquiries.json', []);
   writeData('hosting-requests.json', []);
@@ -312,6 +420,10 @@ async function seedData() {
   console.log('\n🎉 Database seeded successfully!');
   console.log('\n📝 Demo Account Credentials:');
   console.log('   Admin:      admin@demo.com / password123');
+  console.log('   Dojo Owner: owner@demo.com / password123');
+  console.log('   Player:     player@demo.com / password123');
+  console.log('   Coach:      coach@demo.com / coach123');
+  console.log('   Seller:     seller@demo.com / password123');
   console.log('   Dojo Owner: owner@demo.com / password123');
   console.log('   Player:     player@demo.com / password123');
   console.log('   Coach:      coach@demo.com / coach123\n');

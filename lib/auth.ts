@@ -1,4 +1,3 @@
-import { usersDB } from './db';
 import { User, UserRole } from './types';
 import bcrypt from 'bcryptjs';
 import { connectDB } from './mongodb';
@@ -57,9 +56,33 @@ export const deleteSession = async (sessionId: string): Promise<void> => {
 
 export const getUserFromSession = async (sessionId: string | undefined): Promise<User | null> => {
   if (!sessionId) return null;
-  const session = await getSession(sessionId);
-  if (!session) return null;
-  return usersDB.getById(session.userId) || null;
+  
+  try {
+    await connectDB();
+    const session = await getSession(sessionId);
+    if (!session) return null;
+    
+    const { UserModel } = await import('./models');
+    const user = await UserModel.findById(session.userId).lean();
+    if (!user) return null;
+    
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      phoneNumber: user.phoneNumber,
+      password: user.password,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isApproved: user.isApproved,
+      linkedStudents: user.linkedStudents,
+      dojoId: user.dojoId,
+    };
+  } catch (error) {
+    console.error('Error getting user from session:', error);
+    return null;
+  }
 };
 
 export const checkRole = (user: User | null, allowedRoles: UserRole[]): boolean => {
@@ -80,4 +103,37 @@ export const requireRole = (user: User | null, allowedRoles: UserRole[]): User =
     throw new Error('Insufficient permissions');
   }
   return authedUser;
+};
+
+// Helper for Next.js API routes to verify authentication
+export const verifyAuth = async (request: any): Promise<User | null> => {
+  try {
+    await connectDB();
+    const sessionId = request.cookies?.get('session')?.value;
+    if (!sessionId) return null;
+    
+    const session = await getSession(sessionId);
+    if (!session) return null;
+    
+    const { UserModel } = await import('./models');
+    const user = await UserModel.findById(session.userId).lean();
+    if (!user) return null;
+    
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      phoneNumber: user.phoneNumber,
+      password: user.password,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isApproved: user.isApproved,
+      linkedStudents: user.linkedStudents,
+      dojoId: user.dojoId,
+    };
+  } catch (error) {
+    console.error('Error verifying auth:', error);
+    return null;
+  }
 };

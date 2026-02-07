@@ -19,12 +19,14 @@ export default function StudentsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [deletingStudent, setDeletingStudent] = useState<any>(null);
+  const [userDojos, setUserDojos] = useState<any[]>([]);
   const [newStudent, setNewStudent] = useState({
     name: '',
     email: '',
     phone: '',
     age: '',
     beltLevel: 'White Belt',
+    dojoId: '',
   });
   const [editStudent, setEditStudent] = useState<any>(null);
 
@@ -58,11 +60,27 @@ export default function StudentsPage() {
         return;
       }
       setUser(data.user);
-      await fetchStudents();
+      await Promise.all([fetchStudents(), fetchUserDojos()]);
     } catch (error) {
       router.push('/auth/login');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUserDojos = async () => {
+    try {
+      const res = await fetch('/api/dojos/my-dojos');
+      if (res.ok) {
+        const data = await res.json();
+        setUserDojos(data.dojos || []);
+        // Set default dojo if only one
+        if (data.dojos && data.dojos.length === 1) {
+          setNewStudent(prev => ({ ...prev, dojoId: data.dojos[0].id }));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching dojos:', error);
     }
   };
 
@@ -72,19 +90,21 @@ export default function StudentsPage() {
       if (res.ok) {
         const data = await res.json();
         setStudents(data.students || []);
-        setFilteredStudents(data.students || []);
-      } else {
-        showToast('Failed to fetch students', 'error');
       }
     } catch (error) {
       console.error('Error fetching students:', error);
-      showToast('Error fetching students', 'error');
     }
   };
 
   const handleAddStudent = async () => {
     if (!newStudent.name || !newStudent.email || !newStudent.age) {
       showToast('Please fill in all required fields', 'warning');
+      return;
+    }
+
+    // If owner has multiple dojos, require dojo selection
+    if (userDojos.length > 1 && !newStudent.dojoId) {
+      showToast('Please select a dojo', 'warning');
       return;
     }
 
@@ -98,6 +118,7 @@ export default function StudentsPage() {
           phone: newStudent.phone,
           age: newStudent.age,
           beltLevel: newStudent.beltLevel,
+          dojoId: newStudent.dojoId || undefined,
         }),
       });
 
@@ -110,14 +131,29 @@ export default function StudentsPage() {
           phone: '',
           age: '',
           beltLevel: 'White Belt',
+          dojoId: userDojos.length === 1 ? userDojos[0].id : '',
         });
         await fetchStudents();
       } else {
         const data = await res.json();
-        const errorMsg = data.details 
-          ? `${data.error}: ${data.details.map((d: any) => `${d.field} - ${d.message}`).join(', ')}`
-          : data.error || 'Failed to add student';
-        showToast(errorMsg, 'error');
+        
+        // Handle specific error codes
+        if (data.code === 'NO_DOJO') {
+          if (user?.role === 'dojo_owner') {
+            showToast(
+              'You need to create a dojo first. Redirecting...',
+              'error'
+            );
+            setTimeout(() => router.push('/dashboard/my-dojo'), 2000);
+          } else {
+            showToast(data.error || 'Not associated with any dojo', 'error');
+          }
+        } else {
+          const errorMsg = data.details 
+            ? `${data.error}: ${data.details.map((d: any) => `${d.field} - ${d.message}`).join(', ')}`
+            : data.error || 'Failed to add student';
+          showToast(errorMsg, 'error');
+        }
         console.error('API Error:', data);
       }
     } catch (error) {
@@ -391,13 +427,38 @@ export default function StudentsPage() {
             </table>
           </div>
         </div>
+      </div>
 
+      {/* Modals */}
+      <div>
         {/* Add Student Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Student</h2>
               <div className="space-y-4">
+                {userDojos.length > 1 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Select Dojo *
+                    </label>
+                    <select
+                      value={newStudent.dojoId}
+                      onChange={(e) => setNewStudent({ ...newStudent, dojoId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    >
+                      <option value="">Choose a dojo...</option>
+                      {userDojos.map((dojo) => (
+                        <option key={dojo.id} value={dojo.id}>
+                          {dojo.name} - {dojo.city}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      You have multiple dojos. Select which one this student belongs to.
+                    </p>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Name *
@@ -477,6 +538,7 @@ export default function StudentsPage() {
                       phone: '',
                       age: '',
                       beltLevel: 'White Belt',
+                      dojoId: userDojos.length === 1 ? userDojos[0].id : '',
                     });
                   }}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
@@ -510,6 +572,28 @@ export default function StudentsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">Name</label>
                   <p className="text-gray-900 font-medium">{selectedStudent.name}</p>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <label className="block text-sm font-medium text-blue-900 mb-1">
+                    Student ID (for parent linking)
+                  </label>
+                  <div className="flex items-center justify-between">
+                    <code className="text-blue-900 font-mono text-sm bg-white px-2 py-1 rounded">
+                      {selectedStudent.id}
+                    </code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(selectedStudent.id);
+                        showToast('Student ID copied to clipboard', 'success');
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <p className="text-xs text-blue-700 mt-1">
+                    Share this ID with parents to link their accounts
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>

@@ -29,7 +29,8 @@ export default function DashboardTournamentsPage() {
         return;
       }
       const data = await res.json();
-      if (data.user.role !== 'dojo_owner' && data.user.role !== 'coach') {
+      // Allow dojo_owner, coach, and parent roles
+      if (data.user.role !== 'dojo_owner' && data.user.role !== 'coach' && data.user.role !== 'parent') {
         router.push('/dashboard');
         return;
       }
@@ -44,7 +45,13 @@ export default function DashboardTournamentsPage() {
 
   const fetchTournaments = async () => {
     try {
-      const res = await fetch('/api/tournaments?myTournaments=true');
+      // For parents, fetch all tournaments where their children are participating
+      // For dojo_owner/coach, fetch their created tournaments
+      const endpoint = user?.role === 'parent' 
+        ? '/api/tournaments?approved=true' 
+        : '/api/tournaments?myTournaments=true';
+      
+      const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
         const userTournaments = data.tournaments || [];
@@ -139,6 +146,104 @@ export default function DashboardTournamentsPage() {
     );
   }
 
+  // Show parent view for viewing children's tournament participation
+  if (user?.role === 'parent') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Trophy className="w-8 h-8 text-purple-600" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Tournament Participation</h1>
+                <p className="text-gray-600 mt-1">View children's tournament participation</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tournaments List */}
+          <div className="grid grid-cols-1 gap-6">
+            {tournaments.length === 0 ? (
+              <div className="bg-white rounded-lg shadow-md p-12 text-center">
+                <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">No Tournaments Available</h2>
+                <p className="text-gray-600 mb-6">
+                  There are no approved tournaments at the moment
+                </p>
+                <Link href="/tournaments">
+                  <button className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-black transition">
+                    Browse All Tournaments
+                  </button>
+                </Link>
+              </div>
+            ) : (
+              tournaments.map((tournament, index) => (
+                <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <h3 className="text-2xl font-bold text-gray-900">{tournament.name}</h3>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(tournament.status)}`}>
+                          {tournament.status}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 mb-4">{tournament.description}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div className="flex items-center text-gray-600">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          <span className="text-sm">
+                            {new Date(tournament.startDate).toLocaleDateString('en-US', {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-gray-600">
+                          <MapPin className="w-4 h-4 mr-2" />
+                          <span className="text-sm">{tournament.venue}, {tournament.city}</span>
+                        </div>
+                        <div className="flex items-center text-gray-600">
+                          <Users className="w-4 h-4 mr-2" />
+                          <span className="text-sm">
+                            {tournament.participants?.length || 0} / {tournament.maxParticipants} Participants
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {tournament.categories?.map((category: any, idx: number) => (
+                          <span key={idx} className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs">
+                            {category.name} - {category.ageGroup} ({category.gender})
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                        <p className="text-sm text-blue-900 font-medium">
+                          Registration Fee: ₹{tournament.registrationFee}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="ml-4">
+                      <Link href={`/tournaments/${tournament.id}`}>
+                        <button className="flex items-center space-x-2 text-white bg-purple-600 hover:bg-purple-700 transition px-4 py-2 rounded-lg">
+                          <span>View Details</span>
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show coach/dojo_owner view for managing tournaments
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

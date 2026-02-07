@@ -41,6 +41,24 @@ export async function POST(request: NextRequest) {
       isApproved: role === 'student' || role === 'player' || role === 'parent', // Auto-approve basic users
     });
 
+    // If registering as seller, create a seller profile
+    if (role === 'seller') {
+      const { SellerModel } = await import('@/lib/models');
+      await SellerModel.create({
+        userId: newUser._id.toString(),
+        businessName: `${name}'s Store`,
+        description: 'New seller on Dojo Republic',
+        address: '',
+        phoneNumber: phoneNumber || '',
+        email: email,
+        logo: '',
+        isApproved: false,
+        commissionRate: 10,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
     // Return success (don't include password)
     const userResponse = {
       id: newUser._id.toString(),

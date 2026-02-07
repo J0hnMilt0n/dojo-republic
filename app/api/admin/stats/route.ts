@@ -1,40 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromSession, requireRole } from '@/lib/auth';
+import { connectDB } from '@/lib/mongodb';
 import { 
-  dojosDB, 
-  tournamentsDB, 
-  achievementsDB, 
-  sellersDB, 
-  usersDB, 
-  ordersDB 
-} from '@/lib/db';
+  DojoModel,
+  TournamentModel,
+  SellerModel,
+  UserModel,
+  OrderModel
+} from '@/lib/models';
 
 export async function GET(request: NextRequest) {
   try {
+    await connectDB();
+    
     const sessionId = request.cookies.get('session')?.value;
     const user = await getUserFromSession(sessionId);
     requireRole(user, ['admin']);
 
-    // Get all data
-    const dojos = dojosDB.getAll();
-    const tournaments = tournamentsDB.getAll();
-    const achievements = achievementsDB.getAll();
-    const sellers = sellersDB.getAll();
-    const users = usersDB.getAll();
-    const orders = ordersDB.getAll();
+    // Get all data from MongoDB
+    const [dojos, tournaments, sellers, users, orders] = await Promise.all([
+      DojoModel.find({}).lean(),
+      TournamentModel.find({}).lean(),
+      SellerModel.find({}).lean(),
+      UserModel.find({}).lean(),
+      OrderModel.find({}).lean(),
+    ]);
 
     // Calculate stats
     const stats = {
-      pendingDojos: dojos.filter(d => !d.isApproved).length,
-      pendingTournaments: tournaments.filter(t => !t.isApproved).length,
-      pendingAchievements: achievements.filter(a => !a.isApproved).length,
-      pendingSellers: sellers.filter(s => !s.isApproved).length,
+      pendingDojos: dojos.filter((d: any) => !d.isApproved).length,
+      pendingTournaments: tournaments.filter((t: any) => !t.isApproved).length,
+      pendingSellers: sellers.filter((s: any) => !s.isApproved).length,
       totalUsers: users.length,
       totalDojos: dojos.length,
       totalTournaments: tournaments.length,
       totalOrders: orders.length,
-      totalRevenue: orders.reduce((sum, order) => sum + order.totalAmount, 0),
-      commissionEarned: orders.reduce((sum, order) => sum + order.commissionAmount, 0),
+      totalRevenue: orders.reduce((sum: number, order: any) => sum + (order.totalAmount || 0), 0),
+      commissionEarned: orders.reduce((sum: number, order: any) => sum + (order.commissionAmount || 0), 0),
     };
 
     return NextResponse.json({ stats });

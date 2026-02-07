@@ -12,7 +12,8 @@ import {
   Phone,
   Mail,
   Search,
-  Filter
+  Filter,
+  AlertCircle
 } from 'lucide-react';
 import { Dojo } from '@/lib/types';
 import { useToast } from '@/components/ToastProvider';
@@ -26,6 +27,11 @@ export default function AdminDojosPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved'>('all');
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    type: 'approve' | 'reject' | null;
+    dojo: Dojo | null;
+  }>({ isOpen: false, type: null, dojo: null });
 
   useEffect(() => {
     checkAuth();
@@ -90,53 +96,43 @@ export default function AdminDojosPage() {
     setFilteredDojos(filtered);
   }, [searchTerm, statusFilter, dojos]);
 
-  const handleApprove = async (dojoId: string) => {
-    if (!confirm('Are you sure you want to approve this dojo?')) return;
-
-    try {
-      const res = await fetch(`/api/dojos`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id: dojoId, 
-          isApproved: true 
-        }),
-      });
-
-      if (res.ok) {
-        showToast('Dojo approved successfully', 'success');
-        await fetchDojos();
-      } else {
-        showToast('Failed to approve dojo', 'error');
-      }
-    } catch (error) {
-      console.error('Error approving dojo:', error);
-      showToast('Failed to approve dojo', 'error');
-    }
+  const openConfirmModal = (type: 'approve' | 'reject', dojo: Dojo) => {
+    setConfirmModal({ isOpen: true, type, dojo });
   };
 
-  const handleReject = async (dojoId: string) => {
-    if (!confirm('Are you sure you want to reject this dojo?')) return;
+  const closeConfirmModal = () => {
+    setConfirmModal({ isOpen: false, type: null, dojo: null });
+  };
 
+  const handleConfirmAction = async () => {
+    if (!confirmModal.dojo) return;
+
+    const isApproving = confirmModal.type === 'approve';
+    
     try {
       const res = await fetch(`/api/dojos`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          id: dojoId, 
-          isApproved: false 
+          id: confirmModal.dojo.id, 
+          isApproved: isApproving 
         }),
       });
 
       if (res.ok) {
-        showToast('Dojo rejected', 'info');
+        showToast(
+          isApproving ? 'Dojo approved successfully' : 'Dojo approval revoked', 
+          isApproving ? 'success' : 'info'
+        );
         await fetchDojos();
       } else {
-        showToast('Failed to reject dojo', 'error');
+        showToast(`Failed to ${isApproving ? 'approve' : 'reject'} dojo`, 'error');
       }
     } catch (error) {
-      console.error('Error rejecting dojo:', error);
-      showToast('Failed to reject dojo', 'error');
+      console.error(`Error ${isApproving ? 'approving' : 'rejecting'} dojo:`, error);
+      showToast(`Failed to ${isApproving ? 'approve' : 'reject'} dojo`, 'error');
+    } finally {
+      closeConfirmModal();
     }
   };
 
@@ -155,6 +151,72 @@ export default function AdminDojosPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Confirmation Modal */}
+      {confirmModal.isOpen && confirmModal.dojo && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-[scaleIn_0.2s_ease-out]">
+            {/* Icon */}
+            <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
+              confirmModal.type === 'approve' 
+                ? 'bg-green-100' 
+                : 'bg-orange-100'
+            }`}>
+              {confirmModal.type === 'approve' ? (
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              ) : (
+                <AlertCircle className="w-6 h-6 text-orange-600" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+              {confirmModal.type === 'approve' ? 'Approve Dojo?' : 'Revoke Approval?'}
+            </h3>
+
+            {/* Message */}
+            <p className="text-gray-600 text-center mb-4">
+              {confirmModal.type === 'approve' 
+                ? `Are you sure you want to approve "${confirmModal.dojo.name}"? This will make it visible to all users.`
+                : `Are you sure you want to revoke approval for "${confirmModal.dojo.name}"? This will hide it from public view.`
+              }
+            </p>
+
+            {/* Dojo Info */}
+            <div className="bg-gray-50 rounded-lg p-3 mb-6">
+              <p className="text-sm font-medium text-gray-900">{confirmModal.dojo.name}</p>
+              <p className="text-xs text-gray-600 mt-1">{confirmModal.dojo.city}, {confirmModal.dojo.country}</p>
+              <div className="flex flex-wrap gap-1 mt-2">
+                {confirmModal.dojo.martialArts.slice(0, 3).map((ma) => (
+                  <span key={ma} className="text-xs px-2 py-0.5 bg-white text-gray-600 rounded">
+                    {ma}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={closeConfirmModal}
+                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmAction}
+                className={`flex-1 px-4 py-2.5 rounded-lg transition font-medium text-white ${
+                  confirmModal.type === 'approve'
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-orange-600 hover:bg-orange-700'
+                }`}
+              >
+                {confirmModal.type === 'approve' ? 'Approve' : 'Revoke'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -317,7 +379,7 @@ export default function AdminDojosPage() {
                           
                           {!dojo.isApproved ? (
                             <button
-                              onClick={() => handleApprove(dojo.id)}
+                              onClick={() => openConfirmModal('approve', dojo)}
                               className="text-green-600 hover:text-green-800 transition"
                               title="Approve"
                             >
@@ -325,7 +387,7 @@ export default function AdminDojosPage() {
                             </button>
                           ) : (
                             <button
-                              onClick={() => handleReject(dojo.id)}
+                              onClick={() => openConfirmModal('reject', dojo)}
                               className="text-orange-600 hover:text-orange-800 transition"
                               title="Revoke Approval"
                             >

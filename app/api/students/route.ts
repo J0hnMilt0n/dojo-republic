@@ -21,15 +21,39 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const dojoId = searchParams.get('dojoId');
     const myStudents = searchParams.get('myStudents');
+    const linkedToMe = searchParams.get('linkedToMe');
 
     let query: any = {};
 
+    // Get user for role-based filtering
+    const { UserModel } = await import('@/lib/models');
+    const user = await UserModel.findById(session.userId).lean();
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // If parent requesting linked students
+    if (linkedToMe === 'true' && user.role === 'parent') {
+      if (user.linkedStudents && user.linkedStudents.length > 0) {
+        const students = await StudentModel.find({
+          _id: { $in: user.linkedStudents }
+        }).sort({ createdAt: -1 }).lean();
+        
+        const formattedStudents = students.map(s => ({
+          ...s,
+          id: s._id?.toString() || s.id,
+          _id: undefined
+        }));
+
+        return NextResponse.json({ students: formattedStudents });
+      } else {
+        return NextResponse.json({ students: [] });
+      }
+    }
+
     // If requesting "my students", return students from user's dojo
     if (myStudents === 'true') {
-      // Get the user's dojoId from their profile
-      const { UserModel } = await import('@/lib/models');
-      const user = await UserModel.findById(session.userId).lean();
-      
       if (user?.dojoId) {
         query.dojoId = user.dojoId;
       } else {
@@ -78,20 +102,58 @@ export async function POST(request: NextRequest) {
     }
 
     // Only dojo_owner and coach can add students
-    if (user.role !== 'dojo_owner' && user.role !== 'coach') {
+    if (user.role !== 'dojo_owner' && user.role !== 'coach' && user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await request.json();
-    const { name, email, phone, age, beltLevel, gender } = body;
+    const { name, email, phone, age, beltLevel, gender, dojoId: explicitDojoId } = body;
 
     if (!name || !email || !age || !beltLevel) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Use user's dojoId
-    if (!user.dojoId) {
-      return NextResponse.json({ error: 'User is not associated with a dojo' }, { status: 400 });
+    // Get dojoId - priority: explicit dojoId from request, user's dojoId, find by ownerId
+    let dojoId = explicitDojoId || user.dojoId;
+    
+    // If explicit dojoId provided, verify user owns it
+    if (explicitDojoId && user.role === 'dojo_owner') {
+      const { DojoModel } = await import('@/lib/models');
+      const dojo = await DojoModel.findById(explicitDojoId).lean();
+      
+      if (!dojo || dojo.ownerId !== user._id.toString()) {
+        return NextResponse.json({ 
+          error: 'You do not have permission to add students to this dojo'
+        }, { status: 403 });
+      }
+      
+      dojoId = explicitDojoId;
+    }
+    
+    if (!dojoId && user.role === 'dojo_owner') {
+      // Try to find dojo by ownerId
+      const { DojoModel } = await import('@/lib/models');
+      const dojo = await DojoModel.findOne({ ownerId: user._id.toString() }).lean();
+      
+      if (dojo) {
+        dojoId = dojo._id.toString();
+        // Update user's dojoId for future
+        await UserModel.findByIdAndUpdate(user._id, { dojoId });
+      }
+    }
+
+    if (!dojoId) {
+      if (user.role === 'dojo_owner') {
+        return NextResponse.json({ 
+          error: 'Please create a dojo first before adding students',
+          code: 'NO_DOJO'
+        }, { status: 400 });
+      } else {
+        return NextResponse.json({ 
+          error: 'Your account is not associated with any dojo. Please contact your dojo owner.',
+          code: 'NO_DOJO'
+        }, { status: 400 });
+      }
     }
 
     const studentData = {
@@ -100,7 +162,7 @@ export async function POST(request: NextRequest) {
       phone: phone || '',
       age: parseInt(age),
       gender: gender || '',
-      dojoId: user.dojoId,
+      dojoId: dojoId,
       beltLevel,
       enrollmentDate: new Date().toISOString(),
       isActive: true,
@@ -152,7 +214,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Only dojo_owner and coach can update students
-    if (user.role !== 'dojo_owner' && user.role !== 'coach') {
+    if (user.role !== 'dojo_owner' && user.role !== 'coach' && user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -218,7 +280,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Only dojo_owner and coach can delete students
-    if (user.role !== 'dojo_owner' && user.role !== 'coach') {
+    if (user.role !== 'dojo_owner' && user.role !== 'coach' && user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
