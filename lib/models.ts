@@ -188,7 +188,7 @@ const StudentSchema = new Schema<Student>({
   phone: String,
   age: { type: Number, required: true },
   gender: String,
-  dojoId: { type: String, required: true },
+  dojoId: String, // Made optional - can be null until dojo is created
   beltLevel: { type: String, required: true },
   parentId: String,
   enrollmentDate: { type: String, default: () => new Date().toISOString() },

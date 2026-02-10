@@ -31,7 +31,7 @@ export default function Header() {
         setUser(null);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      // Silently handle auth check failures (server may not be ready)
       setUser(null);
     } finally {
       setLoading(false);

@@ -24,7 +24,56 @@ export async function GET(request: NextRequest) {
     }
 
     const user = await UserModel.findById(session.userId).lean();
-    if (!user || user.role !== 'admin') {
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('id');
+
+    // If requesting a specific user
+    if (userId) {
+      const requestedUser = await UserModel.findById(userId).select('-password').lean();
+      
+      if (!requestedUser) {
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        );
+      }
+
+      // Allow admin to view any user
+      // Allow dojo_owner/coach to view parent users only
+      if (user.role === 'admin') {
+        return NextResponse.json({ 
+          user: {
+            ...requestedUser,
+            id: requestedUser._id.toString(),
+            _id: requestedUser._id.toString(),
+          }
+        });
+      } else if ((user.role === 'dojo_owner' || user.role === 'coach') && requestedUser.role === 'parent') {
+        // Dojo owners/coaches can view parent information
+        return NextResponse.json({ 
+          user: {
+            ...requestedUser,
+            id: requestedUser._id.toString(),
+            _id: requestedUser._id.toString(),
+          }
+        });
+      } else {
+        return NextResponse.json(
+          { error: 'Unauthorized to view this user' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Only admins can get all users
+    if (user.role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }

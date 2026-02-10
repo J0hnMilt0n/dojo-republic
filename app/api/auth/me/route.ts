@@ -5,7 +5,13 @@ import { getSession } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    await connectDB();
+    // Try to connect to DB, but handle gracefully if it fails
+    try {
+      await connectDB();
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      return NextResponse.json({ user: null }, { status: 503 });
+    }
     
     const sessionId = request.cookies.get('session')?.value;
     if (!sessionId) {
@@ -34,7 +40,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ user: userResponse });
   } catch (error) {
     console.error('Auth check error:', error);
-    return NextResponse.json({ user: null }, { status: 401 });
+    return NextResponse.json({ user: null }, { status: 500 });
   }
 }
 

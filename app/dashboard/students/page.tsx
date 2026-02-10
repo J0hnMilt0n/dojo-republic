@@ -18,6 +18,8 @@ export default function StudentsPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [parentInfo, setParentInfo] = useState<any>(null);
+  const [loadingParent, setLoadingParent] = useState(false);
   const [deletingStudent, setDeletingStudent] = useState<any>(null);
   const [userDojos, setUserDojos] = useState<any[]>([]);
   const [newStudent, setNewStudent] = useState({
@@ -90,9 +92,47 @@ export default function StudentsPage() {
       if (res.ok) {
         const data = await res.json();
         setStudents(data.students || []);
+      } else if (res.status === 400) {
+        // If no dojo found, might need to refresh user info
+        const data = await res.json();
+        if (data.code === 'NO_DOJO') {
+          console.log('No dojo associated with user');
+          setStudents([]);
+        }
+      } else {
+        setStudents([]);
       }
     } catch (error) {
       console.error('Error fetching students:', error);
+      setStudents([]);
+    }
+  };
+
+  const fetchParentInfo = async (parentId: string) => {
+    if (!parentId) return null;
+    setLoadingParent(true);
+    try {
+      const res = await fetch(`/api/admin/users?id=${parentId}`);
+      if (res.ok) {
+        const data = await res.json();
+        return data.user || null;
+      }
+    } catch (error) {
+      console.error('Error fetching parent info:', error);
+    } finally {
+      setLoadingParent(false);
+    }
+    return null;
+  };
+
+  const handleViewStudent = async (student: any) => {
+    setSelectedStudent(student);
+    setShowViewModal(true);
+    if (student.parentId) {
+      const parent = await fetchParentInfo(student.parentId);
+      setParentInfo(parent);
+    } else {
+      setParentInfo(null);
     }
   };
 
@@ -162,11 +202,6 @@ export default function StudentsPage() {
     }
   };
 
-  const handleViewStudent = (student: any) => {
-    setSelectedStudent(student);
-    setShowViewModal(true);
-  };
-
   const handleEditStudent = (student: any) => {
     setEditStudent({ ...student });
     setShowEditModal(true);
@@ -190,6 +225,7 @@ export default function StudentsPage() {
           age: editStudent.age,
           beltLevel: editStudent.beltLevel,
           isActive: editStudent.isActive,
+          dojoId: editStudent.dojoId,
         }),
       });
 
@@ -269,6 +305,15 @@ export default function StudentsPage() {
               <span>Add Student</span>
             </button>
           </div>
+          
+          {/* Info Banner when no students */}
+          {students.length === 0 && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>💡 Getting Started:</strong> Students you create will be automatically assigned to your dojo. Click "Add Student" to enroll your first student!
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Search Bar */}
@@ -298,14 +343,14 @@ export default function StudentsPage() {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="text-sm text-gray-600 mb-1">Black Belts</div>
-            <div className="text-3xl font-bold text-gray-900">
-              {students.filter(s => s.beltLevel?.toLowerCase().includes('black')).length}
+            <div className="text-sm text-gray-600 mb-1">Parents Linked</div>
+            <div className="text-3xl font-bold text-blue-600">
+              {students.filter(s => s.parentId).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">This Month</div>
-            <div className="text-3xl font-bold text-blue-600">
+            <div className="text-3xl font-bold text-purple-600">
               {students.filter(s => {
                 const enrollmentDate = new Date(s.enrollmentDate);
                 const now = new Date();
@@ -325,10 +370,16 @@ export default function StudentsPage() {
                     Student
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Student ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Belt Rank
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Parent
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Join Date
@@ -344,7 +395,7 @@ export default function StudentsPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredStudents.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
                       No students found
                     </td>
                   </tr>
@@ -367,6 +418,26 @@ export default function StudentsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-2">
+                          <code className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded font-mono">
+                            {student.id.slice(-8)}
+                          </code>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(student.id);
+                              showToast('Student ID copied', 'success');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 transition"
+                            title="Copy full ID"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <Award className="w-4 h-4 text-yellow-600 mr-2" />
                           <span className="text-sm text-gray-900">{student.beltLevel}</span>
@@ -385,6 +456,19 @@ export default function StudentsPage() {
                             </div>
                           )}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {student.parentId ? (
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                            <span className="text-green-700 font-medium">Linked</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 bg-gray-300 rounded-full mr-2"></div>
+                            <span className="text-gray-500">No parent</span>
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(student.enrollmentDate).toLocaleDateString()}
@@ -435,7 +519,18 @@ export default function StudentsPage() {
         {showAddModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Student</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Add Student</h2>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
               <div className="space-y-4">
                 {userDojos.length > 1 && (
                   <div>
@@ -558,13 +653,28 @@ export default function StudentsPage() {
 
         {/* View Student Modal */}
         {showViewModal && selectedStudent && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Student Details</h2>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-4 sm:p-6 my-8 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Student Details</h2>
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setSelectedStudent(null);
+                    setParentInfo(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-center mb-4">
-                  <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-bold text-3xl">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-blue-600 font-bold text-2xl sm:text-3xl">
                       {selectedStudent.name.charAt(0)}
                     </span>
                   </div>
@@ -573,32 +683,118 @@ export default function StudentsPage() {
                   <label className="block text-sm font-medium text-gray-500 mb-1">Name</label>
                   <p className="text-gray-900 font-medium">{selectedStudent.name}</p>
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <label className="block text-sm font-medium text-blue-900 mb-1">
-                    Student ID (for parent linking)
-                  </label>
-                  <div className="flex items-center justify-between">
-                    <code className="text-blue-900 font-mono text-sm bg-white px-2 py-1 rounded">
-                      {selectedStudent.id}
-                    </code>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(selectedStudent.id);
-                        showToast('Student ID copied to clipboard', 'success');
-                      }}
-                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      Copy
-                    </button>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-blue-900 mb-1">
+                      Parent Linking Options
+                    </label>
+                    <p className="text-xs text-blue-700 mb-2">
+                      Parents can link using either the Student ID or Email Address
+                    </p>
                   </div>
-                  <p className="text-xs text-blue-700 mt-1">
-                    Share this ID with parents to link their accounts
-                  </p>
+                  
+                  <div>
+                    <label className="block text-xs font-medium text-blue-800 mb-1">Student ID</label>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <code className="text-blue-900 font-mono text-xs sm:text-sm bg-white px-2 py-1 rounded break-all">
+                        {selectedStudent.id}
+                      </code>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedStudent.id);
+                          showToast('Student ID copied to clipboard', 'success');
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-medium self-start sm:self-auto whitespace-nowrap"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-blue-800 mb-1">Email Address</label>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <code className="text-blue-900 font-mono text-xs sm:text-sm bg-white px-2 py-1 rounded break-all">
+                        {selectedStudent.email}
+                      </code>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedStudent.email);
+                          showToast('Email copied to clipboard', 'success');
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-medium self-start sm:self-auto whitespace-nowrap"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-                  <p className="text-gray-900">{selectedStudent.email}</p>
+                
+                {/* Parent Information Section */}
+                <div className={`border rounded-lg p-3 space-y-2 ${
+                  selectedStudent.parentId 
+                    ? 'bg-green-50 border-green-200' 
+                    : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <label className={`block text-sm font-medium mb-1 ${
+                    selectedStudent.parentId ? 'text-green-900' : 'text-gray-700'
+                  }`}>
+                    Parent Account Status
+                  </label>
+                  {selectedStudent.parentId ? (
+                    loadingParent ? (
+                      <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-green-600"></div>
+                        <span>Loading parent info...</span>
+                      </div>
+                    ) : parentInfo ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-sm font-semibold text-green-700">Parent Linked</span>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 space-y-2">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500">Parent Name</label>
+                            <p className="text-sm text-gray-900 font-medium break-words">{parentInfo.name}</p>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-500">Email</label>
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                              <p className="text-sm text-gray-700 break-all">{parentInfo.email}</p>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(parentInfo.email);
+                                  showToast('Parent email copied', 'success');
+                                }}
+                                className="text-xs text-green-600 hover:text-green-800 font-medium self-start sm:self-auto whitespace-nowrap"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                          {parentInfo.phoneNumber && (
+                            <div>
+                              <label className="block text-xs font-medium text-gray-500">Phone</label>
+                              <p className="text-sm text-gray-700 break-words">{parentInfo.phoneNumber}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm text-green-700">Parent linked (info unavailable)</span>
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <span className="text-sm text-gray-600">No parent account linked yet</span>
+                    </div>
+                  )}
                 </div>
+
                 {selectedStudent.phone && (
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
@@ -631,6 +827,7 @@ export default function StudentsPage() {
                   onClick={() => {
                     setShowViewModal(false);
                     setSelectedStudent(null);
+                    setParentInfo(null);
                   }}
                   className="px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-black transition"
                 >
@@ -645,7 +842,21 @@ export default function StudentsPage() {
         {showEditModal && editStudent && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Edit Student</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Edit Student</h2>
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditStudent(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -696,6 +907,28 @@ export default function StudentsPage() {
                     min="1"
                   />
                 </div>
+                {userDojos.length > 1 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Dojo Assignment
+                    </label>
+                    <select
+                      value={editStudent.dojoId || ''}
+                      onChange={(e) => setEditStudent({ ...editStudent, dojoId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                    >
+                      <option value="">Select dojo...</option>
+                      {userDojos.map((dojo) => (
+                        <option key={dojo.id} value={dojo.id}>
+                          {dojo.name} - {dojo.city}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Change which dojo this student belongs to
+                    </p>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Belt Rank *
@@ -754,6 +987,20 @@ export default function StudentsPage() {
         {showDeleteModal && deletingStudent && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <div className="flex justify-end mb-2">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeletingStudent(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
               <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
                 <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

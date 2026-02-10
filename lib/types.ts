@@ -195,7 +195,7 @@ export interface Student {
   phone?: string;
   age: number;
   gender?: string;
-  dojoId: string;
+  dojoId?: string; // Optional - can be null until dojo is created
   beltLevel: string;
   parentId?: string;
   enrollmentDate: string;

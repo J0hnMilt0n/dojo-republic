@@ -124,27 +124,47 @@ export default function MyDojoPage() {
   };
 
   const handleSave = async () => {
+    // Validation
+    if (!formData.name || !formData.description || !formData.address || !formData.city || !formData.phoneNumber || !formData.email) {
+      showToast('Please fill in all required fields', 'error');
+      return;
+    }
+
     setSaving(true);
     try {
+      // Prepare data for update
+      const updatePayload = {
+        id: dojo.id,
+        name: formData.name,
+        description: formData.description,
+        martialArts: formData.martialArts || [],
+        address: formData.address,
+        city: formData.city,
+        country: formData.country || 'India',
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        website: formData.website || '',
+      };
+
       const res = await fetch('/api/dojos', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: dojo.id,
-          ...formData,
-        }),
+        body: JSON.stringify(updatePayload),
       });
+      
+      const data = await res.json();
+      
       if (res.ok) {
-        const data = await res.json();
         setDojo(data.dojo);
         setEditing(false);
         showToast('Dojo updated successfully', 'success');
       } else {
-        showToast('Failed to update dojo', 'error');
+        console.error('Failed to update dojo:', data);
+        showToast(data.error || 'Failed to update dojo', 'error');
       }
     } catch (error) {
       console.error('Error saving dojo:', error);
-      showToast('Failed to update dojo', 'error');
+      showToast('Failed to update dojo. Please try again.', 'error');
     } finally {
       setSaving(false);
     }
@@ -411,9 +431,11 @@ export default function MyDojoPage() {
                   )}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  {Array.isArray(dojo.martialArts) && dojo.martialArts.length > 0 
-                    ? dojo.martialArts.join(', ') 
-                    : 'No martial arts styles specified'}
+                  {editing && Array.isArray(formData.martialArts) && formData.martialArts.length > 0 
+                    ? formData.martialArts.join(', ')
+                    : (Array.isArray(dojo.martialArts) && dojo.martialArts.length > 0 
+                      ? dojo.martialArts.join(', ') 
+                      : 'No martial arts styles specified')}
                 </p>
               </div>
             </div>
@@ -471,6 +493,26 @@ export default function MyDojoPage() {
                 <p className="text-gray-600">{dojo.description || 'No description available'}</p>
               )}
             </div>
+
+            {/* Martial Arts */}
+            {editing && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Martial Arts Styles
+                </label>
+                <input
+                  type="text"
+                  value={Array.isArray(formData.martialArts) ? formData.martialArts.join(', ') : ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    martialArts: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)
+                  })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  placeholder="e.g., Karate, Judo, Taekwondo"
+                />
+                <p className="text-xs text-gray-500 mt-1">Separate multiple styles with commas</p>
+              </div>
+            )}
 
             {/* Location */}
             <div className="flex items-start space-x-3">

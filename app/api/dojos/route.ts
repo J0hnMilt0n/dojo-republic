@@ -113,9 +113,44 @@ export async function POST(request: NextRequest) {
       isApproved: user!.role === 'admin', // Auto-approve if admin
     });
 
+    const newDojoId = newDojo._id.toString();
+
     // Update user's dojoId
-    const { UserModel } = await import('@/lib/models');
-    await UserModel.findByIdAndUpdate(user!.id, { dojoId: newDojo._id.toString() });
+    const { UserModel, StudentModel } = await import('@/lib/models');
+    await UserModel.findByIdAndUpdate(user!.id, { dojoId: newDojoId });
+
+    // IMPORTANT: Assign all students without a valid dojoId to this new dojo
+    // This handles the case where the owner created students before creating the dojo
+    try {
+      // Step 1: Get all valid dojo IDs
+      const validDojos = await DojoModel.find({}, { _id: 1 }).lean();
+      const validDojoIds = validDojos.map(d => d._id.toString());
+
+      // Step 2: Find students with no dojoId or invalid dojoId
+      const studentsToUpdate = await StudentModel.find({
+        $or: [
+          { dojoId: { $exists: false } },
+          { dojoId: null },
+          { dojoId: '' },
+          { dojoId: { $nin: validDojoIds } }
+        ]
+      }).lean();
+
+      if (studentsToUpdate.length > 0) {
+        const studentIds = studentsToUpdate.map(s => s._id);
+        const updateResult = await StudentModel.updateMany(
+          { _id: { $in: studentIds } },
+          { $set: { dojoId: newDojoId } }
+        );
+        
+        console.log(`✅ Assigned ${updateResult.modifiedCount} students to new dojo "${name}" (ID: ${newDojoId})`);
+      } else {
+        console.log(`ℹ️  No unassigned students found when creating dojo "${name}"`);
+      }
+    } catch (error) {
+      console.error('Error assigning students to new dojo:', error);
+      // Don't fail the dojo creation if student assignment fails
+    }
 
     const formattedDojo = {
       ...newDojo.toObject(),
@@ -148,19 +183,54 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Dojo ID required' }, { status: 400 });
     }
     
+    // Find the dojo first to check ownership
+    const existingDojo = await DojoModel.findById(id).lean();
+    if (!existingDojo) {
+      return NextResponse.json({ error: 'Dojo not found' }, { status: 404 });
+    }
+    
     // Check permissions
     if (isApproved !== undefined) {
       requireRole(user, ['admin']);
+    } else {
+      // For regular updates, check if user owns the dojo or is admin
+      if (user!.role !== 'admin' && existingDojo.ownerId !== user!.id) {
+        return NextResponse.json({ 
+          error: 'Unauthorized. You can only edit your own dojo.' 
+        }, { status: 403 });
+      }
     }
     
     const updateData: any = {};
-    if (isApproved !== undefined) updateData.isApproved = isApproved;
-    if (Object.keys(updates).length > 0) {
-      Object.assign(updateData, updates);
+    
+    // Handle approval
+    if (isApproved !== undefined) {
+      updateData.isApproved = isApproved;
     }
+    
+    // Handle other updates
+    if (Object.keys(updates).length > 0) {
+      // Allowed fields for update
+      const allowedFields = [
+        'name', 'description', 'martialArts', 'address', 'city', 'country',
+        'phoneNumber', 'email', 'website', 'images', 'pricing', 'schedule',
+        'latitude', 'longitude'
+      ];
+      
+      for (const key of allowedFields) {
+        if (updates[key] !== undefined) {
+          updateData[key] = updates[key];
+        }
+      }
+    }
+    
     updateData.updatedAt = new Date().toISOString();
     
-    const dojo = await DojoModel.findByIdAndUpdate(id, updateData, { new: true }).lean();
+    const dojo = await DojoModel.findByIdAndUpdate(
+      id, 
+      updateData, 
+      { new: true, runValidators: true }
+    ).lean();
     
     if (!dojo) {
       return NextResponse.json({ error: 'Dojo not found' }, { status: 404 });
@@ -176,7 +246,13 @@ export async function PATCH(request: NextRequest) {
   } catch (error: any) {
     console.error('Failed to update dojo:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update dojo' },
+      { 
+        error: error.message || 'Failed to update dojo',
+        details: error.errors ? Object.keys(error.errors).map(key => ({
+          field: key,
+          message: error.errors[key].message
+        })) : undefined
+      },
       { status: error.message === 'Authentication required' ? 401 : 500 }
     );
   }
