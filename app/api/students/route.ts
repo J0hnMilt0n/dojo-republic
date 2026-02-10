@@ -264,6 +264,9 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    // Convert _id to id for consistency
+    const userId = user._id.toString();
+
     // Only dojo_owner and coach can update students
     if (user.role !== 'dojo_owner' && user.role !== 'coach' && user.role !== 'admin') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
