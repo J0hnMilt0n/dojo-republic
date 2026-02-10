@@ -47,7 +47,12 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Registration failed');
       }
 
-      router.push('/auth/login?registered=true');
+      // If registered as player, redirect to create profile
+      if (formData.role === 'player') {
+        router.push('/auth/login?registered=true&createProfile=true');
+      } else {
+        router.push('/auth/login?registered=true');
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {

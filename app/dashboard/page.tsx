@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [hasPlayerProfile, setHasPlayerProfile] = useState(true);
 
   useEffect(() => {
     checkAuth();
@@ -26,6 +27,16 @@ export default function DashboardPage() {
       }
       const data = await res.json();
       setUser(data.user);
+
+      // Check if player has a profile
+      if (data.user.role === 'player') {
+        const profileRes = await fetch('/api/players');
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          const hasProfile = profileData.players.some((p: any) => p.userId === data.user.id);
+          setHasPlayerProfile(hasProfile);
+        }
+      }
     } catch (error) {
       router.push('/auth/login');
     } finally {
@@ -71,6 +82,29 @@ export default function DashboardPage() {
             </button>
           </div>
         </div>
+
+        {/* Player Profile Banner */}
+        {user.role === 'player' && !hasPlayerProfile && (
+          <div className="bg-linear-to-r from-red-500 to-red-600 text-white rounded-lg shadow-md p-6 mb-8">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center space-x-4">
+                <Trophy className="w-12 h-12" />
+                <div>
+                  <h2 className="text-xl font-bold">Complete Your Player Profile</h2>
+                  <p className="mt-1 text-red-100">
+                    Create your athlete profile to appear on the players page and start showcasing your achievements!
+                  </p>
+                </div>
+              </div>
+              <Link
+                href="/dashboard/create-profile"
+                className="bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-50 transition whitespace-nowrap"
+              >
+                Create Profile
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Role-specific Dashboard */}
         {user.role === 'admin' && <AdminDashboard />}

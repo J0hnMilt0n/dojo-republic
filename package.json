@@ -8,7 +8,8 @@
     "start": "next start",
     "seed": "node scripts/seed.js",
     "seed:mongodb": "node scripts/seed-mongodb.js",
-    "fix:student-dojos": "node scripts/assign-students-to-dojos.js"
+    "fix:student-dojos": "node scripts/assign-students-to-dojos.js",
+    "create:player-profiles": "node scripts/create-missing-player-profiles.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

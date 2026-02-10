@@ -28,6 +28,22 @@ export default function LoginPage() {
         throw new Error(data.error || 'Login failed');
       }
 
+      // Check if user is a player and needs to create profile
+      if (data.user.role === 'player') {
+        // Check if player profile exists
+        const profileRes = await fetch('/api/players');
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          const hasProfile = profileData.players.some((p: any) => p.userId === data.user.id);
+          
+          if (!hasProfile) {
+            // Redirect to create profile
+            router.push('/dashboard/create-profile');
+            return;
+          }
+        }
+      }
+
       // Store session in cookie (handled by API)
       router.push('/dashboard');
     } catch (err: any) {

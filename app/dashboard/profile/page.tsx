@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Mail, Phone, MapPin, Edit2, Save, X, Calendar } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Edit2, Save, X, Calendar, Trophy } from 'lucide-react';
 
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [playerProfile, setPlayerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+  const [editingPlayer, setEditingPlayer] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,6 +18,16 @@ export default function ProfilePage() {
     address: '',
     city: '',
     country: '',
+  });
+  const [playerFormData, setPlayerFormData] = useState({
+    age: '',
+    dateOfBirth: '',
+    gender: '',
+    beltCategory: '',
+    city: '',
+    country: '',
+    weight: '',
+    height: '',
   });
 
   useEffect(() => {
@@ -39,6 +51,28 @@ export default function ProfilePage() {
         city: data.user.city || '',
         country: data.user.country || '',
       });
+
+      // If player, fetch player profile
+      if (data.user.role === 'player') {
+        const profileRes = await fetch('/api/players');
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          const profile = profileData.players.find((p: any) => p.userId === data.user.id);
+          if (profile) {
+            setPlayerProfile(profile);
+            setPlayerFormData({
+              age: profile.age?.toString() || '',
+              dateOfBirth: profile.dateOfBirth || '',
+              gender: profile.gender || '',
+              beltCategory: profile.beltCategory || '',
+              city: profile.city || '',
+              country: profile.country || '',
+              weight: profile.weight?.toString() || '',
+              height: profile.height?.toString() || '',
+            });
+          }
+        }
+      }
     } catch (error) {
       router.push('/auth/login');
     } finally {
@@ -49,6 +83,13 @@ export default function ProfilePage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handlePlayerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setPlayerFormData({
+      ...playerFormData,
       [e.target.name]: e.target.value,
     });
   };
@@ -69,6 +110,24 @@ export default function ProfilePage() {
     });
   };
 
+  const handleEditPlayer = () => {
+    setEditingPlayer(true);
+  };
+
+  const handleCancelPlayer = () => {
+    setEditingPlayer(false);
+    setPlayerFormData({
+      age: playerProfile.age?.toString() || '',
+      dateOfBirth: playerProfile.dateOfBirth || '',
+      gender: playerProfile.gender || '',
+      beltCategory: playerProfile.beltCategory || '',
+      city: playerProfile.city || '',
+      country: playerProfile.country || '',
+      weight: playerProfile.weight?.toString() || '',
+      height: playerProfile.height?.toString() || '',
+    });
+  };
+
   const handleSave = async () => {
     try {
       const res = await fetch('/api/auth/me', {
@@ -84,6 +143,38 @@ export default function ProfilePage() {
       }
     } catch (error) {
       console.error('Error updating profile:', error);
+    }
+  };
+
+  const handleSavePlayer = async () => {
+    try {
+      const res = await fetch('/api/players', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          playerId: playerProfile.id,
+          name: user.name,
+          age: parseInt(playerFormData.age),
+          dateOfBirth: playerFormData.dateOfBirth,
+          gender: playerFormData.gender,
+          beltCategory: playerFormData.beltCategory,
+          city: playerFormData.city,
+          country: playerFormData.country,
+          weight: playerFormData.weight ? parseFloat(playerFormData.weight) : undefined,
+          height: playerFormData.height ? parseFloat(playerFormData.height) : undefined,
+          dojoId: playerProfile.dojoId,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPlayerProfile(data.player);
+        setEditingPlayer(false);
+        // Refresh the page data
+        checkAuth();
+      }
+    } catch (error) {
+      console.error('Error updating player profile:', error);
     }
   };
 
@@ -266,6 +357,180 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Player Profile Section (if user is a player) */}
+        {user.role === 'player' && playerProfile && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <Trophy className="w-6 h-6 text-red-600" />
+                <h2 className="text-xl font-bold text-gray-900">Player Profile</h2>
+              </div>
+              {!editingPlayer ? (
+                <button
+                  onClick={handleEditPlayer}
+                  className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                >
+                  <Edit2 className="w-5 h-5" />
+                  <span>Edit</span>
+                </button>
+              ) : (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleSavePlayer}
+                    className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                  >
+                    <Save className="w-5 h-5" />
+                    <span>Save</span>
+                  </button>
+                  <button
+                    onClick={handleCancelPlayer}
+                    className="flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition"
+                  >
+                    <X className="w-5 h-5" />
+                    <span>Cancel</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Age */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                {editingPlayer ? (
+                  <input
+                    type="number"
+                    name="age"
+                    value={playerFormData.age}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  />
+                ) : (
+                  <p className="text-gray-900">{playerProfile.age || 'Not set'}</p>
+                )}
+              </div>
+
+              {/* Date of Birth */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                {editingPlayer ? (
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={playerFormData.dateOfBirth}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  />
+                ) : (
+                  <p className="text-gray-900">{playerProfile.dateOfBirth || 'Not set'}</p>
+                )}
+              </div>
+
+              {/* Gender */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                {editingPlayer ? (
+                  <select
+                    name="gender"
+                    value={playerFormData.gender}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  >
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                ) : (
+                  <p className="text-gray-900 capitalize">{playerProfile.gender || 'Not set'}</p>
+                )}
+              </div>
+
+              {/* Belt Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Belt Category</label>
+                {editingPlayer ? (
+                  <input
+                    type="text"
+                    name="beltCategory"
+                    value={playerFormData.beltCategory}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="Black Belt 1st Dan"
+                  />
+                ) : (
+                  <p className="text-gray-900">{playerProfile.beltCategory || 'Not set'}</p>
+                )}
+              </div>
+
+              {/* City */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                {editingPlayer ? (
+                  <input
+                    type="text"
+                    name="city"
+                    value={playerFormData.city}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  />
+                ) : (
+                  <p className="text-gray-900">{playerProfile.city || 'Not set'}</p>
+                )}
+              </div>
+
+              {/* Country */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                {editingPlayer ? (
+                  <input
+                    type="text"
+                    name="country"
+                    value={playerFormData.country}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  />
+                ) : (
+                  <p className="text-gray-900">{playerProfile.country || 'Not set'}</p>
+                )}
+              </div>
+
+              {/* Weight */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                {editingPlayer ? (
+                  <input
+                    type="number"
+                    name="weight"
+                    value={playerFormData.weight}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    step="0.1"
+                  />
+                ) : (
+                  <p className="text-gray-900">{playerProfile.weight || 'Not set'}</p>
+                )}
+              </div>
+
+              {/* Height */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Height (cm)</label>
+                {editingPlayer ? (
+                  <input
+                    type="number"
+                    name="height"
+                    value={playerFormData.height}
+                    onChange={handlePlayerChange}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    step="0.1"
+                  />
+                ) : (
+                  <p className="text-gray-900">{playerProfile.height || 'Not set'}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Account Details */}
         <div className="bg-white rounded-lg shadow-md p-6">
