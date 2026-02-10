@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "seller-1-profile",
+    "userId": "seller-1",
+    "businessName": "Martial Arts Gear Pro",
+    "description": "Premium martial arts equipment and apparel. Official supplier for tournaments and dojos.",
+    "address": "456 Commerce Blvd, Los Angeles, CA 90001",
+    "phoneNumber": "+1 (555) 777-0001",
+    "email": "seller@demo.com",
+    "logo": "",
+    "isApproved": true,
+    "commissionRate": 10,
+    "createdAt": "2026-02-10T07:42:42.291Z",
+    "updatedAt": "2026-02-10T07:42:42.291Z"
+  }
+]
