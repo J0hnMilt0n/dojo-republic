@@ -2,23 +2,38 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Trophy, Award, MapPin } from 'lucide-react';
+import { Trophy, Award, MapPin, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PlayerProfile } from '@/lib/types';
 
+const ITEMS_PER_PAGE = 12;
+
 export default function PlayersPage() {
-  const [players, setPlayers] = useState<PlayerProfile[]>([]);
+  const [allPlayers, setAllPlayers] = useState<PlayerProfile[]>([]);
+  const [filteredPlayers, setFilteredPlayers] = useState<PlayerProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBelt, setSelectedBelt] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchPlayers();
   }, []);
+
+  useEffect(() => {
+    filterPlayers();
+  }, [searchQuery, selectedBelt, allPlayers]);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [searchQuery, selectedBelt]);
 
   const fetchPlayers = async () => {
     try {
       const res = await fetch('/api/players');
       if (res.ok) {
         const data = await res.json();
-        setPlayers(data.players || []);
+        setAllPlayers(data.players || []);
+        setFilteredPlayers(data.players || []);
       }
     } catch (error) {
       console.error('Failed to fetch players:', error);
@@ -26,6 +41,66 @@ export default function PlayersPage() {
       setLoading(false);
     }
   };
+
+  const filterPlayers = () => {
+    let filtered = [...allPlayers];
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (player) => {
+          // Search in basic info
+          const basicMatch =
+            player.name.toLowerCase().includes(query) ||
+            player.city.toLowerCase().includes(query) ||
+            player.country.toLowerCase().includes(query) ||
+            player.beltCategory.toLowerCase().includes(query);
+
+          // Search in achievements
+          const achievementMatch = player.achievements?.some(
+            (achievement) =>
+              achievement.tournamentName?.toLowerCase().includes(query) ||
+              achievement.category?.toLowerCase().includes(query) ||
+              achievement.position?.toLowerCase().includes(query)
+          );
+
+          return basicMatch || achievementMatch;
+        }
+      );
+    }
+
+    // Belt filter
+    if (selectedBelt !== 'all') {
+      filtered = filtered.filter((player) =>
+        player.beltCategory.toLowerCase().includes(selectedBelt.toLowerCase())
+      );
+    }
+
+    setFilteredPlayers(filtered);
+  };
+
+  // Pagination
+  const totalPages = Math.ceil(filteredPlayers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentPlayers = filteredPlayers.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const beltCategories = [
+    { value: 'all', label: 'All Belts' },
+    { value: 'white', label: 'White Belt' },
+    { value: 'yellow', label: 'Yellow Belt' },
+    { value: 'orange', label: 'Orange Belt' },
+    { value: 'green', label: 'Green Belt' },
+    { value: 'blue', label: 'Blue Belt' },
+    { value: 'brown', label: 'Brown Belt' },
+    { value: 'black', label: 'Black Belt' },
+  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -54,18 +129,137 @@ export default function PlayersPage() {
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
               <p className="mt-4 text-gray-600">Loading athletes...</p>
             </div>
-          ) : players.length === 0 ? (
-            <div className="text-center py-12">
-              <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-xl text-gray-600">No athlete profiles yet</p>
-              <p className="mt-2 text-gray-500">Be the first to create your profile!</p>
-            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {players.map((player) => (
-                <PlayerCard key={player.id} player={player} />
-              ))}
-            </div>
+            <>
+              {/* Search and Filter Section */}
+              <div className="mb-8 space-y-4">
+                {/* Search Bar */}
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search by name, city, belt, achievement, tournament..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Filter and Results Info */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  {/* Belt Filter */}
+                  <div className="flex items-center space-x-3">
+                    <label className="text-sm font-medium text-gray-700">Filter by Belt:</label>
+                    <select
+                      value={selectedBelt}
+                      onChange={(e) => setSelectedBelt(e.target.value)}
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    >
+                      {beltCategories.map((category) => (
+                        <option key={category.value} value={category.value}>
+                          {category.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Results Count */}
+                  <div className="text-sm text-gray-600">
+                    Showing {currentPlayers.length} of {filteredPlayers.length} athletes
+                    {searchQuery || selectedBelt !== 'all' ? (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSelectedBelt('all');
+                        }}
+                        className="ml-2 text-red-600 hover:text-red-700 font-medium"
+                      >
+                        Clear filters
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              {/* Players Grid or Empty State */}
+              {filteredPlayers.length === 0 ? (
+                <div className="text-center py-12">
+                  <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-xl text-gray-600">
+                    {allPlayers.length === 0 ? 'No athlete profiles yet' : 'No athletes found'}
+                  </p>
+                  <p className="mt-2 text-gray-500">
+                    {allPlayers.length === 0 
+                      ? 'Be the first to create your profile!' 
+                      : 'Try adjusting your search or filters'}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {currentPlayers.map((player) => (
+                      <PlayerCard key={player.id} player={player} />
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="mt-12 flex justify-center items-center space-x-2">
+                      <button
+                        onClick={() => goToPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+
+                      <div className="flex space-x-2">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                          // Show first page, last page, current page, and pages around current
+                          if (
+                            page === 1 ||
+                            page === totalPages ||
+                            (page >= currentPage - 1 && page <= currentPage + 1)
+                          ) {
+                            return (
+                              <button
+                                key={page}
+                                onClick={() => goToPage(page)}
+                                className={`px-4 py-2 rounded-lg border transition ${
+                                  currentPage === page
+                                    ? 'bg-red-600 text-white border-red-600'
+                                    : 'border-gray-300 hover:bg-gray-50'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            );
+                          } else if (
+                            page === currentPage - 2 ||
+                            page === currentPage + 2
+                          ) {
+                            return (
+                              <span key={page} className="px-2 py-2">
+                                ...
+                              </span>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+
+                      <button
+                        onClick={() => goToPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </>
           )}
         </div>
       </section>
