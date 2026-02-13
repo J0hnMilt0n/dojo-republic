@@ -51,7 +51,7 @@ export default function ContactPage() {
                   <input
                     type="tel"
                     className="w-full px-5 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-600 focus:border-red-600 transition"
-                    placeholder="+44 7440 133748"
+                    placeholder="+1 1234 567890"
                   />
                 </div>
                 <div>
@@ -93,8 +93,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2 text-lg">Email</h3>
-                    <p className="text-gray-600 font-medium">info@dojorepublic.com</p>
-                    <p className="text-gray-600 font-medium">support@dojorepublic.com</p>
+                    <p className="text-gray-600 font-medium">dojorepublic.official@gmail.com</p>
+                    {/* <p className="text-gray-600 font-medium">support@dojorepublic.com</p> */}
                   </div>
                 </div>
 
@@ -104,7 +104,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2 text-lg">Phone</h3>
-                    <p className="text-gray-600 font-medium">+44 7440 133748</p>
+                    <p className="text-gray-600 font-medium">+1 1234 567890</p>
                     <p className="text-gray-600 font-medium">+1 (555) 987-6543</p>
                   </div>
                 </div>

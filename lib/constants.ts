@@ -86,6 +86,6 @@ export const siteConfig = {
   name: 'Dojo Republic',
   description: 'The Home of Combat Sports - A unified platform for martial arts dojos, athletes, tournaments, and more.',
   url: 'https://dojorepublic.com',
-  email: 'info@dojorepublic.com',
-  phone: '+44 7440 133748',
+  email: 'dojorepublic.official@gmail.com',
+  phone: '+1 1234 567890',
 };

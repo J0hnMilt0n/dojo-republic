@@ -572,7 +572,7 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                 required
                 value={formData.contactPhone}
                 onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                placeholder="+44 7440 133748"
+                placeholder="+1 1234 567890"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>

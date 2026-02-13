@@ -99,11 +99,11 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start space-x-2 text-gray-300">
                 <Mail className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
-                <span className="text-sm font-light">info@dojorepublic.com</span>
+                <span className="text-sm font-light">dojorepublic.official@gmail.com</span>
               </li>
               <li className="flex items-start space-x-2 text-gray-300">
                 <Phone className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />
-                <span className="text-sm font-light">+44 7440 133748</span>
+                <span className="text-sm font-light">+1 1234 567890</span>
               </li>
               <li className="flex items-start space-x-2 text-gray-300">
                 <MapPin className="w-5 h-5 mt-0.5 shrink-0 text-red-500" />

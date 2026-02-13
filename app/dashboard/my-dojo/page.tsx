@@ -314,10 +314,10 @@ export default function MyDojoPage() {
                   <input
                     type="text"
                     name="country"
-                    value={formData.country || 'India'}
+                    value={formData.country || ''}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
-                    placeholder="Country"
+                    placeholder="India"
                   />
                 </div>
               </div>
