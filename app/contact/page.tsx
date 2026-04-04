@@ -132,11 +132,7 @@ export default function ContactPage() {
                       Address
                     </h3>
                     <p className="text-gray-600 font-medium">
-                      123 Martial Arts Way
-                      <br />
-                      Sports City, SC 12345
-                      <br />
-                      United States
+                      London, United Kingdom
                     </p>
                   </div>
                 </div>
