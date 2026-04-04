@@ -1,10 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Trophy, Calendar, MapPin, Users, Plus, Edit2, Trash2 } from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Trophy,
+  Calendar,
+  MapPin,
+  Users,
+  Plus,
+  Edit2,
+  Trash2,
+} from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function DashboardTournamentsPage() {
   const router = useRouter();
@@ -23,21 +31,25 @@ export default function DashboardTournamentsPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
       // Allow dojo_owner, coach, and parent roles
-      if (data.user.role !== 'dojo_owner' && data.user.role !== 'coach' && data.user.role !== 'parent') {
-        router.push('/dashboard');
+      if (
+        data.user.role !== "dojo_owner" &&
+        data.user.role !== "coach" &&
+        data.user.role !== "parent"
+      ) {
+        router.push("/dashboard");
         return;
       }
       setUser(data.user);
       await fetchTournaments();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -47,10 +59,11 @@ export default function DashboardTournamentsPage() {
     try {
       // For parents, fetch all tournaments where their children are participating
       // For dojo_owner/coach, fetch their created tournaments
-      const endpoint = user?.role === 'parent' 
-        ? '/api/tournaments?approved=true' 
-        : '/api/tournaments?myTournaments=true';
-      
+      const endpoint =
+        user?.role === "parent"
+          ? "/api/tournaments?approved=true"
+          : "/api/tournaments?myTournaments=true";
+
       const res = await fetch(endpoint);
       if (res.ok) {
         const data = await res.json();
@@ -58,7 +71,7 @@ export default function DashboardTournamentsPage() {
         setTournaments(userTournaments);
       }
     } catch (error) {
-      console.error('Error fetching tournaments:', error);
+      console.error("Error fetching tournaments:", error);
     }
   };
 
@@ -81,9 +94,9 @@ export default function DashboardTournamentsPage() {
     if (!deletingTournament) return;
 
     try {
-      const res = await fetch('/api/tournaments', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/tournaments", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: deletingTournament.id }),
       });
 
@@ -92,49 +105,60 @@ export default function DashboardTournamentsPage() {
         setShowDeleteModal(false);
         setDeletingTournament(null);
       } else {
-        console.error('Failed to delete tournament');
-        showToast('Failed to delete tournament', 'error');
+        console.error("Failed to delete tournament");
+        showToast("Failed to delete tournament", "error");
       }
     } catch (error) {
-      console.error('Error deleting tournament:', error);
-      showToast('Error deleting tournament', 'error');
+      console.error("Error deleting tournament:", error);
+      showToast("Error deleting tournament", "error");
     }
   };
 
   const handleSaveTournament = async (tournamentData: any) => {
     try {
-      const method = editingTournament ? 'PUT' : 'POST';
-      const res = await fetch('/api/tournaments', {
+      const method = editingTournament ? "PUT" : "POST";
+      const res = await fetch("/api/tournaments", {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingTournament ? { ...tournamentData, id: editingTournament.id } : tournamentData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          editingTournament
+            ? { ...tournamentData, id: editingTournament.id }
+            : tournamentData,
+        ),
       });
 
       if (res.ok) {
         await fetchTournaments();
         setShowCreateModal(false);
         setEditingTournament(null);
-        showToast(`Tournament ${editingTournament ? 'updated' : 'created'} successfully`, 'success');
+        showToast(
+          `Tournament ${editingTournament ? "updated" : "created"} successfully`,
+          "success",
+        );
       } else {
         const errorData = await res.json();
-        showToast(errorData.error || `Failed to ${editingTournament ? 'update' : 'create'} tournament`, 'error');
+        showToast(
+          errorData.error ||
+            `Failed to ${editingTournament ? "update" : "create"} tournament`,
+          "error",
+        );
       }
     } catch (error) {
-      console.error('Error saving tournament:', error);
-      showToast('Error saving tournament', 'error');
+      console.error("Error saving tournament:", error);
+      showToast("Error saving tournament", "error");
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'upcoming':
-        return 'bg-blue-100 text-blue-800';
-      case 'ongoing':
-        return 'bg-green-100 text-green-800';
-      case 'completed':
-        return 'bg-gray-100 text-gray-800';
+      case "upcoming":
+        return "bg-blue-100 text-blue-800";
+      case "ongoing":
+        return "bg-green-100 text-green-800";
+      case "completed":
+        return "bg-gray-100 text-gray-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -147,7 +171,7 @@ export default function DashboardTournamentsPage() {
   }
 
   // Show parent view for viewing children's tournament participation
-  if (user?.role === 'parent') {
+  if (user?.role === "parent") {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -158,8 +182,12 @@ export default function DashboardTournamentsPage() {
                 <Trophy className="w-8 h-8 text-purple-600" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Tournament Participation</h1>
-                <p className="text-gray-600 mt-1">View children's tournament participation</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  Tournament Participation
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  View children's tournament participation
+                </p>
               </div>
             </div>
           </div>
@@ -169,7 +197,9 @@ export default function DashboardTournamentsPage() {
             {tournaments.length === 0 ? (
               <div className="bg-white rounded-lg shadow-md p-12 text-center">
                 <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">No Tournaments Available</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  No Tournaments Available
+                </h2>
                 <p className="text-gray-600 mb-6">
                   There are no approved tournaments at the moment
                 </p>
@@ -181,44 +211,65 @@ export default function DashboardTournamentsPage() {
               </div>
             ) : (
               tournaments.map((tournament, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <div
+                  key={index}
+                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-3">
-                        <h3 className="text-2xl font-bold text-gray-900">{tournament.name}</h3>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(tournament.status)}`}>
+                        <h3 className="text-2xl font-bold text-gray-900">
+                          {tournament.name}
+                        </h3>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(tournament.status)}`}
+                        >
                           {tournament.status}
                         </span>
                       </div>
-                      <p className="text-gray-600 mb-4">{tournament.description}</p>
+                      <p className="text-gray-600 mb-4">
+                        {tournament.description}
+                      </p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div className="flex items-center text-gray-600">
                           <Calendar className="w-4 h-4 mr-2" />
                           <span className="text-sm">
-                            {new Date(tournament.startDate).toLocaleDateString('en-US', {
-                              month: 'long',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })}
+                            {new Date(tournament.startDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )}
                           </span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <MapPin className="w-4 h-4 mr-2" />
-                          <span className="text-sm">{tournament.venue}, {tournament.city}</span>
+                          <span className="text-sm">
+                            {tournament.venue}, {tournament.city}
+                          </span>
                         </div>
                         <div className="flex items-center text-gray-600">
                           <Users className="w-4 h-4 mr-2" />
                           <span className="text-sm">
-                            {tournament.participants?.length || 0} / {tournament.maxParticipants} Participants
+                            {tournament.participants?.length || 0} /{" "}
+                            {tournament.maxParticipants} Participants
                           </span>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {tournament.categories?.map((category: any, idx: number) => (
-                          <span key={idx} className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs">
-                            {category.name} - {category.ageGroup} ({category.gender})
-                          </span>
-                        ))}
+                        {tournament.categories?.map(
+                          (category: any, idx: number) => (
+                            <span
+                              key={idx}
+                              className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs"
+                            >
+                              {category.name} - {category.ageGroup} (
+                              {category.gender})
+                            </span>
+                          ),
+                        )}
                       </div>
                       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                         <p className="text-sm text-blue-900 font-medium">
@@ -255,11 +306,15 @@ export default function DashboardTournamentsPage() {
                 <Trophy className="w-8 h-8 text-orange-600" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Tournaments</h1>
-                <p className="text-gray-600 mt-1">Create and manage tournaments</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  My Tournaments
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Create and manage tournaments
+                </p>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleCreateClick}
               className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition"
             >
@@ -273,24 +328,26 @@ export default function DashboardTournamentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Total Tournaments</div>
-            <div className="text-3xl font-bold text-gray-900">{tournaments.length}</div>
+            <div className="text-3xl font-bold text-gray-900">
+              {tournaments.length}
+            </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Upcoming</div>
             <div className="text-3xl font-bold text-blue-600">
-              {tournaments.filter(t => t.status === 'upcoming').length}
+              {tournaments.filter((t) => t.status === "upcoming").length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Ongoing</div>
             <div className="text-3xl font-bold text-green-600">
-              {tournaments.filter(t => t.status === 'ongoing').length}
+              {tournaments.filter((t) => t.status === "ongoing").length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Completed</div>
             <div className="text-3xl font-bold text-gray-600">
-              {tournaments.filter(t => t.status === 'completed').length}
+              {tournaments.filter((t) => t.status === "completed").length}
             </div>
           </div>
         </div>
@@ -300,11 +357,13 @@ export default function DashboardTournamentsPage() {
           {tournaments.length === 0 ? (
             <div className="bg-white rounded-lg shadow-md p-12 text-center">
               <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">No Tournaments Yet</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                No Tournaments Yet
+              </h2>
               <p className="text-gray-600 mb-6">
                 Create your first tournament to get started
               </p>
-              <button 
+              <button
                 onClick={handleCreateClick}
                 className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-black transition"
               >
@@ -313,25 +372,37 @@ export default function DashboardTournamentsPage() {
             </div>
           ) : (
             tournaments.map((tournament, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
-                      <h3 className="text-2xl font-bold text-gray-900">{tournament.name}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(tournament.status)}`}>
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        {tournament.name}
+                      </h3>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(tournament.status)}`}
+                      >
                         {tournament.status}
                       </span>
                     </div>
-                    <p className="text-gray-600 mb-4">{tournament.description}</p>
+                    <p className="text-gray-600 mb-4">
+                      {tournament.description}
+                    </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                       <div className="flex items-center text-gray-600">
                         <Calendar className="w-4 h-4 mr-2" />
                         <span className="text-sm">
-                          {new Date(tournament.startDate).toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
+                          {new Date(tournament.startDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric",
+                            },
+                          )}
                         </span>
                       </div>
                       <div className="flex items-center text-gray-600">
@@ -341,16 +412,23 @@ export default function DashboardTournamentsPage() {
                       <div className="flex items-center text-gray-600">
                         <Users className="w-4 h-4 mr-2" />
                         <span className="text-sm">
-                          {tournament.participants?.length || 0} / {tournament.maxParticipants} Participants
+                          {tournament.participants?.length || 0} /{" "}
+                          {tournament.maxParticipants} Participants
                         </span>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {tournament.categories?.map((category: any, idx: number) => (
-                        <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs">
-                          {category.name} - {category.ageGroup} ({category.gender})
-                        </span>
-                      ))}
+                      {tournament.categories?.map(
+                        (category: any, idx: number) => (
+                          <span
+                            key={idx}
+                            className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs"
+                          >
+                            {category.name} - {category.ageGroup} (
+                            {category.gender})
+                          </span>
+                        ),
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col space-y-2 ml-4">
@@ -359,14 +437,14 @@ export default function DashboardTournamentsPage() {
                         <span>View</span>
                       </button>
                     </Link>
-                    <button 
+                    <button
                       onClick={() => handleEditClick(tournament)}
                       className="flex items-center space-x-2 text-green-600 hover:text-green-800 transition px-3 py-2 border border-green-600 rounded-lg"
                     >
                       <Edit2 className="w-4 h-4" />
                       <span>Edit</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDeleteClick(tournament)}
                       className="flex items-center space-x-2 text-red-600 hover:text-red-900 transition px-3 py-2 border border-red-600 rounded-lg"
                     >
@@ -408,19 +486,27 @@ export default function DashboardTournamentsPage() {
   );
 }
 
-function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onSave: (data: any) => void; onClose: () => void }) {
+function TournamentModal({
+  tournament,
+  onSave,
+  onClose,
+}: {
+  tournament: any;
+  onSave: (data: any) => void;
+  onClose: () => void;
+}) {
   const [formData, setFormData] = useState({
-    name: tournament?.name || '',
-    description: tournament?.description || '',
-    startDate: tournament?.startDate?.split('T')[0] || '',
-    endDate: tournament?.endDate?.split('T')[0] || '',
-    venue: tournament?.venue || '',
-    city: tournament?.city || '',
-    country: tournament?.country || '',
+    name: tournament?.name || "",
+    description: tournament?.description || "",
+    startDate: tournament?.startDate?.split("T")[0] || "",
+    endDate: tournament?.endDate?.split("T")[0] || "",
+    venue: tournament?.venue || "",
+    city: tournament?.city || "",
+    country: tournament?.country || "",
     maxParticipants: tournament?.maxParticipants || 100,
     registrationFee: tournament?.registrationFee || 0,
-    rules: tournament?.rules || '',
-    contactPhone: tournament?.contactPhone || '',
+    rules: tournament?.rules || "",
+    contactPhone: tournament?.contactPhone || "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -433,7 +519,7 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            {tournament ? 'Edit Tournament' : 'Create Tournament'}
+            {tournament ? "Edit Tournament" : "Create Tournament"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -444,7 +530,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                 type="text"
                 required
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
@@ -457,7 +545,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                 required
                 rows={3}
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
@@ -471,7 +561,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   type="date"
                   required
                   value={formData.startDate}
-                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startDate: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
@@ -484,7 +576,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   type="date"
                   required
                   value={formData.endDate}
-                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, endDate: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
@@ -499,7 +593,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   type="text"
                   required
                   value={formData.venue}
-                  onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, venue: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
@@ -514,7 +610,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   type="text"
                   required
                   value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
@@ -527,7 +625,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   type="text"
                   required
                   value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, country: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
@@ -543,7 +643,12 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   required
                   min="1"
                   value={formData.maxParticipants}
-                  onChange={(e) => setFormData({ ...formData, maxParticipants: parseInt(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      maxParticipants: parseInt(e.target.value),
+                    })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
@@ -557,7 +662,12 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                   required
                   min="0"
                   value={formData.registrationFee}
-                  onChange={(e) => setFormData({ ...formData, registrationFee: parseFloat(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      registrationFee: parseFloat(e.target.value),
+                    })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                 />
               </div>
@@ -571,8 +681,10 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                 type="tel"
                 required
                 value={formData.contactPhone}
-                onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                placeholder="+1 1234 567890"
+                onChange={(e) =>
+                  setFormData({ ...formData, contactPhone: e.target.value })
+                }
+                placeholder="+44 7353872474"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
             </div>
@@ -585,7 +697,9 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                 required
                 rows={4}
                 value={formData.rules}
-                onChange={(e) => setFormData({ ...formData, rules: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, rules: e.target.value })
+                }
                 placeholder="Enter tournament rules and regulations..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               />
@@ -603,7 +717,7 @@ function TournamentModal({ tournament, onSave, onClose }: { tournament: any; onS
                 type="submit"
                 className="px-4 py-2 text-white bg-gray-900 rounded-lg hover:bg-black transition"
               >
-                {tournament ? 'Update' : 'Create'} Tournament
+                {tournament ? "Update" : "Create"} Tournament
               </button>
             </div>
           </form>
@@ -632,7 +746,9 @@ function DeleteConfirmationModal({
           Delete Tournament
         </h3>
         <p className="text-gray-600 text-center mb-6">
-          Are you sure you want to delete <span className="font-semibold">{tournamentName}</span>? This action cannot be undone.
+          Are you sure you want to delete{" "}
+          <span className="font-semibold">{tournamentName}</span>? This action
+          cannot be undone.
         </p>
         <div className="flex space-x-3">
           <button
@@ -652,4 +768,3 @@ function DeleteConfirmationModal({
     </div>
   );
 }
-

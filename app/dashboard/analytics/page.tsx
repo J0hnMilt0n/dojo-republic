@@ -165,7 +165,7 @@ export default function AnalyticsPage() {
                 </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                ${analytics?.totalRevenue?.toFixed(2) || '0.00'}
+                ₹{analytics?.totalRevenue?.toFixed(2) || '0.00'}
               </div>
               <div className="text-sm text-gray-600">Total Revenue</div>
               <div className="text-xs text-gray-500 mt-1">All time earnings</div>
@@ -182,7 +182,7 @@ export default function AnalyticsPage() {
                 </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                ${analytics?.monthlyRevenue?.toFixed(2) || '0.00'}
+                ₹{analytics?.monthlyRevenue?.toFixed(2) || '0.00'}
               </div>
               <div className="text-sm text-gray-600">Monthly Revenue</div>
               <div className="text-xs text-gray-500 mt-1">This month's earnings</div>
@@ -241,7 +241,7 @@ export default function AnalyticsPage() {
                         <div
                           className="w-full bg-green-600 rounded-t hover:bg-green-700 transition cursor-pointer"
                           style={{ height: `${height}%` }}
-                          title={`$${data.revenue.toFixed(2)}`}
+                          title={`₹${data.revenue.toFixed(2)}`}
                         ></div>
                         <div className="text-xs text-gray-500 mt-2">
                           {data.month}
@@ -308,7 +308,7 @@ export default function AnalyticsPage() {
                           {new Date(order.createdAt).toLocaleDateString()}
                         </td>
                         <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                          ${order.totalAmount.toFixed(2)}
+                          ₹{order.totalAmount.toFixed(2)}
                         </td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -452,7 +452,7 @@ export default function AnalyticsPage() {
                   <div
                     className="w-full bg-green-600 rounded-t hover:bg-green-700 transition cursor-pointer"
                     style={{ height: `${(value / 12450) * 100}%` }}
-                    title={`$${value}`}
+                    title={`₹${value}`}
                   ></div>
                   <div className="text-xs text-gray-500 mt-2">
                     {['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][index]}

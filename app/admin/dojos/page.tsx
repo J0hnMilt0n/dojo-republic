@@ -348,7 +348,7 @@ export default function AdminDojosPage() {
                           </div>
                           <div className="flex items-center text-gray-600">
                             <Mail className="w-3 h-3 mr-1" />
-                            <span className="text-xs truncate max-w-[150px]">
+                            <span className="text-xs truncate max-w-37.5">
                               {dojo.email}
                             </span>
                           </div>

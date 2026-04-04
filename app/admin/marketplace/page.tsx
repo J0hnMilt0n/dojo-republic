@@ -301,7 +301,7 @@ export default function AdminMarketplacePage() {
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                         <p className="text-xs text-gray-500 mb-3">Category: {product.category}</p>
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-lg font-bold text-gray-900">${product.price}</span>
+                          <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
                           <span className="text-xs text-gray-500">Stock: {product.stock}</span>
                         </div>
                         {!product.isApproved && (

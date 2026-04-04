@@ -88,7 +88,7 @@ export default function DojoDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-gray-900 to-black text-white py-8">
+      <section className="bg-linear-to-r from-gray-900 to-black text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             href="/dojos"
@@ -191,7 +191,7 @@ export default function DojoDetailPage() {
                     >
                       <h3 className="font-semibold text-gray-900 mb-2">{plan.name}</h3>
                       <p className="text-3xl font-bold text-gray-900 mb-2">
-                        ${plan.price}
+                        ₹{plan.price}
                         <span className="text-base font-normal text-gray-600">
                           /{plan.duration}
                         </span>

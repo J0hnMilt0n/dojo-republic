@@ -143,7 +143,7 @@ export default function AdminAnalyticsPage() {
           <StatCard
             icon={<DollarSign className="w-8 h-8 text-green-600" />}
             title="Total Revenue"
-            value={`$${stats.totalRevenue.toFixed(2)}`}
+            value={`₹${stats.totalRevenue.toFixed(2)}`}
             change="All time"
             bgColor="bg-green-50"
           />

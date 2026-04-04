@@ -200,7 +200,7 @@ export default function TournamentDetailPage() {
                   <div>
                     <p className="text-sm font-medium text-gray-900">Registration Fee</p>
                     <p className="text-sm text-gray-600">
-                      ${tournament.registrationFee}
+                      ₹{tournament.registrationFee}
                     </p>
                   </div>
                 </div>
