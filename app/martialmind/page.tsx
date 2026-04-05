@@ -62,6 +62,18 @@ export default function MartialMindPage() {
       });
 
       if (!response.ok) {
+        if (response.status === 413) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.message || 'Video file is too large. Please upload a video under 100MB.'
+          );
+        }
+        if (response.status === 504) {
+          throw new Error('Analysis timed out. Please try with a shorter video.');
+        }
+        if (response.status === 503) {
+          throw new Error('AI service is temporarily unavailable. Please try again later.');
+        }
         throw new Error('Analysis failed. Please try again.');
       }
 
