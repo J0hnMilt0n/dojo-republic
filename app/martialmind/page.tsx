@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, Play, AlertCircle, CheckCircle, TrendingUp, Activity, Shield, Lightbulb, X } from 'lucide-react';
+import { Upload, Play, AlertCircle, CheckCircle, TrendingUp, Activity, Shield, Lightbulb, X, ExternalLink } from 'lucide-react';
 
 interface AnalysisResult {
   score: number;
@@ -15,6 +15,9 @@ interface AnalysisResult {
   drills: string[];
   prevention_advice: string[];
 }
+
+// Vercel limit: 4.5MB - files larger than this need direct upload
+const VERCEL_LIMIT_BYTES = 4.5 * 1024 * 1024;
 
 export default function MartialMindPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -53,6 +56,14 @@ export default function MartialMindPage() {
     setError(null);
 
     try {
+      // Check if file is larger than Vercel's limit
+      // If so, upload directly to the AI backend
+      if (selectedFile.size > VERCEL_LIMIT_BYTES) {
+        await uploadDirectToBackend();
+        return;
+      }
+
+      // For smaller files, use the Next.js API route
       const formData = new FormData();
       formData.append('video', selectedFile);
 
@@ -84,6 +95,40 @@ export default function MartialMindPage() {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const uploadDirectToBackend = async () => {
+    if (!selectedFile) {
+      setError('Please select a video file first');
+      return;
+    }
+
+    // Direct upload to AI backend (bypasses Vercel's 4.5MB limit)
+    const AI_BACKEND_URL = process.env.NEXT_PUBLIC_MARTIALMIND_API_URL || 
+                           'https://martialmind-backend-production.up.railway.app';
+    
+    const formData = new FormData();
+    formData.append('video', selectedFile);
+
+    const response = await fetch(`${AI_BACKEND_URL}/analyze-video`, {
+      method: 'POST',
+      body: formData,
+      // Set a longer timeout for large file uploads
+      signal: AbortSignal.timeout(300000), // 5 minutes timeout
+    });
+
+    if (!response.ok) {
+      if (response.status === 413) {
+        throw new Error('Video file is too large. Maximum size is 100MB.');
+      }
+      if (response.status === 504) {
+        throw new Error('Analysis timed out. Please try with a shorter video.');
+      }
+      throw new Error(`AI analysis failed with status ${response.status}. Please try again.`);
+    }
+
+    const data: AnalysisResult = await response.json();
+    setResult(data);
   };
 
   const getRiskColor = (level: string) => {

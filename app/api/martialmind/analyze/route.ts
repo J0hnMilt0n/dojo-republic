@@ -6,6 +6,9 @@ const AI_BACKEND_URL = process.env.MARTIALMIND_API_URL || 'http://localhost:8000
 // Maximum file size: 100MB
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
+// Vercel serverless limit: 4.5MB
+const VERCEL_LIMIT = 4.5 * 1024 * 1024;
+
 // Helper to check content length before processing
 function getContentLength(request: NextRequest): number {
   const contentLength = request.headers.get('content-length');
@@ -15,6 +18,21 @@ function getContentLength(request: NextRequest): number {
 export async function POST(request: NextRequest) {
   // Check content-length header first to reject oversized requests early
   const contentLength = getContentLength(request);
+  
+  // On Vercel, enforce the 4.5MB limit and provide guidance
+  if (process.env.VERCEL && contentLength > VERCEL_LIMIT) {
+    return NextResponse.json(
+      { 
+        error: 'File too large for Vercel',
+        message: `Video file exceeds Vercel's 4.5MB limit. Please use direct upload.`,
+        details: `Request size: ${(contentLength / (1024 * 1024)).toFixed(2)}MB`,
+        solution: 'Upload directly to the AI backend or use a smaller video file.',
+        directUploadUrl: `${AI_BACKEND_URL}/analyze-video`
+      },
+      { status: 413 }
+    );
+  }
+  
   if (contentLength > MAX_FILE_SIZE) {
     return NextResponse.json(
       { 
