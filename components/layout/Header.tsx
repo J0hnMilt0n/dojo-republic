@@ -63,7 +63,7 @@ export default function Header() {
               <img 
                 src="/head.png" 
                 alt="Dojo Republic" 
-                className="h-5 w-auto lg:h-6 xl:h-8 ml-1 sm:ml-2 object-contain"
+                className="h-7 w-auto lg:h-8 xl:h-10 ml-1 sm:ml-2 object-contain"
               />
             </div>
           </Link>

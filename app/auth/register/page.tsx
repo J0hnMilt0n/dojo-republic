@@ -65,8 +65,13 @@ export default function RegisterPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto w-16 h-16 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">
+            <span className="text-white font-bold text-2xl ">
               <img src="/logo.png" alt="" />
+              <img 
+                src="/head.png" 
+                alt="Dojo Republic" 
+                className="h-[25]"
+              />
             </span>
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
