@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   CheckCircle,
@@ -13,10 +13,10 @@ import {
   Mail,
   Search,
   Filter,
-  AlertCircle
-} from 'lucide-react';
-import { Dojo } from '@/lib/types';
-import { useToast } from '@/components/ToastProvider';
+  AlertCircle,
+} from "lucide-react";
+import { Dojo } from "@/lib/types";
+import { useToast } from "@/components/ToastProvider";
 
 export default function AdminDojosPage() {
   const router = useRouter();
@@ -25,11 +25,13 @@ export default function AdminDojosPage() {
   const [dojos, setDojos] = useState<Dojo[]>([]);
   const [filteredDojos, setFilteredDojos] = useState<Dojo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved'>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "pending" | "approved"
+  >("all");
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
-    type: 'approve' | 'reject' | null;
+    type: "approve" | "reject" | null;
     dojo: Dojo | null;
   }>({ isOpen: false, type: null, dojo: null });
 
@@ -39,22 +41,22 @@ export default function AdminDojosPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      
-      if (data.user.role !== 'admin') {
-        router.push('/dashboard');
+
+      if (data.user.role !== "admin") {
+        router.push("/dashboard");
         return;
       }
 
       setUser(data.user);
       await fetchDojos();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -62,14 +64,14 @@ export default function AdminDojosPage() {
 
   const fetchDojos = async () => {
     try {
-      const res = await fetch('/api/dojos');
+      const res = await fetch("/api/dojos");
       if (res.ok) {
         const data = await res.json();
         setDojos(data.dojos);
         setFilteredDojos(data.dojos);
       }
     } catch (error) {
-      console.error('Failed to fetch dojos:', error);
+      console.error("Failed to fetch dojos:", error);
     }
   };
 
@@ -77,10 +79,10 @@ export default function AdminDojosPage() {
     let filtered = dojos;
 
     // Filter by status
-    if (statusFilter === 'pending') {
-      filtered = filtered.filter(d => !d.isApproved);
-    } else if (statusFilter === 'approved') {
-      filtered = filtered.filter(d => d.isApproved);
+    if (statusFilter === "pending") {
+      filtered = filtered.filter((d) => !d.isApproved);
+    } else if (statusFilter === "approved") {
+      filtered = filtered.filter((d) => d.isApproved);
     }
 
     // Filter by search term
@@ -89,14 +91,14 @@ export default function AdminDojosPage() {
         (dojo) =>
           dojo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           dojo.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          dojo.email.toLowerCase().includes(searchTerm.toLowerCase())
+          dojo.email.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     setFilteredDojos(filtered);
   }, [searchTerm, statusFilter, dojos]);
 
-  const openConfirmModal = (type: 'approve' | 'reject', dojo: Dojo) => {
+  const openConfirmModal = (type: "approve" | "reject", dojo: Dojo) => {
     setConfirmModal({ isOpen: true, type, dojo });
   };
 
@@ -107,30 +109,39 @@ export default function AdminDojosPage() {
   const handleConfirmAction = async () => {
     if (!confirmModal.dojo) return;
 
-    const isApproving = confirmModal.type === 'approve';
-    
+    const isApproving = confirmModal.type === "approve";
+
     try {
       const res = await fetch(`/api/dojos`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id: confirmModal.dojo.id, 
-          isApproved: isApproving 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: confirmModal.dojo.id,
+          isApproved: isApproving,
         }),
       });
 
       if (res.ok) {
         showToast(
-          isApproving ? 'Dojo approved successfully' : 'Dojo approval revoked', 
-          isApproving ? 'success' : 'info'
+          isApproving ? "Dojo approved successfully" : "Dojo approval revoked",
+          isApproving ? "success" : "info",
         );
         await fetchDojos();
       } else {
-        showToast(`Failed to ${isApproving ? 'approve' : 'reject'} dojo`, 'error');
+        showToast(
+          `Failed to ${isApproving ? "approve" : "reject"} dojo`,
+          "error",
+        );
       }
     } catch (error) {
-      console.error(`Error ${isApproving ? 'approving' : 'rejecting'} dojo:`, error);
-      showToast(`Failed to ${isApproving ? 'approve' : 'reject'} dojo`, 'error');
+      console.error(
+        `Error ${isApproving ? "approving" : "rejecting"} dojo:`,
+        error,
+      );
+      showToast(
+        `Failed to ${isApproving ? "approve" : "reject"} dojo`,
+        "error",
+      );
     } finally {
       closeConfirmModal();
     }
@@ -138,7 +149,7 @@ export default function AdminDojosPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -146,22 +157,24 @@ export default function AdminDojosPage() {
 
   if (!user) return null;
 
-  const pendingDojos = dojos.filter(d => !d.isApproved);
-  const approvedDojos = dojos.filter(d => d.isApproved);
+  const pendingDojos = dojos.filter((d) => !d.isApproved);
+  const approvedDojos = dojos.filter((d) => d.isApproved);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       {/* Confirmation Modal */}
       {confirmModal.isOpen && confirmModal.dojo && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-[scaleIn_0.2s_ease-out]">
             {/* Icon */}
-            <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
-              confirmModal.type === 'approve' 
-                ? 'bg-green-100' 
-                : 'bg-orange-100'
-            }`}>
-              {confirmModal.type === 'approve' ? (
+            <div
+              className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
+                confirmModal.type === "approve"
+                  ? "bg-green-100"
+                  : "bg-orange-100"
+              }`}
+            >
+              {confirmModal.type === "approve" ? (
                 <CheckCircle className="w-6 h-6 text-green-600" />
               ) : (
                 <AlertCircle className="w-6 h-6 text-orange-600" />
@@ -170,24 +183,32 @@ export default function AdminDojosPage() {
 
             {/* Title */}
             <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-              {confirmModal.type === 'approve' ? 'Approve Dojo?' : 'Revoke Approval?'}
+              {confirmModal.type === "approve"
+                ? "Approve Dojo?"
+                : "Revoke Approval?"}
             </h3>
 
             {/* Message */}
             <p className="text-gray-600 text-center mb-4">
-              {confirmModal.type === 'approve' 
+              {confirmModal.type === "approve"
                 ? `Are you sure you want to approve "${confirmModal.dojo.name}"? This will make it visible to all users.`
-                : `Are you sure you want to revoke approval for "${confirmModal.dojo.name}"? This will hide it from public view.`
-              }
+                : `Are you sure you want to revoke approval for "${confirmModal.dojo.name}"? This will hide it from public view.`}
             </p>
 
             {/* Dojo Info */}
-            <div className="bg-gray-50 rounded-lg p-3 mb-6">
-              <p className="text-sm font-medium text-gray-900">{confirmModal.dojo.name}</p>
-              <p className="text-xs text-gray-600 mt-1">{confirmModal.dojo.city}, {confirmModal.dojo.country}</p>
+            <div className="bg-[#FEFEFE] rounded-lg p-3 mb-6">
+              <p className="text-sm font-medium text-gray-900">
+                {confirmModal.dojo.name}
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                {confirmModal.dojo.city}, {confirmModal.dojo.country}
+              </p>
               <div className="flex flex-wrap gap-1 mt-2">
                 {confirmModal.dojo.martialArts.slice(0, 3).map((ma) => (
-                  <span key={ma} className="text-xs px-2 py-0.5 bg-white text-gray-600 rounded">
+                  <span
+                    key={ma}
+                    className="text-xs px-2 py-0.5 bg-white text-gray-600 rounded"
+                  >
                     {ma}
                   </span>
                 ))}
@@ -198,19 +219,19 @@ export default function AdminDojosPage() {
             <div className="flex gap-3">
               <button
                 onClick={closeConfirmModal}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-[#FEFEFE] transition font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmAction}
                 className={`flex-1 px-4 py-2.5 rounded-lg transition font-medium text-white ${
-                  confirmModal.type === 'approve'
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : 'bg-orange-600 hover:bg-orange-700'
+                  confirmModal.type === "approve"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-orange-600 hover:bg-orange-700"
                 }`}
               >
-                {confirmModal.type === 'approve' ? 'Approve' : 'Revoke'}
+                {confirmModal.type === "approve" ? "Approve" : "Revoke"}
               </button>
             </div>
           </div>
@@ -239,11 +260,15 @@ export default function AdminDojosPage() {
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Pending Approval</p>
-            <p className="text-3xl font-bold text-orange-600">{pendingDojos.length}</p>
+            <p className="text-3xl font-bold text-orange-600">
+              {pendingDojos.length}
+            </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Approved</p>
-            <p className="text-3xl font-bold text-green-600">{approvedDojos.length}</p>
+            <p className="text-3xl font-bold text-green-600">
+              {approvedDojos.length}
+            </p>
           </div>
         </div>
 
@@ -286,7 +311,7 @@ export default function AdminDojosPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#FEFEFE]">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Dojo
@@ -307,10 +332,12 @@ export default function AdminDojosPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredDojos.map((dojo) => (
-                    <tr key={dojo.id} className="hover:bg-gray-50">
+                    <tr key={dojo.id} className="hover:bg-[#FEFEFE]">
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-medium text-gray-900">{dojo.name}</p>
+                          <p className="font-medium text-gray-900">
+                            {dojo.name}
+                          </p>
                           <p className="text-sm text-gray-500 line-clamp-1">
                             {dojo.description}
                           </p>
@@ -376,10 +403,10 @@ export default function AdminDojosPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
-                          
+
                           {!dojo.isApproved ? (
                             <button
-                              onClick={() => openConfirmModal('approve', dojo)}
+                              onClick={() => openConfirmModal("approve", dojo)}
                               className="text-green-600 hover:text-green-800 transition"
                               title="Approve"
                             >
@@ -387,7 +414,7 @@ export default function AdminDojosPage() {
                             </button>
                           ) : (
                             <button
-                              onClick={() => openConfirmModal('reject', dojo)}
+                              onClick={() => openConfirmModal("reject", dojo)}
                               className="text-orange-600 hover:text-orange-800 transition"
                               title="Revoke Approval"
                             >
@@ -407,4 +434,3 @@ export default function AdminDojosPage() {
     </div>
   );
 }
-

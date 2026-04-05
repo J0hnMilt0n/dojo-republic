@@ -117,7 +117,7 @@ export default function TermsOfServicePage() {
             </div>
 
             {/* TABLE OF CONTENTS */}
-            <div className="mb-12 bg-gray-50 p-6 rounded-xl border border-gray-200">
+            <div className="mb-12 bg-[#FEFEFE] p-6 rounded-xl border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 TABLE OF CONTENTS
               </h2>

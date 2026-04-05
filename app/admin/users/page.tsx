@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   CheckCircle,
@@ -11,9 +11,9 @@ import {
   Phone,
   Search,
   Filter,
-  Trash2
-} from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+  Trash2,
+} from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function AdminUsersPage() {
   const router = useRouter();
@@ -22,8 +22,8 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingUser, setDeletingUser] = useState<any>(null);
 
@@ -33,22 +33,22 @@ export default function AdminUsersPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      
-      if (data.user.role !== 'admin') {
-        router.push('/dashboard');
+
+      if (data.user.role !== "admin") {
+        router.push("/dashboard");
         return;
       }
 
       setUser(data.user);
       await fetchUsers();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -56,57 +56,57 @@ export default function AdminUsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('/api/admin/users');
+      const res = await fetch("/api/admin/users");
       if (res.ok) {
         const data = await res.json();
         setUsers(data.users || []);
         setFilteredUsers(data.users || []);
       } else {
         const error = await res.json();
-        console.error('Failed to fetch users:', error);
-        showToast(error.error || 'Failed to fetch users', 'error');
+        console.error("Failed to fetch users:", error);
+        showToast(error.error || "Failed to fetch users", "error");
       }
     } catch (error) {
-      console.error('Failed to fetch users:', error);
-      showToast('Error loading users', 'error');
+      console.error("Failed to fetch users:", error);
+      showToast("Error loading users", "error");
     }
   };
 
   const handleApproveUser = async (userId: string) => {
     try {
-      const res = await fetch('/api/admin/users', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, isApproved: true }),
       });
       if (res.ok) {
-        showToast('User approved successfully', 'success');
+        showToast("User approved successfully", "success");
         await fetchUsers();
       } else {
-        showToast('Failed to approve user', 'error');
+        showToast("Failed to approve user", "error");
       }
     } catch (error) {
-      console.error('Failed to approve user:', error);
-      showToast('Error approving user', 'error');
+      console.error("Failed to approve user:", error);
+      showToast("Error approving user", "error");
     }
   };
 
   const handleRejectUser = async (userId: string) => {
     try {
-      const res = await fetch('/api/admin/users', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, isApproved: false }),
       });
       if (res.ok) {
-        showToast('User rejected', 'info');
+        showToast("User rejected", "info");
         await fetchUsers();
       } else {
-        showToast('Failed to reject user', 'error');
+        showToast("Failed to reject user", "error");
       }
     } catch (error) {
-      console.error('Failed to reject user:', error);
-      showToast('Error rejecting user', 'error');
+      console.error("Failed to reject user:", error);
+      showToast("Error rejecting user", "error");
     }
   };
 
@@ -117,32 +117,32 @@ export default function AdminUsersPage() {
 
   const confirmDeleteUser = async () => {
     if (!deletingUser) return;
-    
+
     try {
       const res = await fetch(`/api/admin/users?userId=${deletingUser.id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (res.ok) {
-        showToast('User deleted successfully', 'success');
+        showToast("User deleted successfully", "success");
         setShowDeleteModal(false);
         setDeletingUser(null);
         await fetchUsers();
       } else {
         const data = await res.json();
-        showToast(data.error || 'Failed to delete user', 'error');
+        showToast(data.error || "Failed to delete user", "error");
       }
     } catch (error) {
-      console.error('Error deleting user:', error);
-      showToast('Error deleting user', 'error');
+      console.error("Error deleting user:", error);
+      showToast("Error deleting user", "error");
     }
   };
 
   useEffect(() => {
     let filtered = users;
 
-    if (roleFilter !== 'all') {
-      filtered = filtered.filter(u => u.role === roleFilter);
+    if (roleFilter !== "all") {
+      filtered = filtered.filter((u) => u.role === roleFilter);
     }
 
     if (searchTerm) {
@@ -150,7 +150,7 @@ export default function AdminUsersPage() {
         (user) =>
           user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.phoneNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+          user.phoneNumber?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -159,7 +159,7 @@ export default function AdminUsersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -169,20 +169,29 @@ export default function AdminUsersPage() {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'admin': return 'bg-gray-900 text-white';
-      case 'dojo_owner': return 'bg-purple-100 text-purple-800';
-      case 'coach': return 'bg-blue-100 text-blue-800';
-      case 'player': return 'bg-green-100 text-green-800';
-      case 'parent': return 'bg-yellow-100 text-yellow-800';
-      case 'referee': return 'bg-indigo-100 text-indigo-800';
-      case 'judge': return 'bg-pink-100 text-pink-800';
-      case 'seller': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "admin":
+        return "bg-gray-900 text-white";
+      case "dojo_owner":
+        return "bg-purple-100 text-purple-800";
+      case "coach":
+        return "bg-blue-100 text-blue-800";
+      case "player":
+        return "bg-green-100 text-green-800";
+      case "parent":
+        return "bg-yellow-100 text-yellow-800";
+      case "referee":
+        return "bg-indigo-100 text-indigo-800";
+      case "judge":
+        return "bg-pink-100 text-pink-800";
+      case "seller":
+        return "bg-orange-100 text-orange-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Link
@@ -193,7 +202,9 @@ export default function AdminUsersPage() {
             Back to Admin Dashboard
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Manage Users</h1>
-          <p className="text-gray-600 mt-1">View and manage all platform users</p>
+          <p className="text-gray-600 mt-1">
+            View and manage all platform users
+          </p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -240,7 +251,7 @@ export default function AdminUsersPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#FEFEFE]">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       User
@@ -264,7 +275,7 @@ export default function AdminUsersPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredUsers.map((usr) => (
-                    <tr key={usr.id} className="hover:bg-gray-50">
+                    <tr key={usr.id} className="hover:bg-[#FEFEFE]">
                       <td className="px-6 py-4">
                         <p className="font-medium text-gray-900">{usr.name}</p>
                       </td>
@@ -283,8 +294,10 @@ export default function AdminUsersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(usr.role)}`}>
-                          {usr.role.replace('_', ' ')}
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadgeColor(usr.role)}`}
+                        >
+                          {usr.role.replace("_", " ")}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -325,7 +338,7 @@ export default function AdminUsersPage() {
                               </button>
                             </>
                           ) : null}
-                          {usr.role !== 'admin' && (
+                          {usr.role !== "admin" && (
                             <button
                               onClick={() => handleDeleteUser(usr)}
                               className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none"
@@ -356,8 +369,10 @@ export default function AdminUsersPage() {
                 Delete User
               </h3>
               <p className="text-gray-600 text-center mb-6">
-                Are you sure you want to delete <span className="font-semibold">{deletingUser.name}</span> ({deletingUser.email})? 
-                This action cannot be undone and will permanently remove all associated data.
+                Are you sure you want to delete{" "}
+                <span className="font-semibold">{deletingUser.name}</span> (
+                {deletingUser.email})? This action cannot be undone and will
+                permanently remove all associated data.
               </p>
               <div className="flex space-x-3">
                 <button
@@ -383,4 +398,3 @@ export default function AdminUsersPage() {
     </div>
   );
 }
-

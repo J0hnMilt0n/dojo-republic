@@ -1,12 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
-  Users, Building, Trophy, Award, ShoppingBag, BarChart,
-  CheckCircle, XCircle, Clock, TrendingUp
-} from 'lucide-react';
+  Users,
+  Building,
+  Trophy,
+  Award,
+  ShoppingBag,
+  BarChart,
+  CheckCircle,
+  XCircle,
+  Clock,
+  TrendingUp,
+} from "lucide-react";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -27,22 +35,22 @@ export default function AdminDashboard() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      
-      if (data.user.role !== 'admin') {
-        router.push('/dashboard');
+
+      if (data.user.role !== "admin") {
+        router.push("/dashboard");
         return;
       }
 
       setUser(data.user);
       await fetchStats();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -50,19 +58,19 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('/api/admin/stats');
+      const res = await fetch("/api/admin/stats");
       if (res.ok) {
         const data = await res.json();
         setStats(data.stats);
       }
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      console.error("Failed to fetch stats:", error);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
       </div>
     );
@@ -71,7 +79,7 @@ export default function AdminDashboard() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -169,7 +177,9 @@ function StatCard({
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between">
-        <div className={`w-12 h-12 ${bgColor} rounded-lg flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 ${bgColor} rounded-lg flex items-center justify-center`}
+        >
           {icon}
         </div>
         <div className="text-right">
@@ -209,4 +219,3 @@ function ManagementCard({
     </Link>
   );
 }
-

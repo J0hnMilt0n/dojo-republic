@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Users, Search, UserPlus, Mail, Phone, Award } from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Users, Search, UserPlus, Mail, Phone, Award } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function StudentsPage() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -23,12 +23,12 @@ export default function StudentsPage() {
   const [deletingStudent, setDeletingStudent] = useState<any>(null);
   const [userDojos, setUserDojos] = useState<any[]>([]);
   const [newStudent, setNewStudent] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    age: '',
-    beltLevel: 'White Belt',
-    dojoId: '',
+    name: "",
+    email: "",
+    phone: "",
+    age: "",
+    beltLevel: "White Belt",
+    dojoId: "",
   });
   const [editStudent, setEditStudent] = useState<any>(null);
 
@@ -38,10 +38,11 @@ export default function StudentsPage() {
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = students.filter(student =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.beltLevel?.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = students.filter(
+        (student) =>
+          student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          student.beltLevel?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       setFilteredStudents(filtered);
     } else {
@@ -51,20 +52,20 @@ export default function StudentsPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      if (data.user.role !== 'dojo_owner' && data.user.role !== 'coach') {
-        router.push('/dashboard');
+      if (data.user.role !== "dojo_owner" && data.user.role !== "coach") {
+        router.push("/dashboard");
         return;
       }
       setUser(data.user);
       await Promise.all([fetchStudents(), fetchUserDojos()]);
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -72,38 +73,38 @@ export default function StudentsPage() {
 
   const fetchUserDojos = async () => {
     try {
-      const res = await fetch('/api/dojos/my-dojos');
+      const res = await fetch("/api/dojos/my-dojos");
       if (res.ok) {
         const data = await res.json();
         setUserDojos(data.dojos || []);
         // Set default dojo if only one
         if (data.dojos && data.dojos.length === 1) {
-          setNewStudent(prev => ({ ...prev, dojoId: data.dojos[0].id }));
+          setNewStudent((prev) => ({ ...prev, dojoId: data.dojos[0].id }));
         }
       }
     } catch (error) {
-      console.error('Error fetching dojos:', error);
+      console.error("Error fetching dojos:", error);
     }
   };
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch('/api/students?myStudents=true');
+      const res = await fetch("/api/students?myStudents=true");
       if (res.ok) {
         const data = await res.json();
         setStudents(data.students || []);
       } else if (res.status === 400) {
         // If no dojo found, might need to refresh user info
         const data = await res.json();
-        if (data.code === 'NO_DOJO') {
-          console.log('No dojo associated with user');
+        if (data.code === "NO_DOJO") {
+          console.log("No dojo associated with user");
           setStudents([]);
         }
       } else {
         setStudents([]);
       }
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.error("Error fetching students:", error);
       setStudents([]);
     }
   };
@@ -118,7 +119,7 @@ export default function StudentsPage() {
         return data.user || null;
       }
     } catch (error) {
-      console.error('Error fetching parent info:', error);
+      console.error("Error fetching parent info:", error);
     } finally {
       setLoadingParent(false);
     }
@@ -138,20 +139,20 @@ export default function StudentsPage() {
 
   const handleAddStudent = async () => {
     if (!newStudent.name || !newStudent.email || !newStudent.age) {
-      showToast('Please fill in all required fields', 'warning');
+      showToast("Please fill in all required fields", "warning");
       return;
     }
 
     // If owner has multiple dojos, require dojo selection
     if (userDojos.length > 1 && !newStudent.dojoId) {
-      showToast('Please select a dojo', 'warning');
+      showToast("Please select a dojo", "warning");
       return;
     }
 
     try {
-      const res = await fetch('/api/students', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/students", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: newStudent.name,
           email: newStudent.email,
@@ -163,42 +164,42 @@ export default function StudentsPage() {
       });
 
       if (res.ok) {
-        showToast('Student added successfully', 'success');
+        showToast("Student added successfully", "success");
         setShowAddModal(false);
         setNewStudent({
-          name: '',
-          email: '',
-          phone: '',
-          age: '',
-          beltLevel: 'White Belt',
-          dojoId: userDojos.length === 1 ? userDojos[0].id : '',
+          name: "",
+          email: "",
+          phone: "",
+          age: "",
+          beltLevel: "White Belt",
+          dojoId: userDojos.length === 1 ? userDojos[0].id : "",
         });
         await fetchStudents();
       } else {
         const data = await res.json();
-        
+
         // Handle specific error codes
-        if (data.code === 'NO_DOJO') {
-          if (user?.role === 'dojo_owner') {
+        if (data.code === "NO_DOJO") {
+          if (user?.role === "dojo_owner") {
             showToast(
-              'You need to create a dojo first. Redirecting...',
-              'error'
+              "You need to create a dojo first. Redirecting...",
+              "error",
             );
-            setTimeout(() => router.push('/dashboard/my-dojo'), 2000);
+            setTimeout(() => router.push("/dashboard/my-dojo"), 2000);
           } else {
-            showToast(data.error || 'Not associated with any dojo', 'error');
+            showToast(data.error || "Not associated with any dojo", "error");
           }
         } else {
-          const errorMsg = data.details 
-            ? `${data.error}: ${data.details.map((d: any) => `${d.field} - ${d.message}`).join(', ')}`
-            : data.error || 'Failed to add student';
-          showToast(errorMsg, 'error');
+          const errorMsg = data.details
+            ? `${data.error}: ${data.details.map((d: any) => `${d.field} - ${d.message}`).join(", ")}`
+            : data.error || "Failed to add student";
+          showToast(errorMsg, "error");
         }
-        console.error('API Error:', data);
+        console.error("API Error:", data);
       }
     } catch (error) {
-      console.error('Error adding student:', error);
-      showToast('Error adding student', 'error');
+      console.error("Error adding student:", error);
+      showToast("Error adding student", "error");
     }
   };
 
@@ -209,14 +210,14 @@ export default function StudentsPage() {
 
   const handleSaveEdit = async () => {
     if (!editStudent.name || !editStudent.email || !editStudent.age) {
-      showToast('Please fill in all required fields', 'warning');
+      showToast("Please fill in all required fields", "warning");
       return;
     }
 
     try {
-      const res = await fetch('/api/students', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/students", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: editStudent.id,
           name: editStudent.name,
@@ -230,17 +231,17 @@ export default function StudentsPage() {
       });
 
       if (res.ok) {
-        showToast('Student updated successfully', 'success');
+        showToast("Student updated successfully", "success");
         setShowEditModal(false);
         setEditStudent(null);
         await fetchStudents();
       } else {
         const data = await res.json();
-        showToast(data.error || 'Failed to update student', 'error');
+        showToast(data.error || "Failed to update student", "error");
       }
     } catch (error) {
-      console.error('Error updating student:', error);
-      showToast('Error updating student', 'error');
+      console.error("Error updating student:", error);
+      showToast("Error updating student", "error");
     }
   };
 
@@ -251,37 +252,37 @@ export default function StudentsPage() {
 
   const confirmDelete = async () => {
     if (!deletingStudent) return;
-    
+
     try {
       const res = await fetch(`/api/students?id=${deletingStudent.id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (res.ok) {
-        showToast('Student deleted successfully', 'success');
+        showToast("Student deleted successfully", "success");
         setShowDeleteModal(false);
         setDeletingStudent(null);
         await fetchStudents();
       } else {
         const data = await res.json();
-        showToast(data.error || 'Failed to delete student', 'error');
+        showToast(data.error || "Failed to delete student", "error");
       }
     } catch (error) {
-      console.error('Error deleting student:', error);
-      showToast('Error deleting student', 'error');
+      console.error("Error deleting student:", error);
+      showToast("Error deleting student", "error");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -297,7 +298,7 @@ export default function StudentsPage() {
                 </p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition"
             >
@@ -305,12 +306,14 @@ export default function StudentsPage() {
               <span>Add Student</span>
             </button>
           </div>
-          
+
           {/* Info Banner when no students */}
           {students.length === 0 && (
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>💡 Getting Started:</strong> Students you create will be automatically assigned to your dojo. Click "Add Student" to enroll your first student!
+                <strong>💡 Getting Started:</strong> Students you create will be
+                automatically assigned to your dojo. Click "Add Student" to
+                enroll your first student!
               </p>
             </div>
           )}
@@ -334,28 +337,35 @@ export default function StudentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Total Students</div>
-            <div className="text-3xl font-bold text-gray-900">{students.length}</div>
+            <div className="text-3xl font-bold text-gray-900">
+              {students.length}
+            </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Active</div>
             <div className="text-3xl font-bold text-green-600">
-              {students.filter(s => s.isActive).length}
+              {students.filter((s) => s.isActive).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Parents Linked</div>
             <div className="text-3xl font-bold text-blue-600">
-              {students.filter(s => s.parentId).length}
+              {students.filter((s) => s.parentId).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">This Month</div>
             <div className="text-3xl font-bold text-purple-600">
-              {students.filter(s => {
-                const enrollmentDate = new Date(s.enrollmentDate);
-                const now = new Date();
-                return enrollmentDate.getMonth() === now.getMonth() && enrollmentDate.getFullYear() === now.getFullYear();
-              }).length}
+              {
+                students.filter((s) => {
+                  const enrollmentDate = new Date(s.enrollmentDate);
+                  const now = new Date();
+                  return (
+                    enrollmentDate.getMonth() === now.getMonth() &&
+                    enrollmentDate.getFullYear() === now.getFullYear()
+                  );
+                }).length
+              }
             </div>
           </div>
         </div>
@@ -364,7 +374,7 @@ export default function StudentsPage() {
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+              <thead className="bg-[#FEFEFE]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Student
@@ -395,13 +405,16 @@ export default function StudentsPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredStudents.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                    <td
+                      colSpan={8}
+                      className="px-6 py-8 text-center text-gray-500"
+                    >
                       No students found
                     </td>
                   </tr>
                 ) : (
                   filteredStudents.map((student, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
+                    <tr key={index} className="hover:bg-[#FEFEFE]">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -413,7 +426,9 @@ export default function StudentsPage() {
                             <div className="text-sm font-medium text-gray-900">
                               {student.name}
                             </div>
-                            <div className="text-sm text-gray-500">{student.age} years old</div>
+                            <div className="text-sm text-gray-500">
+                              {student.age} years old
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -426,13 +441,23 @@ export default function StudentsPage() {
                             onClick={(e) => {
                               e.stopPropagation();
                               navigator.clipboard.writeText(student.id);
-                              showToast('Student ID copied', 'success');
+                              showToast("Student ID copied", "success");
                             }}
                             className="text-gray-400 hover:text-gray-600 transition"
                             title="Copy full ID"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -440,7 +465,9 @@ export default function StudentsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <Award className="w-4 h-4 text-yellow-600 mr-2" />
-                          <span className="text-sm text-gray-900">{student.beltLevel}</span>
+                          <span className="text-sm text-gray-900">
+                            {student.beltLevel}
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -461,7 +488,9 @@ export default function StudentsPage() {
                         {student.parentId ? (
                           <div className="flex items-center">
                             <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                            <span className="text-green-700 font-medium">Linked</span>
+                            <span className="text-green-700 font-medium">
+                              Linked
+                            </span>
                           </div>
                         ) : (
                           <div className="flex items-center">
@@ -477,27 +506,27 @@ export default function StudentsPage() {
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             student.isActive
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {student.isActive ? 'active' : 'inactive'}
+                          {student.isActive ? "active" : "inactive"}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button 
+                        <button
                           onClick={() => handleViewStudent(student)}
                           className="text-gray-600 hover:text-gray-900 mr-3"
                         >
                           View
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleEditStudent(student)}
                           className="text-blue-600 hover:text-blue-900 mr-3"
                         >
                           Edit
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDeleteStudent(student)}
                           className="text-red-600 hover:text-red-900"
                         >
@@ -520,14 +549,26 @@ export default function StudentsPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Add Student</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Add Student
+                </h2>
                 <button
                   onClick={() => setShowAddModal(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -539,7 +580,9 @@ export default function StudentsPage() {
                     </label>
                     <select
                       value={newStudent.dojoId}
-                      onChange={(e) => setNewStudent({ ...newStudent, dojoId: e.target.value })}
+                      onChange={(e) =>
+                        setNewStudent({ ...newStudent, dojoId: e.target.value })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     >
                       <option value="">Choose a dojo...</option>
@@ -550,7 +593,8 @@ export default function StudentsPage() {
                       ))}
                     </select>
                     <p className="text-xs text-gray-500 mt-1">
-                      You have multiple dojos. Select which one this student belongs to.
+                      You have multiple dojos. Select which one this student
+                      belongs to.
                     </p>
                   </div>
                 )}
@@ -561,7 +605,9 @@ export default function StudentsPage() {
                   <input
                     type="text"
                     value={newStudent.name}
-                    onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, name: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="Student name"
                   />
@@ -573,7 +619,9 @@ export default function StudentsPage() {
                   <input
                     type="email"
                     value={newStudent.email}
-                    onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, email: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="student@example.com"
                   />
@@ -585,7 +633,9 @@ export default function StudentsPage() {
                   <input
                     type="tel"
                     value={newStudent.phone}
-                    onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, phone: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="+1 (555) 000-0000"
                   />
@@ -597,7 +647,9 @@ export default function StudentsPage() {
                   <input
                     type="number"
                     value={newStudent.age}
-                    onChange={(e) => setNewStudent({ ...newStudent, age: e.target.value })}
+                    onChange={(e) =>
+                      setNewStudent({ ...newStudent, age: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="Age"
                     min="1"
@@ -609,7 +661,12 @@ export default function StudentsPage() {
                   </label>
                   <select
                     value={newStudent.beltLevel}
-                    onChange={(e) => setNewStudent({ ...newStudent, beltLevel: e.target.value })}
+                    onChange={(e) =>
+                      setNewStudent({
+                        ...newStudent,
+                        beltLevel: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   >
                     <option value="White Belt">White Belt</option>
@@ -628,12 +685,12 @@ export default function StudentsPage() {
                   onClick={() => {
                     setShowAddModal(false);
                     setNewStudent({
-                      name: '',
-                      email: '',
-                      phone: '',
-                      age: '',
-                      beltLevel: 'White Belt',
-                      dojoId: userDojos.length === 1 ? userDojos[0].id : '',
+                      name: "",
+                      email: "",
+                      phone: "",
+                      age: "",
+                      beltLevel: "White Belt",
+                      dojoId: userDojos.length === 1 ? userDojos[0].id : "",
                     });
                   }}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
@@ -656,7 +713,9 @@ export default function StudentsPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-4 sm:p-6 my-8 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Student Details</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  Student Details
+                </h2>
                 <button
                   onClick={() => {
                     setShowViewModal(false);
@@ -666,8 +725,18 @@ export default function StudentsPage() {
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -680,8 +749,12 @@ export default function StudentsPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Name</label>
-                  <p className="text-gray-900 font-medium">{selectedStudent.name}</p>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Name
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {selectedStudent.name}
+                  </p>
                 </div>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-3">
                   <div>
@@ -689,12 +762,15 @@ export default function StudentsPage() {
                       Parent Linking Options
                     </label>
                     <p className="text-xs text-blue-700 mb-2">
-                      Parents can link using either the Student ID or Email Address
+                      Parents can link using either the Student ID or Email
+                      Address
                     </p>
                   </div>
-                  
+
                   <div>
-                    <label className="block text-xs font-medium text-blue-800 mb-1">Student ID</label>
+                    <label className="block text-xs font-medium text-blue-800 mb-1">
+                      Student ID
+                    </label>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <code className="text-blue-900 font-mono text-xs sm:text-sm bg-white px-2 py-1 rounded break-all">
                         {selectedStudent.id}
@@ -702,7 +778,10 @@ export default function StudentsPage() {
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(selectedStudent.id);
-                          showToast('Student ID copied to clipboard', 'success');
+                          showToast(
+                            "Student ID copied to clipboard",
+                            "success",
+                          );
                         }}
                         className="text-xs text-blue-600 hover:text-blue-800 font-medium self-start sm:self-auto whitespace-nowrap"
                       >
@@ -712,7 +791,9 @@ export default function StudentsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-blue-800 mb-1">Email Address</label>
+                    <label className="block text-xs font-medium text-blue-800 mb-1">
+                      Email Address
+                    </label>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <code className="text-blue-900 font-mono text-xs sm:text-sm bg-white px-2 py-1 rounded break-all">
                         {selectedStudent.email}
@@ -720,7 +801,7 @@ export default function StudentsPage() {
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(selectedStudent.email);
-                          showToast('Email copied to clipboard', 'success');
+                          showToast("Email copied to clipboard", "success");
                         }}
                         className="text-xs text-blue-600 hover:text-blue-800 font-medium self-start sm:self-auto whitespace-nowrap"
                       >
@@ -729,16 +810,22 @@ export default function StudentsPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Parent Information Section */}
-                <div className={`border rounded-lg p-3 space-y-2 ${
-                  selectedStudent.parentId 
-                    ? 'bg-green-50 border-green-200' 
-                    : 'bg-gray-50 border-gray-200'
-                }`}>
-                  <label className={`block text-sm font-medium mb-1 ${
-                    selectedStudent.parentId ? 'text-green-900' : 'text-gray-700'
-                  }`}>
+                <div
+                  className={`border rounded-lg p-3 space-y-2 ${
+                    selectedStudent.parentId
+                      ? "bg-green-50 border-green-200"
+                      : "bg-[#FEFEFE] border-gray-200"
+                  }`}
+                >
+                  <label
+                    className={`block text-sm font-medium mb-1 ${
+                      selectedStudent.parentId
+                        ? "text-green-900"
+                        : "text-gray-700"
+                    }`}
+                  >
                     Parent Account Status
                   </label>
                   {selectedStudent.parentId ? (
@@ -751,21 +838,33 @@ export default function StudentsPage() {
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <span className="text-sm font-semibold text-green-700">Parent Linked</span>
+                          <span className="text-sm font-semibold text-green-700">
+                            Parent Linked
+                          </span>
                         </div>
                         <div className="bg-white rounded-lg p-3 space-y-2">
                           <div>
-                            <label className="block text-xs font-medium text-gray-500">Parent Name</label>
-                            <p className="text-sm text-gray-900 font-medium break-words">{parentInfo.name}</p>
+                            <label className="block text-xs font-medium text-gray-500">
+                              Parent Name
+                            </label>
+                            <p className="text-sm text-gray-900 font-medium break-words">
+                              {parentInfo.name}
+                            </p>
                           </div>
                           <div>
-                            <label className="block text-xs font-medium text-gray-500">Email</label>
+                            <label className="block text-xs font-medium text-gray-500">
+                              Email
+                            </label>
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                              <p className="text-sm text-gray-700 break-all">{parentInfo.email}</p>
+                              <p className="text-sm text-gray-700 break-all">
+                                {parentInfo.email}
+                              </p>
                               <button
                                 onClick={() => {
-                                  navigator.clipboard.writeText(parentInfo.email);
-                                  showToast('Parent email copied', 'success');
+                                  navigator.clipboard.writeText(
+                                    parentInfo.email,
+                                  );
+                                  showToast("Parent email copied", "success");
                                 }}
                                 className="text-xs text-green-600 hover:text-green-800 font-medium self-start sm:self-auto whitespace-nowrap"
                               >
@@ -775,8 +874,12 @@ export default function StudentsPage() {
                           </div>
                           {parentInfo.phoneNumber && (
                             <div>
-                              <label className="block text-xs font-medium text-gray-500">Phone</label>
-                              <p className="text-sm text-gray-700 break-words">{parentInfo.phoneNumber}</p>
+                              <label className="block text-xs font-medium text-gray-500">
+                                Phone
+                              </label>
+                              <p className="text-sm text-gray-700 break-words">
+                                {parentInfo.phoneNumber}
+                              </p>
                             </div>
                           )}
                         </div>
@@ -784,41 +887,65 @@ export default function StudentsPage() {
                     ) : (
                       <div className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-sm text-green-700">Parent linked (info unavailable)</span>
+                        <span className="text-sm text-green-700">
+                          Parent linked (info unavailable)
+                        </span>
                       </div>
                     )
                   ) : (
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                      <span className="text-sm text-gray-600">No parent account linked yet</span>
+                      <span className="text-sm text-gray-600">
+                        No parent account linked yet
+                      </span>
                     </div>
                   )}
                 </div>
 
                 {selectedStudent.phone && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Phone
+                    </label>
                     <p className="text-gray-900">{selectedStudent.phone}</p>
                   </div>
                 )}
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Age</label>
-                  <p className="text-gray-900">{selectedStudent.age} years old</p>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Age
+                  </label>
+                  <p className="text-gray-900">
+                    {selectedStudent.age} years old
+                  </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Belt Rank</label>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Belt Rank
+                  </label>
                   <p className="text-gray-900">{selectedStudent.beltLevel}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Join Date</label>
-                  <p className="text-gray-900">{new Date(selectedStudent.enrollmentDate).toLocaleDateString()}</p>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Join Date
+                  </label>
+                  <p className="text-gray-900">
+                    {new Date(
+                      selectedStudent.enrollmentDate,
+                    ).toLocaleDateString()}
+                  </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Status</label>
-                  <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                    selectedStudent.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {selectedStudent.isActive ? 'active' : 'inactive'}
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Status
+                  </label>
+                  <span
+                    className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                      selectedStudent.isActive
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {selectedStudent.isActive ? "active" : "inactive"}
                   </span>
                 </div>
               </div>
@@ -843,7 +970,9 @@ export default function StudentsPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Edit Student</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Edit Student
+                </h2>
                 <button
                   onClick={() => {
                     setShowEditModal(false);
@@ -852,8 +981,18 @@ export default function StudentsPage() {
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -865,7 +1004,9 @@ export default function StudentsPage() {
                   <input
                     type="text"
                     value={editStudent.name}
-                    onChange={(e) => setEditStudent({ ...editStudent, name: e.target.value })}
+                    onChange={(e) =>
+                      setEditStudent({ ...editStudent, name: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="Student name"
                   />
@@ -877,7 +1018,9 @@ export default function StudentsPage() {
                   <input
                     type="email"
                     value={editStudent.email}
-                    onChange={(e) => setEditStudent({ ...editStudent, email: e.target.value })}
+                    onChange={(e) =>
+                      setEditStudent({ ...editStudent, email: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="student@example.com"
                   />
@@ -888,8 +1031,10 @@ export default function StudentsPage() {
                   </label>
                   <input
                     type="tel"
-                    value={editStudent.phone || ''}
-                    onChange={(e) => setEditStudent({ ...editStudent, phone: e.target.value })}
+                    value={editStudent.phone || ""}
+                    onChange={(e) =>
+                      setEditStudent({ ...editStudent, phone: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="+1 (555) 000-0000"
                   />
@@ -901,7 +1046,12 @@ export default function StudentsPage() {
                   <input
                     type="number"
                     value={editStudent.age}
-                    onChange={(e) => setEditStudent({ ...editStudent, age: parseInt(e.target.value) })}
+                    onChange={(e) =>
+                      setEditStudent({
+                        ...editStudent,
+                        age: parseInt(e.target.value),
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     placeholder="Age"
                     min="1"
@@ -913,8 +1063,13 @@ export default function StudentsPage() {
                       Dojo Assignment
                     </label>
                     <select
-                      value={editStudent.dojoId || ''}
-                      onChange={(e) => setEditStudent({ ...editStudent, dojoId: e.target.value })}
+                      value={editStudent.dojoId || ""}
+                      onChange={(e) =>
+                        setEditStudent({
+                          ...editStudent,
+                          dojoId: e.target.value,
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     >
                       <option value="">Select dojo...</option>
@@ -935,7 +1090,12 @@ export default function StudentsPage() {
                   </label>
                   <select
                     value={editStudent.beltLevel}
-                    onChange={(e) => setEditStudent({ ...editStudent, beltLevel: e.target.value })}
+                    onChange={(e) =>
+                      setEditStudent({
+                        ...editStudent,
+                        beltLevel: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   >
                     <option value="White Belt">White Belt</option>
@@ -953,8 +1113,13 @@ export default function StudentsPage() {
                     Status *
                   </label>
                   <select
-                    value={editStudent.isActive ? 'active' : 'inactive'}
-                    onChange={(e) => setEditStudent({ ...editStudent, isActive: e.target.value === 'active' })}
+                    value={editStudent.isActive ? "active" : "inactive"}
+                    onChange={(e) =>
+                      setEditStudent({
+                        ...editStudent,
+                        isActive: e.target.value === "active",
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   >
                     <option value="active">Active</option>
@@ -996,21 +1161,43 @@ export default function StudentsPage() {
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
               <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
-                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg
+                  className="w-6 h-6 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
                 Delete Student
               </h3>
               <p className="text-gray-600 text-center mb-6">
-                Are you sure you want to delete <span className="font-semibold">{deletingStudent.name}</span>? This action cannot be undone.
+                Are you sure you want to delete{" "}
+                <span className="font-semibold">{deletingStudent.name}</span>?
+                This action cannot be undone.
               </p>
               <div className="flex space-x-3">
                 <button
@@ -1036,4 +1223,3 @@ export default function StudentsPage() {
     </div>
   );
 }
-

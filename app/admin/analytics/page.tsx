@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   TrendingUp,
@@ -10,8 +10,8 @@ import {
   Building,
   Trophy,
   ShoppingBag,
-  DollarSign
-} from 'lucide-react';
+  DollarSign,
+} from "lucide-react";
 
 export default function AdminAnalyticsPage() {
   const router = useRouter();
@@ -35,22 +35,22 @@ export default function AdminAnalyticsPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      
-      if (data.user.role !== 'admin') {
-        router.push('/dashboard');
+
+      if (data.user.role !== "admin") {
+        router.push("/dashboard");
         return;
       }
 
       setUser(data.user);
       await fetchAnalytics();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,7 @@ export default function AdminAnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const res = await fetch('/api/admin/stats');
+      const res = await fetch("/api/admin/stats");
       if (res.ok) {
         const data = await res.json();
         setStats({
@@ -74,13 +74,13 @@ export default function AdminAnalyticsPage() {
         });
       }
     } catch (error) {
-      console.error('Failed to fetch analytics:', error);
+      console.error("Failed to fetch analytics:", error);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -89,7 +89,7 @@ export default function AdminAnalyticsPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Link
@@ -152,7 +152,9 @@ export default function AdminAnalyticsPage() {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">User Growth</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              User Growth
+            </h2>
             <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
               <div className="text-center text-gray-500">
                 <TrendingUp className="w-12 h-12 mx-auto mb-2" />
@@ -162,7 +164,9 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Revenue Trends</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Revenue Trends
+            </h2>
             <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
               <div className="text-center text-gray-500">
                 <TrendingUp className="w-12 h-12 mx-auto mb-2" />
@@ -172,7 +176,9 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Tournament Participation</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Tournament Participation
+            </h2>
             <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
               <div className="text-center text-gray-500">
                 <Trophy className="w-12 h-12 mx-auto mb-2" />
@@ -182,7 +188,9 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Marketplace Activity</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              Marketplace Activity
+            </h2>
             <div className="h-64 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
               <div className="text-center text-gray-500">
                 <ShoppingBag className="w-12 h-12 mx-auto mb-2" />
@@ -212,7 +220,9 @@ function StatCard({
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 ${bgColor} rounded-lg flex items-center justify-center`}>
+        <div
+          className={`w-12 h-12 ${bgColor} rounded-lg flex items-center justify-center`}
+        >
           {icon}
         </div>
       </div>
@@ -222,4 +232,3 @@ function StatCard({
     </div>
   );
 }
-

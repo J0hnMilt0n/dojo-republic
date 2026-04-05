@@ -1,4 +1,4 @@
-import { Trophy, Users, Target, Heart } from 'lucide-react';
+import { Trophy, Users, Target, Heart } from "lucide-react";
 
 export default function AboutPage() {
   return (
@@ -10,7 +10,9 @@ export default function AboutPage() {
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">About Dojo Republic</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">
+            About Dojo Republic
+          </h1>
           <p className="text-base sm:text-lg text-gray-200 font-light">
             Uniting the martial arts community worldwide
           </p>
@@ -20,11 +22,14 @@ export default function AboutPage() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              Our Mission
+            </h2>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Dojo Republic is more than just a platform—it's a movement to unite martial artists, 
-              dojos, coaches, and enthusiasts worldwide. We're building the ultimate ecosystem for 
-              combat sports, starting with Karate and expanding to all martial arts disciplines.
+              Dojo Republic is more than just a platform—it's a movement to
+              unite martial artists, dojos, coaches, and enthusiasts worldwide.
+              We're building the ultimate ecosystem for combat sports, starting
+              with Karate and expanding to all martial arts disciplines.
             </p>
           </div>
 
@@ -53,9 +58,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-[#FEFEFE]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">What We Offer</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+            What We Offer
+          </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
               title="Dojo Directory"
@@ -87,10 +94,13 @@ export default function AboutPage() {
 
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-5 tracking-tight">Join the Revolution</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-5 tracking-tight">
+            Join the Revolution
+          </h2>
           <p className="text-base text-gray-600 mb-8 max-w-2xl mx-auto font-light leading-relaxed">
-            Whether you're a student, athlete, coach, or dojo owner, Dojo Republic has 
-            something for you. Join thousands of martial artists already part of our community.
+            Whether you're a student, athlete, coach, or dojo owner, Dojo
+            Republic has something for you. Join thousands of martial artists
+            already part of our community.
           </p>
           <a
             href="/auth/register"
@@ -104,17 +114,33 @@ export default function AboutPage() {
   );
 }
 
-function ValueCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+function ValueCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
   return (
     <div className="group text-center bg-linear-to-br from-white to-gray-50 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-      <div className="inline-flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">{icon}</div>
+      <div className="inline-flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
+        {icon}
+      </div>
       <h3 className="text-2xl font-bold text-gray-900 mb-4">{title}</h3>
       <p className="text-gray-600 leading-relaxed">{description}</p>
     </div>
   );
 }
 
-function FeatureCard({ title, description }: { title: string; description: string }) {
+function FeatureCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
   return (
     <div className="bg-linear-to-br from-white to-gray-50 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-gray-100 hover:border-red-200">
       <h3 className="text-2xl font-bold text-gray-900 mb-4">{title}</h3>
@@ -122,4 +148,3 @@ function FeatureCard({ title, description }: { title: string; description: strin
     </div>
   );
 }
-

@@ -1,12 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { 
-  Users, Trophy, Building, ShoppingBag, Calendar, 
-  Award, ClipboardList, BarChart, Settings, LogOut 
-} from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Users,
+  Trophy,
+  Building,
+  ShoppingBag,
+  Calendar,
+  Award,
+  ClipboardList,
+  BarChart,
+  Settings,
+  LogOut,
+} from "lucide-react";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -20,38 +28,40 @@ export default function DashboardPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
       setUser(data.user);
 
       // Check if player has a profile
-      if (data.user.role === 'player') {
-        const profileRes = await fetch('/api/players');
+      if (data.user.role === "player") {
+        const profileRes = await fetch("/api/players");
         if (profileRes.ok) {
           const profileData = await profileRes.json();
-          const hasProfile = profileData.players.some((p: any) => p.userId === data.user.id);
+          const hasProfile = profileData.players.some(
+            (p: any) => p.userId === data.user.id,
+          );
           setHasPlayerProfile(hasProfile);
         }
       }
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/');
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
       </div>
     );
@@ -60,7 +70,7 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -70,7 +80,7 @@ export default function DashboardPage() {
                 Welcome, {user.name}
               </h1>
               <p className="text-gray-600 mt-1 capitalize">
-                {user.role.replace('_', ' ')} Dashboard
+                {user.role.replace("_", " ")} Dashboard
               </p>
             </div>
             <button
@@ -84,15 +94,18 @@ export default function DashboardPage() {
         </div>
 
         {/* Player Profile Banner */}
-        {user.role === 'player' && !hasPlayerProfile && (
+        {user.role === "player" && !hasPlayerProfile && (
           <div className="bg-linear-to-r from-red-500 to-red-600 text-white rounded-lg shadow-md p-6 mb-8">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center space-x-4">
                 <Trophy className="w-12 h-12" />
                 <div>
-                  <h2 className="text-xl font-bold">Complete Your Player Profile</h2>
+                  <h2 className="text-xl font-bold">
+                    Complete Your Player Profile
+                  </h2>
                   <p className="mt-1 text-red-100">
-                    Create your athlete profile to appear on the players page and start showcasing your achievements!
+                    Create your athlete profile to appear on the players page
+                    and start showcasing your achievements!
                   </p>
                 </div>
               </div>
@@ -107,13 +120,15 @@ export default function DashboardPage() {
         )}
 
         {/* Role-specific Dashboard */}
-        {user.role === 'admin' && <AdminDashboard />}
-        {user.role === 'dojo_owner' && <DojoOwnerDashboard />}
-        {user.role === 'player' && <PlayerDashboard />}
-        {user.role === 'parent' && <ParentDashboard />}
-        {user.role === 'coach' && <CoachDashboard />}
-        {user.role === 'seller' && <SellerDashboard />}
-        {(user.role === 'student' || user.role === 'referee' || user.role === 'judge') && <GeneralDashboard />}
+        {user.role === "admin" && <AdminDashboard />}
+        {user.role === "dojo_owner" && <DojoOwnerDashboard />}
+        {user.role === "player" && <PlayerDashboard />}
+        {user.role === "parent" && <ParentDashboard />}
+        {user.role === "coach" && <CoachDashboard />}
+        {user.role === "seller" && <SellerDashboard />}
+        {(user.role === "student" ||
+          user.role === "referee" ||
+          user.role === "judge") && <GeneralDashboard />}
       </div>
     </div>
   );
@@ -176,7 +191,7 @@ function DojoOwnerDashboard() {
         title="My Dojo"
         description="Manage your dojo information"
         link="/dashboard/my-dojo"
-        bgColor="bg-gray-50"
+        bgColor="bg-[#FEFEFE]"
       />
       <DashboardCard
         icon={<Users className="w-8 h-8 text-blue-600" />}
@@ -344,7 +359,7 @@ function SellerDashboard() {
         title="Store Settings"
         description="Manage your store"
         link="/dashboard/settings"
-        bgColor="bg-gray-50"
+        bgColor="bg-[#FEFEFE]"
       />
     </div>
   );
@@ -378,23 +393,25 @@ function GeneralDashboard() {
   );
 }
 
-function DashboardCard({ 
-  icon, 
-  title, 
-  description, 
-  link, 
-  bgColor 
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
-  link: string; 
+function DashboardCard({
+  icon,
+  title,
+  description,
+  link,
+  bgColor,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  link: string;
   bgColor: string;
 }) {
   return (
     <Link href={link}>
       <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition p-6 cursor-pointer">
-        <div className={`w-16 h-16 ${bgColor} rounded-lg flex items-center justify-center mb-4`}>
+        <div
+          className={`w-16 h-16 ${bgColor} rounded-lg flex items-center justify-center mb-4`}
+        >
           {icon}
         </div>
         <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
@@ -403,4 +420,3 @@ function DashboardCard({
     </Link>
   );
 }
-

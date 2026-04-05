@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Users, Search, Award, Calendar, UserPlus } from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Users, Search, Award, Calendar, UserPlus } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function ChildrenPage() {
   const router = useRouter();
@@ -12,11 +12,11 @@ export default function ChildrenPage() {
   const [children, setChildren] = useState<any[]>([]);
   const [filteredChildren, setFilteredChildren] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [showLinkModal, setShowLinkModal] = useState(false);
-  const [linkStudentId, setLinkStudentId] = useState('');
-  const [linkStudentEmail, setLinkStudentEmail] = useState('');
-  const [linkMethod, setLinkMethod] = useState<'id' | 'email'>('email');
+  const [linkStudentId, setLinkStudentId] = useState("");
+  const [linkStudentEmail, setLinkStudentEmail] = useState("");
+  const [linkMethod, setLinkMethod] = useState<"id" | "email">("email");
   const [linking, setLinking] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedChild, setSelectedChild] = useState<any>(null);
@@ -27,9 +27,10 @@ export default function ChildrenPage() {
 
   useEffect(() => {
     if (searchTerm) {
-      const filtered = children.filter(child =>
-        child.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        child.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = children.filter(
+        (child) =>
+          child.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          child.email?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       setFilteredChildren(filtered);
     } else {
@@ -39,20 +40,20 @@ export default function ChildrenPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      if (data.user.role !== 'parent') {
-        router.push('/dashboard');
+      if (data.user.role !== "parent") {
+        router.push("/dashboard");
         return;
       }
       setUser(data.user);
       await fetchChildren();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -60,7 +61,7 @@ export default function ChildrenPage() {
 
   const fetchChildren = async () => {
     try {
-      const res = await fetch('/api/students?linkedToMe=true');
+      const res = await fetch("/api/students?linkedToMe=true");
       if (res.ok) {
         const data = await res.json();
         setChildren(data.students || []);
@@ -70,7 +71,7 @@ export default function ChildrenPage() {
         setFilteredChildren([]);
       }
     } catch (error) {
-      console.error('Error fetching children:', error);
+      console.error("Error fetching children:", error);
       setChildren([]);
       setFilteredChildren([]);
     }
@@ -80,13 +81,13 @@ export default function ChildrenPage() {
     const emailValue = linkStudentEmail.trim();
     const idValue = linkStudentId.trim();
 
-    if (linkMethod === 'email' && !emailValue) {
-      showToast('Please enter a student email address', 'warning');
+    if (linkMethod === "email" && !emailValue) {
+      showToast("Please enter a student email address", "warning");
       return;
     }
 
-    if (linkMethod === 'id' && !idValue) {
-      showToast('Please enter a student ID', 'warning');
+    if (linkMethod === "id" && !idValue) {
+      showToast("Please enter a student ID", "warning");
       return;
     }
 
@@ -94,32 +95,32 @@ export default function ChildrenPage() {
 
     try {
       const payload: any = {};
-      if (linkMethod === 'email') {
+      if (linkMethod === "email") {
         payload.email = emailValue;
       } else {
         payload.studentId = idValue;
       }
 
-      const res = await fetch('/api/students/link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/students/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        showToast('Student linked successfully', 'success');
+        showToast("Student linked successfully", "success");
         setShowLinkModal(false);
-        setLinkStudentId('');
-        setLinkStudentEmail('');
+        setLinkStudentId("");
+        setLinkStudentEmail("");
         await fetchChildren();
       } else {
-        showToast(data.error || 'Failed to link student', 'error');
+        showToast(data.error || "Failed to link student", "error");
       }
     } catch (error) {
-      console.error('Error linking student:', error);
-      showToast('Error linking student', 'error');
+      console.error("Error linking student:", error);
+      showToast("Error linking student", "error");
     } finally {
       setLinking(false);
     }
@@ -127,14 +128,14 @@ export default function ChildrenPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -144,13 +145,15 @@ export default function ChildrenPage() {
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Children</h1>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  My Children
+                </h1>
                 <p className="text-gray-600 mt-1">
                   Track your children's martial arts journey
                 </p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setShowLinkModal(true)}
               className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition"
             >
@@ -178,18 +181,23 @@ export default function ChildrenPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Total Children</div>
-            <div className="text-3xl font-bold text-gray-900">{children.length}</div>
+            <div className="text-3xl font-bold text-gray-900">
+              {children.length}
+            </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Active Students</div>
             <div className="text-3xl font-bold text-green-600">
-              {children.filter(c => c.isActive).length}
+              {children.filter((c) => c.isActive).length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Total Achievements</div>
             <div className="text-3xl font-bold text-yellow-600">
-              {children.reduce((sum, c) => sum + (c.achievements?.length || 0), 0)}
+              {children.reduce(
+                (sum, c) => sum + (c.achievements?.length || 0),
+                0,
+              )}
             </div>
           </div>
         </div>
@@ -202,7 +210,7 @@ export default function ChildrenPage() {
             <p className="text-gray-400 text-sm mb-4">
               Link your children's student accounts to track their progress
             </p>
-            <button 
+            <button
               onClick={() => setShowLinkModal(true)}
               className="text-gray-900 hover:text-black font-medium"
             >
@@ -212,7 +220,10 @@ export default function ChildrenPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredChildren.map((child, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+              >
                 <div className="bg-gradient-to-br from-blue-500 to-purple-600 h-32 flex items-center justify-center">
                   <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
                     <span className="text-3xl font-bold text-gray-900">
@@ -221,11 +232,13 @@ export default function ChildrenPage() {
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{child.name}</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    {child.name}
+                  </h3>
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm text-gray-600">
                       <Award className="w-4 h-4 mr-2 text-yellow-600" />
-                      <span>{child.beltLevel || 'White Belt'}</span>
+                      <span>{child.beltLevel || "White Belt"}</span>
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
                       <Calendar className="w-4 h-4 mr-2 text-blue-600" />
@@ -233,16 +246,20 @@ export default function ChildrenPage() {
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
                       <Users className="w-4 h-4 mr-2 text-gray-600" />
-                      <span>{child.dojoName || 'No dojo assigned'}</span>
+                      <span>{child.dojoName || "No dojo assigned"}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      child.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {child.isActive ? 'Active' : 'Inactive'}
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        child.isActive
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {child.isActive ? "Active" : "Inactive"}
                     </span>
-                    <button 
+                    <button
                       onClick={() => {
                         setSelectedChild(child);
                         setShowViewModal(true);
@@ -263,50 +280,62 @@ export default function ChildrenPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Link Student Account</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Link Student Account
+                </h2>
                 <button
                   onClick={() => {
                     setShowLinkModal(false);
-                    setLinkStudentId('');
-                    setLinkStudentEmail('');
+                    setLinkStudentId("");
+                    setLinkStudentEmail("");
                   }}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
               <p className="text-gray-600 mb-4">
                 Link your child's student account to track their progress.
               </p>
-              
+
               {/* Toggle between Email and ID */}
               <div className="flex space-x-2 mb-4">
                 <button
-                  onClick={() => setLinkMethod('email')}
+                  onClick={() => setLinkMethod("email")}
                   className={`flex-1 px-4 py-2 rounded-lg transition ${
-                    linkMethod === 'email'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    linkMethod === "email"
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
                   By Email
                 </button>
                 <button
-                  onClick={() => setLinkMethod('id')}
+                  onClick={() => setLinkMethod("id")}
                   className={`flex-1 px-4 py-2 rounded-lg transition ${
-                    linkMethod === 'id'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    linkMethod === "id"
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
                   By Student ID
                 </button>
               </div>
 
-              {linkMethod === 'email' ? (
+              {linkMethod === "email" ? (
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Student Email Address *
@@ -320,7 +349,8 @@ export default function ChildrenPage() {
                     disabled={linking}
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Enter the email address used when your child was registered at the dojo
+                    Enter the email address used when your child was registered
+                    at the dojo
                   </p>
                 </div>
               ) : (
@@ -346,8 +376,8 @@ export default function ChildrenPage() {
                 <button
                   onClick={() => {
                     setShowLinkModal(false);
-                    setLinkStudentId('');
-                    setLinkStudentEmail('');
+                    setLinkStudentId("");
+                    setLinkStudentEmail("");
                   }}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
                   disabled={linking}
@@ -378,7 +408,9 @@ export default function ChildrenPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-4 sm:p-6 my-8 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Student Details</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  Student Details
+                </h2>
                 <button
                   onClick={() => {
                     setShowViewModal(false);
@@ -387,12 +419,22 @@ export default function ChildrenPage() {
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 {/* Avatar */}
                 <div className="flex items-center justify-center mb-4">
@@ -406,60 +448,96 @@ export default function ChildrenPage() {
                 {/* Student Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Name</label>
-                    <p className="text-gray-900 font-medium">{selectedChild.name}</p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Name
+                    </label>
+                    <p className="text-gray-900 font-medium">
+                      {selectedChild.name}
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Age</label>
-                    <p className="text-gray-900">{selectedChild.age} years old</p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Age
+                    </label>
+                    <p className="text-gray-900">
+                      {selectedChild.age} years old
+                    </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Email</label>
-                    <p className="text-gray-900 break-all">{selectedChild.email}</p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Email
+                    </label>
+                    <p className="text-gray-900 break-all">
+                      {selectedChild.email}
+                    </p>
                   </div>
                   {selectedChild.phone && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        Phone
+                      </label>
                       <p className="text-gray-900">{selectedChild.phone}</p>
                     </div>
                   )}
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Belt Rank</label>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Belt Rank
+                    </label>
                     <div className="flex items-center space-x-2">
                       <Award className="w-5 h-5 text-yellow-600" />
-                      <span className="text-gray-900 font-medium">{selectedChild.beltLevel || 'White Belt'}</span>
+                      <span className="text-gray-900 font-medium">
+                        {selectedChild.beltLevel || "White Belt"}
+                      </span>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Status</label>
-                    <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                      selectedChild.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {selectedChild.isActive ? 'Active' : 'Inactive'}
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Status
+                    </label>
+                    <span
+                      className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                        selectedChild.isActive
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {selectedChild.isActive ? "Active" : "Inactive"}
                     </span>
                   </div>
                 </div>
 
                 {/* Dojo Info */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <label className="block text-sm font-medium text-blue-900 mb-2">Dojo Information</label>
+                  <label className="block text-sm font-medium text-blue-900 mb-2">
+                    Dojo Information
+                  </label>
                   <div className="flex items-center space-x-2">
                     <Users className="w-5 h-5 text-blue-600" />
-                    <span className="text-gray-900">{selectedChild.dojoName || 'No dojo assigned'}</span>
+                    <span className="text-gray-900">
+                      {selectedChild.dojoName || "No dojo assigned"}
+                    </span>
                   </div>
                 </div>
 
                 {/* Enrollment Info */}
                 {selectedChild.enrollmentDate && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">Enrollment Date</label>
-                    <p className="text-gray-900">{new Date(selectedChild.enrollmentDate).toLocaleDateString()}</p>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      Enrollment Date
+                    </label>
+                    <p className="text-gray-900">
+                      {new Date(
+                        selectedChild.enrollmentDate,
+                      ).toLocaleDateString()}
+                    </p>
                   </div>
                 )}
 
                 {/* Student ID */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
+                <div className="bg-[#FEFEFE] border border-gray-200 rounded-lg p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Student ID
+                  </label>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <code className="text-gray-900 font-mono text-xs sm:text-sm bg-white px-3 py-2 rounded border border-gray-200 break-all">
                       {selectedChild.id}
@@ -467,7 +545,7 @@ export default function ChildrenPage() {
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(selectedChild.id);
-                        showToast('Student ID copied', 'success');
+                        showToast("Student ID copied", "success");
                       }}
                       className="text-sm text-blue-600 hover:text-blue-800 font-medium self-start sm:self-auto whitespace-nowrap"
                     >

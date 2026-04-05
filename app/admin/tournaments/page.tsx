@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   CheckCircle,
@@ -11,20 +11,24 @@ import {
   MapPin,
   Calendar,
   Search,
-  Filter
-} from 'lucide-react';
-import { Tournament } from '@/lib/types';
-import { useToast } from '@/components/ToastProvider';
+  Filter,
+} from "lucide-react";
+import { Tournament } from "@/lib/types";
+import { useToast } from "@/components/ToastProvider";
 
 export default function AdminTournamentsPage() {
   const router = useRouter();
   const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [filteredTournaments, setFilteredTournaments] = useState<Tournament[]>([]);
+  const [filteredTournaments, setFilteredTournaments] = useState<Tournament[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved'>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "pending" | "approved"
+  >("all");
 
   useEffect(() => {
     checkAuth();
@@ -32,22 +36,22 @@ export default function AdminTournamentsPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      
-      if (data.user.role !== 'admin') {
-        router.push('/dashboard');
+
+      if (data.user.role !== "admin") {
+        router.push("/dashboard");
         return;
       }
 
       setUser(data.user);
       await fetchTournaments();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -55,24 +59,24 @@ export default function AdminTournamentsPage() {
 
   const fetchTournaments = async () => {
     try {
-      const res = await fetch('/api/tournaments');
+      const res = await fetch("/api/tournaments");
       if (res.ok) {
         const data = await res.json();
         setTournaments(data.tournaments);
         setFilteredTournaments(data.tournaments);
       }
     } catch (error) {
-      console.error('Failed to fetch tournaments:', error);
+      console.error("Failed to fetch tournaments:", error);
     }
   };
 
   useEffect(() => {
     let filtered = tournaments;
 
-    if (statusFilter === 'pending') {
-      filtered = filtered.filter(t => !t.isApproved);
-    } else if (statusFilter === 'approved') {
-      filtered = filtered.filter(t => t.isApproved);
+    if (statusFilter === "pending") {
+      filtered = filtered.filter((t) => !t.isApproved);
+    } else if (statusFilter === "approved") {
+      filtered = filtered.filter((t) => t.isApproved);
     }
 
     if (searchTerm) {
@@ -80,7 +84,9 @@ export default function AdminTournamentsPage() {
         (tournament) =>
           tournament.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           tournament.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          tournament.martialArt.toLowerCase().includes(searchTerm.toLowerCase())
+          tournament.martialArt
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -88,58 +94,58 @@ export default function AdminTournamentsPage() {
   }, [searchTerm, statusFilter, tournaments]);
 
   const handleApprove = async (tournamentId: string) => {
-    if (!confirm('Are you sure you want to approve this tournament?')) return;
+    if (!confirm("Are you sure you want to approve this tournament?")) return;
 
     try {
       const res = await fetch(`/api/tournaments`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id: tournamentId, 
-          isApproved: true 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: tournamentId,
+          isApproved: true,
         }),
       });
 
       if (res.ok) {
-        showToast('Tournament approved successfully', 'success');
+        showToast("Tournament approved successfully", "success");
         await fetchTournaments();
       } else {
-        showToast('Failed to approve tournament', 'error');
+        showToast("Failed to approve tournament", "error");
       }
     } catch (error) {
-      console.error('Error approving tournament:', error);
-      showToast('Failed to approve tournament', 'error');
+      console.error("Error approving tournament:", error);
+      showToast("Failed to approve tournament", "error");
     }
   };
 
   const handleReject = async (tournamentId: string) => {
-    if (!confirm('Are you sure you want to reject this tournament?')) return;
+    if (!confirm("Are you sure you want to reject this tournament?")) return;
 
     try {
       const res = await fetch(`/api/tournaments`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id: tournamentId, 
-          isApproved: false 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: tournamentId,
+          isApproved: false,
         }),
       });
 
       if (res.ok) {
-        showToast('Tournament rejected', 'info');
+        showToast("Tournament rejected", "info");
         await fetchTournaments();
       } else {
-        showToast('Failed to reject tournament', 'error');
+        showToast("Failed to reject tournament", "error");
       }
     } catch (error) {
-      console.error('Error rejecting tournament:', error);
-      showToast('Failed to reject tournament', 'error');
+      console.error("Error rejecting tournament:", error);
+      showToast("Failed to reject tournament", "error");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -147,11 +153,11 @@ export default function AdminTournamentsPage() {
 
   if (!user) return null;
 
-  const pendingTournaments = tournaments.filter(t => !t.isApproved);
-  const approvedTournaments = tournaments.filter(t => t.isApproved);
+  const pendingTournaments = tournaments.filter((t) => !t.isApproved);
+  const approvedTournaments = tournaments.filter((t) => t.isApproved);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Link
@@ -161,22 +167,32 @@ export default function AdminTournamentsPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Admin Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Tournaments</h1>
-          <p className="text-gray-600 mt-1">Review and approve tournament listings</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Manage Tournaments
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Review and approve tournament listings
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Total Tournaments</p>
-            <p className="text-3xl font-bold text-gray-900">{tournaments.length}</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {tournaments.length}
+            </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Pending Approval</p>
-            <p className="text-3xl font-bold text-orange-600">{pendingTournaments.length}</p>
+            <p className="text-3xl font-bold text-orange-600">
+              {pendingTournaments.length}
+            </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Approved</p>
-            <p className="text-3xl font-bold text-green-600">{approvedTournaments.length}</p>
+            <p className="text-3xl font-bold text-green-600">
+              {approvedTournaments.length}
+            </p>
           </div>
         </div>
 
@@ -217,7 +233,7 @@ export default function AdminTournamentsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#FEFEFE]">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Tournament
@@ -238,11 +254,15 @@ export default function AdminTournamentsPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredTournaments.map((tournament) => (
-                    <tr key={tournament.id} className="hover:bg-gray-50">
+                    <tr key={tournament.id} className="hover:bg-[#FEFEFE]">
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-medium text-gray-900">{tournament.name}</p>
-                          <p className="text-sm text-gray-500">{tournament.martialArt}</p>
+                          <p className="font-medium text-gray-900">
+                            {tournament.name}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {tournament.martialArt}
+                          </p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -250,14 +270,20 @@ export default function AdminTournamentsPage() {
                           <MapPin className="w-4 h-4 mr-1 mt-0.5 shrink-0" />
                           <div>
                             <p>{tournament.city}</p>
-                            <p className="text-gray-500">{tournament.country}</p>
+                            <p className="text-gray-500">
+                              {tournament.country}
+                            </p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center text-sm text-gray-600">
                           <Calendar className="w-4 h-4 mr-1" />
-                          <span>{new Date(tournament.startDate).toLocaleDateString()}</span>
+                          <span>
+                            {new Date(
+                              tournament.startDate,
+                            ).toLocaleDateString()}
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -282,7 +308,7 @@ export default function AdminTournamentsPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
-                          
+
                           {!tournament.isApproved ? (
                             <button
                               onClick={() => handleApprove(tournament.id)}
@@ -313,4 +339,3 @@ export default function AdminTournamentsPage() {
     </div>
   );
 }
-

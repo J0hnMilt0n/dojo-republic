@@ -1,4 +1,5 @@
 # 🥋 Dojo Republic - UI Redesign Plan
+
 ## Inspired by: Smoothcomp + LinkedIn + Airbnb
 
 ---
@@ -6,6 +7,7 @@
 ## Executive Summary
 
 Transform Dojo Republic into a world-class global martial arts platform by combining the best UX patterns from:
+
 - **Smoothcomp** → Tournament & sports management logic
 - **LinkedIn** → Professional profiles & community engagement
 - **Airbnb** → Discovery & search experience
@@ -15,6 +17,7 @@ Transform Dojo Republic into a world-class global martial arts platform by combi
 ## 🏠 1. HOMEPAGE REDESIGN (Airbnb-style)
 
 ### Hero Section
+
 ```
 ┌─────────────────────────────────────────────────────┐
 │                                                     │
@@ -30,18 +33,21 @@ Transform Dojo Republic into a world-class global martial arts platform by combi
 ```
 
 **Key Features:**
+
 - Large, clean hero section with centered search bar
 - Clear call-to-action buttons
 - Minimal distractions
 - Strong headline that communicates value
 
 ### Quick Explore Section (Card Grid)
+
 - **Find Dojos** - Browse martial arts schools worldwide
 - **Upcoming Tournaments** - Register for competitions
 - **Top Fighters** - Explore athlete profiles
 - **Marketplace** - Shop for equipment
 
 ### Featured Tournaments (Smoothcomp Style)
+
 ```
 Tournament Cards:
 ├── Poster Image (16:9 ratio)
@@ -52,6 +58,7 @@ Tournament Cards:
 ```
 
 ### Popular Dojos Section
+
 ```
 Dojo Cards:
 ├── Logo/Photo
@@ -63,6 +70,7 @@ Dojo Cards:
 ```
 
 ### Founder Vision Section (LinkedIn Feel)
+
 - Your photo
 - Your mission statement
 - "Building the world's martial arts community"
@@ -73,12 +81,14 @@ Dojo Cards:
 ## 🔍 2. GLOBAL SEARCH BAR (Critical Feature)
 
 ### Search Types
+
 1. **Dojos** - Find schools by location, style
 2. **Fighters** - Discover athletes by name, rank
 3. **Tournaments** - Browse competitions by date, location
 4. **Coaches** - Find instructors
 
 ### Filters
+
 - **Location:** Country → City → Radius
 - **Martial Art Style:** Karate, BJJ, Judo, MMA, etc.
 - **Belt Level:** White → Black, All levels
@@ -87,6 +97,7 @@ Dojo Cards:
 - **Price Range:** For marketplace
 
 ### Implementation
+
 ```typescript
 // Example search component structure
 <SearchBar>
@@ -106,6 +117,7 @@ Dojo Cards:
 ## 👤 3. FIGHTER PROFILE PAGE (LinkedIn Style)
 
 ### Profile Structure
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  📷 Profile Photo        [⭐ Follow] [📤 Share]│
@@ -136,6 +148,7 @@ Dojo Cards:
 ```
 
 ### Key Sections
+
 1. **Header** - Photo, name, rank, location, dojo
 2. **About** - Biography and training philosophy
 3. **Achievements** - Medal collection with certificates
@@ -149,6 +162,7 @@ Dojo Cards:
 ## 🥋 4. DOJO PROFILE PAGE (Google Business + LinkedIn)
 
 ### Dojo Profile Structure
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  🏢 Tokyo Fight Club          [⭐ 4.8] (156)  │
@@ -195,6 +209,7 @@ Dojo Cards:
 ## 🏆 5. TOURNAMENT PAGE (Smoothcomp Inspired)
 
 ### Tournament Detail Structure
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  [Tournament Banner Image]                      │
@@ -238,6 +253,7 @@ Dojo Cards:
 ```
 
 ### Future Feature: Live Results
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  🔴 LIVE - Semi-Finals                         │
@@ -255,6 +271,7 @@ Dojo Cards:
 ## 🧭 6. TOP NAVBAR (Clean + Modern)
 
 ### Desktop Navbar
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  🥋 DOJO REPUBLIC                              │
@@ -266,6 +283,7 @@ Dojo Cards:
 ```
 
 ### Mobile Navbar
+
 ```
 ┌─────────────────────────────────┐
 │  ☰  DOJO REPUBLIC         [🔍] │
@@ -277,6 +295,7 @@ Dojo Cards:
 ## 📱 7. DASHBOARD (Role-Specific)
 
 ### Athlete Dashboard
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  Welcome back, John! 👋                        │
@@ -303,6 +322,7 @@ Dojo Cards:
 ```
 
 ### Dojo Owner Dashboard
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  Tokyo Fight Club Dashboard                     │
@@ -332,12 +352,13 @@ Dojo Cards:
 ## 🎨 DESIGN SYSTEM
 
 ### Color Palette
+
 ```css
 Primary: #DC2626 (Red)
 Secondary: #1F2937 (Dark Gray/Black)
 Accent: #F59E0B (Gold/Yellow)
 Background: #FFFFFF (White)
-Surface: #F9FAFB (Light Gray)
+Surface: #FEFEFE (Light Gray)
 Text Primary: #111827
 Text Secondary: #6B7280
 Success: #10B981
@@ -346,6 +367,7 @@ Error: #EF4444
 ```
 
 ### Typography
+
 ```css
 Font Family: Inter, -apple-system, system-ui
 Headings: Bold, Large spacing
@@ -354,6 +376,7 @@ Small Text: 14px for captions
 ```
 
 ### Spacing
+
 ```
 Base unit: 8px
 Small: 8px
@@ -364,6 +387,7 @@ XL: 32px
 ```
 
 ### Components
+
 - **Cards:** White background, subtle shadow, rounded corners
 - **Buttons:** Solid fills, high contrast, clear hover states
 - **Form Inputs:** Clean borders, focused states, helpful errors
@@ -374,6 +398,7 @@ XL: 32px
 ## 📊 PRIORITY MATRIX
 
 ### Phase 1: Foundation (Month 1-2)
+
 1. ✅ Homepage redesign with hero section
 2. ✅ Global search bar implementation
 3. ✅ Fighter profile pages (LinkedIn style)
@@ -381,12 +406,14 @@ XL: 32px
 5. ✅ Navigation improvement
 
 ### Phase 2: Core Features (Month 3-4)
+
 1. ✅ Tournament detail pages (Smoothcomp style)
 2. ✅ Dashboard improvements (role-specific)
 3. ✅ Marketplace redesign
 4. ✅ Mobile responsive optimization
 
 ### Phase 3: Advanced (Month 5-6)
+
 1. ⏳ Live tournament results
 2. ⏳ Video integration
 3. ⏳ Social features (follow, share, comment)
@@ -400,24 +427,28 @@ XL: 32px
 As requested, select which feature should be the **MAIN FOCUS** first:
 
 ### Option 1: **Tournaments System** ⭐ RECOMMENDED
+
 - **Why?** Creates immediate value for organizers
 - **Impact:** Attracts both fighters and dojos
 - **Revenue:** Registration fees, premium features
 - **Network Effect:** More tournaments → More users → More dojos
 
 ### Option 2: Fighter Profiles
+
 - **Why?** Builds community and engagement
 - **Impact:** Creates personal investment in platform
 - **Revenue:** Premium profiles, verified badges
 - **Network Effect:** Medium - needs tournaments to showcase data
 
 ### Option 3: Dojo Listings
+
 - **Why?** Foundation for student acquisition
 - **Impact:** Helps dojos grow membership
 - **Revenue:** Subscription tiers, featured listings
 - **Network Effect:** Lower initially, grows over time
 
 ### Option 4: Marketplace
+
 - **Why?** Immediate monetization
 - **Impact:** Convenient for existing users
 - **Revenue:** Commission on sales
@@ -430,6 +461,7 @@ As requested, select which feature should be the **MAIN FOCUS** first:
 **Focus on TOURNAMENTS FIRST (Option 1)**
 
 **Reasoning:**
+
 1. **Dual-sided attraction:** Brings both fighters AND dojos
 2. **Viral potential:** Fighters share tournament registrations
 3. **Clear value:** Solves real pain point (registration is messy)
@@ -438,6 +470,7 @@ As requested, select which feature should be the **MAIN FOCUS** first:
 6. **Marketing hook:** "Register for tournaments globally in one click"
 
 Once tournaments are strong, other features naturally benefit:
+
 - Fighter profiles have achievements to display
 - Dojos gain credibility from hosting tournaments
 - Marketplace sells to active community
@@ -468,12 +501,15 @@ Once tournaments are strong, other features naturally benefit:
 ## 📞 STAKEHOLDER COMMUNICATION
 
 ### For Investors:
+
 "Dojo Republic combines the tournament management of Smoothcomp, the professional networking of LinkedIn, and the discovery experience of Airbnb to create the world's first global martial arts platform."
 
 ### For Users:
+
 "One platform. Every fighter. Find dojos, register for tournaments, and showcase your achievements - all in one place."
 
 ### For Dojos:
+
 "Grow your membership, host tournaments, and connect with the global martial arts community."
 
 ---
@@ -492,11 +528,13 @@ Once tournaments are strong, other features naturally benefit:
 ## 🎯 CONCLUSION
 
 The vision is clear: Create a **global martial arts platform** that feels like:
+
 - **Smoothcomp** for tournament management
 - **LinkedIn** for professional profiles
 - **Airbnb** for discovery and search
 
 This combination positions Dojo Republic as:
+
 - ✅ A tech startup (not just a website)
 - ✅ A global platform (thinking internationally)
 - ✅ Investor-ready (clear value proposition)
@@ -506,4 +544,4 @@ This combination positions Dojo Republic as:
 
 ---
 
-*Questions or need clarification on any section? Let's discuss your priority focus!*
+_Questions or need clarification on any section? Let's discuss your priority focus!_

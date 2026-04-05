@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { Search, MapPin, Filter } from 'lucide-react';
-import { Dojo } from '@/lib/types';
-import { martialArts } from '@/lib/constants';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Search, MapPin, Filter } from "lucide-react";
+import { Dojo } from "@/lib/types";
+import { martialArts } from "@/lib/constants";
 
 export default function DojosPage() {
   const [dojos, setDojos] = useState<Dojo[]>([]);
   const [filteredDojos, setFilteredDojos] = useState<Dojo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [selectedMartialArt, setSelectedMartialArt] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedMartialArt, setSelectedMartialArt] = useState("");
 
   useEffect(() => {
     fetchDojos();
@@ -20,12 +20,12 @@ export default function DojosPage() {
 
   const fetchDojos = async () => {
     try {
-      const res = await fetch('/api/dojos?approved=true');
+      const res = await fetch("/api/dojos?approved=true");
       const data = await res.json();
       setDojos(data.dojos);
       setFilteredDojos(data.dojos);
     } catch (error) {
-      console.error('Failed to fetch dojos:', error);
+      console.error("Failed to fetch dojos:", error);
     } finally {
       setLoading(false);
     }
@@ -38,19 +38,19 @@ export default function DojosPage() {
       filtered = filtered.filter(
         (dojo) =>
           dojo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          dojo.description.toLowerCase().includes(searchTerm.toLowerCase())
+          dojo.description.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     if (selectedCity) {
       filtered = filtered.filter((dojo) =>
-        dojo.city.toLowerCase().includes(selectedCity.toLowerCase())
+        dojo.city.toLowerCase().includes(selectedCity.toLowerCase()),
       );
     }
 
     if (selectedMartialArt) {
       filtered = filtered.filter((dojo) =>
-        dojo.martialArts.includes(selectedMartialArt)
+        dojo.martialArts.includes(selectedMartialArt),
       );
     }
 
@@ -60,7 +60,7 @@ export default function DojosPage() {
   const cities = Array.from(new Set(dojos.map((d) => d.city)));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-20 overflow-hidden">
         {/* Decorative background elements */}
@@ -69,7 +69,9 @@ export default function DojosPage() {
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">Find Your Perfect Dojo</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight">
+            Find Your Perfect Dojo
+          </h1>
           <p className="text-base sm:text-lg text-gray-200 font-light">
             Discover martial arts schools in your area and start your journey
           </p>
@@ -143,8 +145,10 @@ export default function DojosPage() {
             <>
               <div className="mb-6">
                 <p className="text-gray-600">
-                  Found <span className="font-semibold">{filteredDojos.length}</span> dojo
-                  {filteredDojos.length !== 1 ? 's' : ''}
+                  Found{" "}
+                  <span className="font-semibold">{filteredDojos.length}</span>{" "}
+                  dojo
+                  {filteredDojos.length !== 1 ? "s" : ""}
                 </p>
               </div>
 
@@ -167,7 +171,7 @@ function DojoCard({ dojo }: { dojo: Dojo }) {
       <div className="group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden cursor-pointer hover:scale-105 border border-gray-100 hover:border-red-200">
         {/* Gradient accent on hover */}
         <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-red-600/0 group-hover:from-red-500/5 group-hover:to-red-600/5 rounded-2xl transition-all duration-300 pointer-events-none"></div>
-        
+
         <div className="h-48 bg-gradient-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] flex items-center justify-center relative">
           <span className="text-white text-4xl font-bold">
             {dojo.name.charAt(0)}
@@ -179,7 +183,9 @@ function DojoCard({ dojo }: { dojo: Dojo }) {
 
           <div className="flex items-center text-gray-600 mb-3">
             <MapPin className="w-4 h-4 mr-1" />
-            <span className="text-sm">{dojo.city}, {dojo.country}</span>
+            <span className="text-sm">
+              {dojo.city}, {dojo.country}
+            </span>
           </div>
 
           <p className="text-gray-600 text-sm mb-4 line-clamp-2">
@@ -206,4 +212,3 @@ function DojoCard({ dojo }: { dojo: Dojo }) {
     </Link>
   );
 }
-

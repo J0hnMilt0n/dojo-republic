@@ -1,9 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Building, MapPin, Phone, Mail, Globe, Edit2, Save, X, Plus } from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Building,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Edit2,
+  Save,
+  X,
+  Plus,
+} from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function MyDojoPage() {
   const router = useRouter();
@@ -22,20 +32,20 @@ export default function MyDojoPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      if (data.user.role !== 'dojo_owner') {
-        router.push('/dashboard');
+      if (data.user.role !== "dojo_owner") {
+        router.push("/dashboard");
         return;
       }
       setUser(data.user);
       await fetchDojo(data.user.id);
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -43,7 +53,7 @@ export default function MyDojoPage() {
 
   const fetchDojo = async (userId?: string) => {
     try {
-      const res = await fetch('/api/dojos/my-dojos');
+      const res = await fetch("/api/dojos/my-dojos");
       if (res.ok) {
         const data = await res.json();
         // Get the first dojo (or you could handle multiple dojos)
@@ -53,22 +63,22 @@ export default function MyDojoPage() {
         }
       }
     } catch (error) {
-      console.error('Error fetching dojo:', error);
+      console.error("Error fetching dojo:", error);
     }
   };
 
   const handleCreateNew = () => {
     setCreating(true);
     setFormData({
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       martialArts: [],
-      address: '',
-      city: '',
-      country: 'India',
-      phoneNumber: '',
-      email: user?.email || '',
-      website: '',
+      address: "",
+      city: "",
+      country: "India",
+      phoneNumber: "",
+      email: user?.email || "",
+      website: "",
     });
   };
 
@@ -79,35 +89,45 @@ export default function MyDojoPage() {
 
   const handleCreateDojo = async () => {
     // Validation
-    if (!formData.name || !formData.description || !formData.address || !formData.city || !formData.phoneNumber || !formData.email) {
-      showToast('Please fill in all required fields', 'error');
+    if (
+      !formData.name ||
+      !formData.description ||
+      !formData.address ||
+      !formData.city ||
+      !formData.phoneNumber ||
+      !formData.email
+    ) {
+      showToast("Please fill in all required fields", "error");
       return;
     }
 
     setSaving(true);
     try {
-      const res = await fetch('/api/dojos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/dojos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
           martialArts: formData.martialArts || [],
         }),
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         setDojo(data.dojo);
         setCreating(false);
-        showToast('Dojo created successfully! Awaiting admin approval.', 'success');
+        showToast(
+          "Dojo created successfully! Awaiting admin approval.",
+          "success",
+        );
         await fetchDojo();
       } else {
         const error = await res.json();
-        showToast(error.error || 'Failed to create dojo', 'error');
+        showToast(error.error || "Failed to create dojo", "error");
       }
     } catch (error) {
-      console.error('Error creating dojo:', error);
-      showToast('Failed to create dojo', 'error');
+      console.error("Error creating dojo:", error);
+      showToast("Failed to create dojo", "error");
     } finally {
       setSaving(false);
     }
@@ -125,8 +145,15 @@ export default function MyDojoPage() {
 
   const handleSave = async () => {
     // Validation
-    if (!formData.name || !formData.description || !formData.address || !formData.city || !formData.phoneNumber || !formData.email) {
-      showToast('Please fill in all required fields', 'error');
+    if (
+      !formData.name ||
+      !formData.description ||
+      !formData.address ||
+      !formData.city ||
+      !formData.phoneNumber ||
+      !formData.email
+    ) {
+      showToast("Please fill in all required fields", "error");
       return;
     }
 
@@ -140,37 +167,39 @@ export default function MyDojoPage() {
         martialArts: formData.martialArts || [],
         address: formData.address,
         city: formData.city,
-        country: formData.country || 'India',
+        country: formData.country || "India",
         phoneNumber: formData.phoneNumber,
         email: formData.email,
-        website: formData.website || '',
+        website: formData.website || "",
       };
 
-      const res = await fetch('/api/dojos', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/dojos", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatePayload),
       });
-      
+
       const data = await res.json();
-      
+
       if (res.ok) {
         setDojo(data.dojo);
         setEditing(false);
-        showToast('Dojo updated successfully', 'success');
+        showToast("Dojo updated successfully", "success");
       } else {
-        console.error('Failed to update dojo:', data);
-        showToast(data.error || 'Failed to update dojo', 'error');
+        console.error("Failed to update dojo:", data);
+        showToast(data.error || "Failed to update dojo", "error");
       }
     } catch (error) {
-      console.error('Error saving dojo:', error);
-      showToast('Failed to update dojo. Please try again.', 'error');
+      console.error("Error saving dojo:", error);
+      showToast("Failed to update dojo. Please try again.", "error");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -179,7 +208,7 @@ export default function MyDojoPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
       </div>
     );
@@ -187,11 +216,13 @@ export default function MyDojoPage() {
 
   if (!dojo && !creating) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#FEFEFE]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
             <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No Dojo Found</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              No Dojo Found
+            </h2>
             <p className="text-gray-600 mb-6">
               You don't have a dojo associated with your account yet.
             </p>
@@ -210,11 +241,13 @@ export default function MyDojoPage() {
 
   if (creating) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#FEFEFE]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white rounded-lg shadow-md p-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Create Your Dojo</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Create Your Dojo
+              </h2>
               <button
                 onClick={handleCancelCreate}
                 disabled={saving}
@@ -233,7 +266,7 @@ export default function MyDojoPage() {
                 <input
                   type="text"
                   name="name"
-                  value={formData.name || ''}
+                  value={formData.name || ""}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   placeholder="Enter dojo name"
@@ -248,7 +281,7 @@ export default function MyDojoPage() {
                 </label>
                 <textarea
                   name="description"
-                  value={formData.description || ''}
+                  value={formData.description || ""}
                   onChange={handleChange}
                   rows={4}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
@@ -264,15 +297,26 @@ export default function MyDojoPage() {
                 </label>
                 <input
                   type="text"
-                  value={Array.isArray(formData.martialArts) ? formData.martialArts.join(', ') : ''}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    martialArts: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)
-                  })}
+                  value={
+                    Array.isArray(formData.martialArts)
+                      ? formData.martialArts.join(", ")
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      martialArts: e.target.value
+                        .split(",")
+                        .map((s: string) => s.trim())
+                        .filter(Boolean),
+                    })
+                  }
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   placeholder="e.g., Karate, Judo, Taekwondo"
                 />
-                <p className="text-xs text-gray-500 mt-1">Separate multiple styles with commas</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Separate multiple styles with commas
+                </p>
               </div>
 
               {/* Address */}
@@ -283,7 +327,7 @@ export default function MyDojoPage() {
                 <input
                   type="text"
                   name="address"
-                  value={formData.address || ''}
+                  value={formData.address || ""}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   placeholder="Street address"
@@ -300,7 +344,7 @@ export default function MyDojoPage() {
                   <input
                     type="text"
                     name="city"
-                    value={formData.city || ''}
+                    value={formData.city || ""}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                     placeholder="City"
@@ -314,7 +358,7 @@ export default function MyDojoPage() {
                   <input
                     type="text"
                     name="country"
-                    value={formData.country || ''}
+                    value={formData.country || ""}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                     placeholder="India"
@@ -331,7 +375,7 @@ export default function MyDojoPage() {
                   <input
                     type="tel"
                     name="phoneNumber"
-                    value={formData.phoneNumber || ''}
+                    value={formData.phoneNumber || ""}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                     placeholder="+1234567890"
@@ -345,7 +389,7 @@ export default function MyDojoPage() {
                   <input
                     type="email"
                     name="email"
-                    value={formData.email || ''}
+                    value={formData.email || ""}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                     placeholder="contact@dojo.com"
@@ -362,7 +406,7 @@ export default function MyDojoPage() {
                 <input
                   type="url"
                   name="website"
-                  value={formData.website || ''}
+                  value={formData.website || ""}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-600 focus:border-transparent"
                   placeholder="https://yourdojo.com"
@@ -374,7 +418,7 @@ export default function MyDojoPage() {
                 <button
                   onClick={handleCancelCreate}
                   disabled={saving}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-[#FEFEFE] transition disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -383,12 +427,13 @@ export default function MyDojoPage() {
                   disabled={saving}
                   className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition disabled:opacity-50 font-semibold"
                 >
-                  {saving ? 'Creating...' : 'Create Dojo'}
+                  {saving ? "Creating..." : "Create Dojo"}
                 </button>
               </div>
 
               <p className="text-sm text-gray-500 text-center">
-                Your dojo will be submitted for admin approval before appearing publicly.
+                Your dojo will be submitted for admin approval before appearing
+                publicly.
               </p>
             </div>
           </div>
@@ -398,7 +443,7 @@ export default function MyDojoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -406,7 +451,8 @@ export default function MyDojoPage() {
           {!dojo.isApproved && (
             <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-sm text-yellow-800">
-                <strong>⏳ Pending Approval:</strong> Your dojo is awaiting admin approval before it appears publicly on the platform.
+                <strong>⏳ Pending Approval:</strong> Your dojo is awaiting
+                admin approval before it appears publicly on the platform.
               </p>
             </div>
           )}
@@ -422,7 +468,7 @@ export default function MyDojoPage() {
                     <input
                       type="text"
                       name="name"
-                      value={formData.name || ''}
+                      value={formData.name || ""}
                       onChange={handleChange}
                       className="border border-gray-300 rounded-lg px-3 py-2 w-full"
                     />
@@ -431,11 +477,14 @@ export default function MyDojoPage() {
                   )}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  {editing && Array.isArray(formData.martialArts) && formData.martialArts.length > 0 
-                    ? formData.martialArts.join(', ')
-                    : (Array.isArray(dojo.martialArts) && dojo.martialArts.length > 0 
-                      ? dojo.martialArts.join(', ') 
-                      : 'No martial arts styles specified')}
+                  {editing &&
+                  Array.isArray(formData.martialArts) &&
+                  formData.martialArts.length > 0
+                    ? formData.martialArts.join(", ")
+                    : Array.isArray(dojo.martialArts) &&
+                        dojo.martialArts.length > 0
+                      ? dojo.martialArts.join(", ")
+                      : "No martial arts styles specified"}
                 </p>
               </div>
             </div>
@@ -448,7 +497,7 @@ export default function MyDojoPage() {
                     className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
                   >
                     <Save className="w-5 h-5" />
-                    <span>{saving ? 'Saving...' : 'Save'}</span>
+                    <span>{saving ? "Saving..." : "Save"}</span>
                   </button>
                   <button
                     onClick={handleCancel}
@@ -474,7 +523,9 @@ export default function MyDojoPage() {
 
         {/* Dojo Information */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Dojo Information</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Dojo Information
+          </h2>
           <div className="space-y-4">
             {/* Description */}
             <div>
@@ -484,13 +535,15 @@ export default function MyDojoPage() {
               {editing ? (
                 <textarea
                   name="description"
-                  value={formData.description || ''}
+                  value={formData.description || ""}
                   onChange={handleChange}
                   rows={4}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2"
                 />
               ) : (
-                <p className="text-gray-600">{dojo.description || 'No description available'}</p>
+                <p className="text-gray-600">
+                  {dojo.description || "No description available"}
+                </p>
               )}
             </div>
 
@@ -502,15 +555,26 @@ export default function MyDojoPage() {
                 </label>
                 <input
                   type="text"
-                  value={Array.isArray(formData.martialArts) ? formData.martialArts.join(', ') : ''}
-                  onChange={(e) => setFormData({
-                    ...formData,
-                    martialArts: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)
-                  })}
+                  value={
+                    Array.isArray(formData.martialArts)
+                      ? formData.martialArts.join(", ")
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      martialArts: e.target.value
+                        .split(",")
+                        .map((s: string) => s.trim())
+                        .filter(Boolean),
+                    })
+                  }
                   className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   placeholder="e.g., Karate, Judo, Taekwondo"
                 />
-                <p className="text-xs text-gray-500 mt-1">Separate multiple styles with commas</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Separate multiple styles with commas
+                </p>
               </div>
             )}
 
@@ -526,7 +590,7 @@ export default function MyDojoPage() {
                     <input
                       type="text"
                       name="address"
-                      value={formData.address || ''}
+                      value={formData.address || ""}
                       onChange={handleChange}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2"
                       placeholder="Street address"
@@ -535,7 +599,7 @@ export default function MyDojoPage() {
                       <input
                         type="text"
                         name="city"
-                        value={formData.city || ''}
+                        value={formData.city || ""}
                         onChange={handleChange}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
                         placeholder="City"
@@ -543,7 +607,7 @@ export default function MyDojoPage() {
                       <input
                         type="text"
                         name="country"
-                        value={formData.country || ''}
+                        value={formData.country || ""}
                         onChange={handleChange}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2"
                         placeholder="Country"
@@ -553,7 +617,9 @@ export default function MyDojoPage() {
                 ) : (
                   <div>
                     <p className="text-gray-600">{dojo.address}</p>
-                    <p className="text-gray-600 text-sm">{dojo.city}, {dojo.country}</p>
+                    <p className="text-gray-600 text-sm">
+                      {dojo.city}, {dojo.country}
+                    </p>
                   </div>
                 )}
               </div>
@@ -570,7 +636,7 @@ export default function MyDojoPage() {
                   <input
                     type="email"
                     name="email"
-                    value={formData.email || ''}
+                    value={formData.email || ""}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   />
@@ -591,12 +657,14 @@ export default function MyDojoPage() {
                   <input
                     type="tel"
                     name="phoneNumber"
-                    value={formData.phoneNumber || ''}
+                    value={formData.phoneNumber || ""}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   />
                 ) : (
-                  <p className="text-gray-600">{dojo.phoneNumber || 'Not provided'}</p>
+                  <p className="text-gray-600">
+                    {dojo.phoneNumber || "Not provided"}
+                  </p>
                 )}
               </div>
             </div>
@@ -612,7 +680,7 @@ export default function MyDojoPage() {
                   <input
                     type="url"
                     name="website"
-                    value={formData.website || ''}
+                    value={formData.website || ""}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                     placeholder="https://"
@@ -629,7 +697,7 @@ export default function MyDojoPage() {
                         {dojo.website}
                       </a>
                     ) : (
-                      'Not provided'
+                      "Not provided"
                     )}
                   </p>
                 )}
@@ -653,7 +721,9 @@ export default function MyDojoPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Created</div>
             <div className="text-lg font-bold text-gray-900">
-              {dojo.createdAt ? new Date(dojo.createdAt).toLocaleDateString() : 'N/A'}
+              {dojo.createdAt
+                ? new Date(dojo.createdAt).toLocaleDateString()
+                : "N/A"}
             </div>
           </div>
         </div>
@@ -661,4 +731,3 @@ export default function MyDojoPage() {
     </div>
   );
 }
-

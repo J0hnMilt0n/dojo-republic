@@ -50,7 +50,9 @@ export default function Footer() {
                 <Twitter className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/dojorepublic"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-red-500 transition-all duration-300 transform hover:scale-110"
               >
                 <Instagram className="w-5 h-5" />

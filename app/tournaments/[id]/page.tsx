@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   Calendar,
@@ -12,10 +12,10 @@ import {
   DollarSign,
   Clock,
   Mail,
-  Phone
-} from 'lucide-react';
-import { Tournament } from '@/lib/types';
-import { formatDate } from '@/lib/utils';
+  Phone,
+} from "lucide-react";
+import { Tournament } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 
 export default function TournamentDetailPage() {
   const params = useParams();
@@ -30,18 +30,20 @@ export default function TournamentDetailPage() {
 
   const fetchTournament = async () => {
     try {
-      const res = await fetch('/api/tournaments');
+      const res = await fetch("/api/tournaments");
       const data = await res.json();
-      const found = data.tournaments.find((t: Tournament) => t.id === params.id);
-      
+      const found = data.tournaments.find(
+        (t: Tournament) => t.id === params.id,
+      );
+
       if (found) {
         setTournament(found);
       } else {
-        setError('Tournament not found');
+        setError("Tournament not found");
       }
     } catch (err) {
-      console.error('Failed to fetch tournament:', err);
-      setError('Failed to load tournament details');
+      console.error("Failed to fetch tournament:", err);
+      setError("Failed to load tournament details");
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,7 @@ export default function TournamentDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-orange-600"></div>
           <p className="mt-4 text-gray-600">Loading tournament details...</p>
@@ -60,10 +62,10 @@ export default function TournamentDetailPage() {
 
   if (error || !tournament) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            {error || 'Tournament not found'}
+            {error || "Tournament not found"}
           </h2>
           <Link
             href="/tournaments"
@@ -77,10 +79,11 @@ export default function TournamentDetailPage() {
     );
   }
 
-  const isRegistrationOpen = new Date(tournament.registrationDeadline) > new Date();
+  const isRegistrationOpen =
+    new Date(tournament.registrationDeadline) > new Date();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       {/* Header Section */}
       <section className="bg-linear-to-r from-orange-600 to-red-600 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -104,12 +107,16 @@ export default function TournamentDetailPage() {
             {/* Description */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
-              <p className="text-gray-600 leading-relaxed">{tournament.description}</p>
+              <p className="text-gray-600 leading-relaxed">
+                {tournament.description}
+              </p>
             </div>
 
             {/* Categories */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Categories</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Categories
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {tournament.categories.map((category) => (
                   <div
@@ -122,7 +129,9 @@ export default function TournamentDetailPage() {
                     <div className="space-y-1 text-sm text-gray-600">
                       <p>Age: {category.ageGroup}</p>
                       <p>Gender: {category.gender}</p>
-                      {category.weightClass && <p>Weight: {category.weightClass}</p>}
+                      {category.weightClass && (
+                        <p>Weight: {category.weightClass}</p>
+                      )}
                       {category.beltLevel && <p>Belt: {category.beltLevel}</p>}
                     </div>
                   </div>
@@ -132,8 +141,12 @@ export default function TournamentDetailPage() {
 
             {/* Rules */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Rules & Guidelines</h2>
-              <p className="text-gray-600 leading-relaxed">{tournament.rules}</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Rules & Guidelines
+              </h2>
+              <p className="text-gray-600 leading-relaxed">
+                {tournament.rules}
+              </p>
             </div>
           </div>
 
@@ -141,17 +154,21 @@ export default function TournamentDetailPage() {
           <div className="space-y-6">
             {/* Quick Info Card */}
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Event Details</h2>
-              
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                Event Details
+              </h2>
+
               <div className="space-y-4">
                 {/* Dates */}
                 <div className="flex items-start">
                   <Calendar className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Event Date</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Event Date
+                    </p>
                     <p className="text-sm text-gray-600">
                       {formatDate(tournament.startDate)}
-                      {tournament.endDate !== tournament.startDate && 
+                      {tournament.endDate !== tournament.startDate &&
                         ` - ${formatDate(tournament.endDate)}`}
                     </p>
                   </div>
@@ -161,7 +178,9 @@ export default function TournamentDetailPage() {
                 <div className="flex items-start">
                   <Clock className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Registration Deadline</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Registration Deadline
+                    </p>
                     <p className="text-sm text-gray-600">
                       {formatDate(tournament.registrationDeadline)}
                     </p>
@@ -185,10 +204,12 @@ export default function TournamentDetailPage() {
                 <div className="flex items-start">
                   <Users className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Participants</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Participants
+                    </p>
                     <p className="text-sm text-gray-600">
                       {tournament.participants.length} registered
-                      {tournament.maxParticipants && 
+                      {tournament.maxParticipants &&
                         ` / ${tournament.maxParticipants} max`}
                     </p>
                   </div>
@@ -198,7 +219,9 @@ export default function TournamentDetailPage() {
                 <div className="flex items-start">
                   <DollarSign className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Registration Fee</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      Registration Fee
+                    </p>
                     <p className="text-sm text-gray-600">
                       ₹{tournament.registrationFee}
                     </p>

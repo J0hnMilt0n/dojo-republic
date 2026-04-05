@@ -1,8 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { User, Mail, Phone, MapPin, Edit2, Save, X, Calendar, Trophy } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Edit2,
+  Save,
+  X,
+  Calendar,
+  Trophy,
+} from "lucide-react";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -12,22 +22,22 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    address: '',
-    city: '',
-    country: '',
+    name: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    city: "",
+    country: "",
   });
   const [playerFormData, setPlayerFormData] = useState({
-    age: '',
-    dateOfBirth: '',
-    gender: '',
-    beltCategory: '',
-    city: '',
-    country: '',
-    weight: '',
-    height: '',
+    age: "",
+    dateOfBirth: "",
+    gender: "",
+    beltCategory: "",
+    city: "",
+    country: "",
+    weight: "",
+    height: "",
   });
 
   useEffect(() => {
@@ -36,45 +46,47 @@ export default function ProfilePage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
       setUser(data.user);
       setFormData({
-        name: data.user.name || '',
-        email: data.user.email || '',
-        phoneNumber: data.user.phoneNumber || '',
-        address: data.user.address || '',
-        city: data.user.city || '',
-        country: data.user.country || '',
+        name: data.user.name || "",
+        email: data.user.email || "",
+        phoneNumber: data.user.phoneNumber || "",
+        address: data.user.address || "",
+        city: data.user.city || "",
+        country: data.user.country || "",
       });
 
       // If player, fetch player profile
-      if (data.user.role === 'player') {
-        const profileRes = await fetch('/api/players');
+      if (data.user.role === "player") {
+        const profileRes = await fetch("/api/players");
         if (profileRes.ok) {
           const profileData = await profileRes.json();
-          const profile = profileData.players.find((p: any) => p.userId === data.user.id);
+          const profile = profileData.players.find(
+            (p: any) => p.userId === data.user.id,
+          );
           if (profile) {
             setPlayerProfile(profile);
             setPlayerFormData({
-              age: profile.age?.toString() || '',
-              dateOfBirth: profile.dateOfBirth || '',
-              gender: profile.gender || '',
-              beltCategory: profile.beltCategory || '',
-              city: profile.city || '',
-              country: profile.country || '',
-              weight: profile.weight?.toString() || '',
-              height: profile.height?.toString() || '',
+              age: profile.age?.toString() || "",
+              dateOfBirth: profile.dateOfBirth || "",
+              gender: profile.gender || "",
+              beltCategory: profile.beltCategory || "",
+              city: profile.city || "",
+              country: profile.country || "",
+              weight: profile.weight?.toString() || "",
+              height: profile.height?.toString() || "",
             });
           }
         }
       }
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -87,7 +99,9 @@ export default function ProfilePage() {
     });
   };
 
-  const handlePlayerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handlePlayerChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setPlayerFormData({
       ...playerFormData,
       [e.target.name]: e.target.value,
@@ -101,12 +115,12 @@ export default function ProfilePage() {
   const handleCancel = () => {
     setEditing(false);
     setFormData({
-      name: user.name || '',
-      email: user.email || '',
-      phoneNumber: user.phoneNumber || '',
-      address: user.address || '',
-      city: user.city || '',
-      country: user.country || '',
+      name: user.name || "",
+      email: user.email || "",
+      phoneNumber: user.phoneNumber || "",
+      address: user.address || "",
+      city: user.city || "",
+      country: user.country || "",
     });
   };
 
@@ -117,22 +131,22 @@ export default function ProfilePage() {
   const handleCancelPlayer = () => {
     setEditingPlayer(false);
     setPlayerFormData({
-      age: playerProfile.age?.toString() || '',
-      dateOfBirth: playerProfile.dateOfBirth || '',
-      gender: playerProfile.gender || '',
-      beltCategory: playerProfile.beltCategory || '',
-      city: playerProfile.city || '',
-      country: playerProfile.country || '',
-      weight: playerProfile.weight?.toString() || '',
-      height: playerProfile.height?.toString() || '',
+      age: playerProfile.age?.toString() || "",
+      dateOfBirth: playerProfile.dateOfBirth || "",
+      gender: playerProfile.gender || "",
+      beltCategory: playerProfile.beltCategory || "",
+      city: playerProfile.city || "",
+      country: playerProfile.country || "",
+      weight: playerProfile.weight?.toString() || "",
+      height: playerProfile.height?.toString() || "",
     });
   };
 
   const handleSave = async () => {
     try {
-      const res = await fetch('/api/auth/me', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/auth/me", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -142,15 +156,15 @@ export default function ProfilePage() {
         setEditing(false);
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
     }
   };
 
   const handleSavePlayer = async () => {
     try {
-      const res = await fetch('/api/players', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/players", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           playerId: playerProfile.id,
           name: user.name,
@@ -160,8 +174,12 @@ export default function ProfilePage() {
           beltCategory: playerFormData.beltCategory,
           city: playerFormData.city,
           country: playerFormData.country,
-          weight: playerFormData.weight ? parseFloat(playerFormData.weight) : undefined,
-          height: playerFormData.height ? parseFloat(playerFormData.height) : undefined,
+          weight: playerFormData.weight
+            ? parseFloat(playerFormData.weight)
+            : undefined,
+          height: playerFormData.height
+            ? parseFloat(playerFormData.height)
+            : undefined,
           dojoId: playerProfile.dojoId,
         }),
       });
@@ -174,13 +192,13 @@ export default function ProfilePage() {
         checkAuth();
       }
     } catch (error) {
-      console.error('Error updating player profile:', error);
+      console.error("Error updating player profile:", error);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -189,7 +207,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -213,7 +231,7 @@ export default function ProfilePage() {
                   )}
                 </h1>
                 <p className="text-gray-600 mt-1 capitalize">
-                  {user.role.replace('_', ' ')}
+                  {user.role.replace("_", " ")}
                 </p>
               </div>
             </div>
@@ -250,7 +268,9 @@ export default function ProfilePage() {
 
         {/* Profile Information */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Profile Information</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
+            Profile Information
+          </h2>
           <div className="space-y-6">
             {/* Email */}
             <div>
@@ -292,7 +312,9 @@ export default function ProfilePage() {
                   placeholder="+1 (555) 000-0000"
                 />
               ) : (
-                <p className="text-gray-900">{user.phoneNumber || 'Not provided'}</p>
+                <p className="text-gray-900">
+                  {user.phoneNumber || "Not provided"}
+                </p>
               )}
             </div>
 
@@ -314,7 +336,9 @@ export default function ProfilePage() {
                   placeholder="Street address"
                 />
               ) : (
-                <p className="text-gray-900">{user.address || 'Not provided'}</p>
+                <p className="text-gray-900">
+                  {user.address || "Not provided"}
+                </p>
               )}
             </div>
 
@@ -334,7 +358,7 @@ export default function ProfilePage() {
                     placeholder="City"
                   />
                 ) : (
-                  <p className="text-gray-900">{user.city || 'Not provided'}</p>
+                  <p className="text-gray-900">{user.city || "Not provided"}</p>
                 )}
               </div>
               <div>
@@ -351,7 +375,9 @@ export default function ProfilePage() {
                     placeholder="Country"
                   />
                 ) : (
-                  <p className="text-gray-900">{user.country || 'Not provided'}</p>
+                  <p className="text-gray-900">
+                    {user.country || "Not provided"}
+                  </p>
                 )}
               </div>
             </div>
@@ -359,12 +385,14 @@ export default function ProfilePage() {
         </div>
 
         {/* Player Profile Section (if user is a player) */}
-        {user.role === 'player' && playerProfile && (
+        {user.role === "player" && playerProfile && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-2">
                 <Trophy className="w-6 h-6 text-red-600" />
-                <h2 className="text-xl font-bold text-gray-900">Player Profile</h2>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Player Profile
+                </h2>
               </div>
               {!editingPlayer ? (
                 <button
@@ -397,7 +425,9 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Age */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Age
+                </label>
                 {editingPlayer ? (
                   <input
                     type="number"
@@ -407,13 +437,17 @@ export default function ProfilePage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   />
                 ) : (
-                  <p className="text-gray-900">{playerProfile.age || 'Not set'}</p>
+                  <p className="text-gray-900">
+                    {playerProfile.age || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Date of Birth */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date of Birth
+                </label>
                 {editingPlayer ? (
                   <input
                     type="date"
@@ -423,13 +457,17 @@ export default function ProfilePage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   />
                 ) : (
-                  <p className="text-gray-900">{playerProfile.dateOfBirth || 'Not set'}</p>
+                  <p className="text-gray-900">
+                    {playerProfile.dateOfBirth || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Gender */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Gender
+                </label>
                 {editingPlayer ? (
                   <select
                     name="gender"
@@ -442,13 +480,17 @@ export default function ProfilePage() {
                     <option value="other">Other</option>
                   </select>
                 ) : (
-                  <p className="text-gray-900 capitalize">{playerProfile.gender || 'Not set'}</p>
+                  <p className="text-gray-900 capitalize">
+                    {playerProfile.gender || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Belt Category */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Belt Category</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Belt Category
+                </label>
                 {editingPlayer ? (
                   <input
                     type="text"
@@ -459,13 +501,17 @@ export default function ProfilePage() {
                     placeholder="Black Belt 1st Dan"
                   />
                 ) : (
-                  <p className="text-gray-900">{playerProfile.beltCategory || 'Not set'}</p>
+                  <p className="text-gray-900">
+                    {playerProfile.beltCategory || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* City */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  City
+                </label>
                 {editingPlayer ? (
                   <input
                     type="text"
@@ -475,13 +521,17 @@ export default function ProfilePage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   />
                 ) : (
-                  <p className="text-gray-900">{playerProfile.city || 'Not set'}</p>
+                  <p className="text-gray-900">
+                    {playerProfile.city || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Country */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Country
+                </label>
                 {editingPlayer ? (
                   <input
                     type="text"
@@ -491,13 +541,17 @@ export default function ProfilePage() {
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   />
                 ) : (
-                  <p className="text-gray-900">{playerProfile.country || 'Not set'}</p>
+                  <p className="text-gray-900">
+                    {playerProfile.country || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Weight */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Weight (kg)
+                </label>
                 {editingPlayer ? (
                   <input
                     type="number"
@@ -508,13 +562,17 @@ export default function ProfilePage() {
                     step="0.1"
                   />
                 ) : (
-                  <p className="text-gray-900">{playerProfile.weight || 'Not set'}</p>
+                  <p className="text-gray-900">
+                    {playerProfile.weight || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Height */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Height (cm)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Height (cm)
+                </label>
                 {editingPlayer ? (
                   <input
                     type="number"
@@ -525,7 +583,9 @@ export default function ProfilePage() {
                     step="0.1"
                   />
                 ) : (
-                  <p className="text-gray-900">{playerProfile.height || 'Not set'}</p>
+                  <p className="text-gray-900">
+                    {playerProfile.height || "Not set"}
+                  </p>
                 )}
               </div>
             </div>
@@ -534,40 +594,50 @@ export default function ProfilePage() {
 
         {/* Account Details */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Account Details</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
+            Account Details
+          </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between py-3 border-b border-gray-200">
               <div className="flex items-center space-x-2">
                 <User className="w-4 h-4 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">User ID</span>
+                <span className="text-sm font-medium text-gray-700">
+                  User ID
+                </span>
               </div>
               <span className="text-sm text-gray-900">{user.id}</span>
             </div>
             <div className="flex items-center justify-between py-3 border-b border-gray-200">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">Member Since</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Member Since
+                </span>
               </div>
               <span className="text-sm text-gray-900">
-                {user.createdAt 
-                  ? new Date(user.createdAt).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                {user.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
                     })
-                  : 'N/A'}
+                  : "N/A"}
               </span>
             </div>
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700">Account Status</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Account Status
+                </span>
               </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                user.isApproved 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-yellow-100 text-yellow-800'
-              }`}>
-                {user.isApproved ? 'Active' : 'Pending Approval'}
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  user.isApproved
+                    ? "bg-green-100 text-green-800"
+                    : "bg-yellow-100 text-yellow-800"
+                }`}
+              >
+                {user.isApproved ? "Active" : "Pending Approval"}
               </span>
             </div>
           </div>
@@ -576,4 +646,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

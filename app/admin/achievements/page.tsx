@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   CheckCircle,
   XCircle,
   Award,
   Search,
-  Filter
-} from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+  Filter,
+} from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function AdminAchievementsPage() {
   const router = useRouter();
@@ -20,8 +20,10 @@ export default function AdminAchievementsPage() {
   const [achievements, setAchievements] = useState<any[]>([]);
   const [filteredAchievements, setFilteredAchievements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved'>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "pending" | "approved"
+  >("all");
 
   useEffect(() => {
     checkAuth();
@@ -29,22 +31,22 @@ export default function AdminAchievementsPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      
-      if (data.user.role !== 'admin') {
-        router.push('/dashboard');
+
+      if (data.user.role !== "admin") {
+        router.push("/dashboard");
         return;
       }
 
       setUser(data.user);
       await fetchAchievements();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -52,11 +54,11 @@ export default function AdminAchievementsPage() {
 
   const fetchAchievements = async () => {
     try {
-      const res = await fetch('/api/players');
+      const res = await fetch("/api/players");
       if (res.ok) {
         const data = await res.json();
         const allAchievements: any[] = [];
-        
+
         data.players.forEach((player: any) => {
           if (player.achievements && player.achievements.length > 0) {
             player.achievements.forEach((achievement: any) => {
@@ -73,25 +75,31 @@ export default function AdminAchievementsPage() {
         setFilteredAchievements(allAchievements);
       }
     } catch (error) {
-      console.error('Failed to fetch achievements:', error);
+      console.error("Failed to fetch achievements:", error);
     }
   };
 
   useEffect(() => {
     let filtered = achievements;
 
-    if (statusFilter === 'pending') {
-      filtered = filtered.filter(a => !a.isApproved);
-    } else if (statusFilter === 'approved') {
-      filtered = filtered.filter(a => a.isApproved);
+    if (statusFilter === "pending") {
+      filtered = filtered.filter((a) => !a.isApproved);
+    } else if (statusFilter === "approved") {
+      filtered = filtered.filter((a) => a.isApproved);
     }
 
     if (searchTerm) {
       filtered = filtered.filter(
         (achievement) =>
-          achievement.playerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          achievement.tournamentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          achievement.category?.toLowerCase().includes(searchTerm.toLowerCase())
+          achievement.playerName
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          achievement.tournamentName
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          achievement.category
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -99,60 +107,60 @@ export default function AdminAchievementsPage() {
   }, [searchTerm, statusFilter, achievements]);
 
   const handleApprove = async (achievement: any) => {
-    if (!confirm('Are you sure you want to approve this achievement?')) return;
+    if (!confirm("Are you sure you want to approve this achievement?")) return;
 
     try {
       const res = await fetch(`/api/players`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           playerId: achievement.playerId,
           achievementId: achievement.id,
-          isApproved: true 
+          isApproved: true,
         }),
       });
 
       if (res.ok) {
-        showToast('Achievement approved successfully', 'success');
+        showToast("Achievement approved successfully", "success");
         await fetchAchievements();
       } else {
-        showToast('Failed to approve achievement', 'error');
+        showToast("Failed to approve achievement", "error");
       }
     } catch (error) {
-      console.error('Error approving achievement:', error);
-      showToast('Failed to approve achievement', 'error');
+      console.error("Error approving achievement:", error);
+      showToast("Failed to approve achievement", "error");
     }
   };
 
   const handleReject = async (achievement: any) => {
-    if (!confirm('Are you sure you want to reject this achievement?')) return;
+    if (!confirm("Are you sure you want to reject this achievement?")) return;
 
     try {
       const res = await fetch(`/api/players`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           playerId: achievement.playerId,
           achievementId: achievement.id,
-          isApproved: false 
+          isApproved: false,
         }),
       });
 
       if (res.ok) {
-        showToast('Achievement rejected', 'info');
+        showToast("Achievement rejected", "info");
         await fetchAchievements();
       } else {
-        showToast('Failed to reject achievement', 'error');
+        showToast("Failed to reject achievement", "error");
       }
     } catch (error) {
-      console.error('Error rejecting achievement:', error);
-      showToast('Failed to reject achievement', 'error');
+      console.error("Error rejecting achievement:", error);
+      showToast("Failed to reject achievement", "error");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -160,20 +168,24 @@ export default function AdminAchievementsPage() {
 
   if (!user) return null;
 
-  const pendingAchievements = achievements.filter(a => !a.isApproved);
-  const approvedAchievements = achievements.filter(a => a.isApproved);
+  const pendingAchievements = achievements.filter((a) => !a.isApproved);
+  const approvedAchievements = achievements.filter((a) => a.isApproved);
 
   const getPositionColor = (position: string) => {
     switch (position) {
-      case 'gold': return 'bg-yellow-100 text-yellow-800';
-      case 'silver': return 'bg-gray-200 text-gray-800';
-      case 'bronze': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-blue-100 text-blue-800';
+      case "gold":
+        return "bg-yellow-100 text-yellow-800";
+      case "silver":
+        return "bg-gray-200 text-gray-800";
+      case "bronze":
+        return "bg-orange-100 text-orange-800";
+      default:
+        return "bg-blue-100 text-blue-800";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Link
@@ -183,22 +195,32 @@ export default function AdminAchievementsPage() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Admin Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Achievements</h1>
-          <p className="text-gray-600 mt-1">Review and approve player achievements</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Manage Achievements
+          </h1>
+          <p className="text-gray-600 mt-1">
+            Review and approve player achievements
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Total Achievements</p>
-            <p className="text-3xl font-bold text-gray-900">{achievements.length}</p>
+            <p className="text-3xl font-bold text-gray-900">
+              {achievements.length}
+            </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Pending Approval</p>
-            <p className="text-3xl font-bold text-orange-600">{pendingAchievements.length}</p>
+            <p className="text-3xl font-bold text-orange-600">
+              {pendingAchievements.length}
+            </p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <p className="text-sm text-gray-600 mb-1">Approved</p>
-            <p className="text-3xl font-bold text-green-600">{approvedAchievements.length}</p>
+            <p className="text-3xl font-bold text-green-600">
+              {approvedAchievements.length}
+            </p>
           </div>
         </div>
 
@@ -240,7 +262,7 @@ export default function AdminAchievementsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#FEFEFE]">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Player
@@ -264,23 +286,31 @@ export default function AdminAchievementsPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredAchievements.map((achievement, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
+                    <tr key={index} className="hover:bg-[#FEFEFE]">
                       <td className="px-6 py-4">
-                        <p className="font-medium text-gray-900">{achievement.playerName}</p>
+                        <p className="font-medium text-gray-900">
+                          {achievement.playerName}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <p className="text-sm text-gray-900">{achievement.tournamentName}</p>
+                          <p className="text-sm text-gray-900">
+                            {achievement.tournamentName}
+                          </p>
                           <p className="text-xs text-gray-500">
                             {achievement.year}
                           </p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm text-gray-900">{achievement.category}</p>
+                        <p className="text-sm text-gray-900">
+                          {achievement.category}
+                        </p>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPositionColor(achievement.position)}`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPositionColor(achievement.position)}`}
+                        >
                           {achievement.position}
                         </span>
                       </td>
@@ -329,4 +359,3 @@ export default function AdminAchievementsPage() {
     </div>
   );
 }
-

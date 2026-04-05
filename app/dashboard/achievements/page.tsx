@@ -1,9 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Award, Trophy, Medal, Star, Target, TrendingUp, Calendar, X } from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Award,
+  Trophy,
+  Medal,
+  Star,
+  Target,
+  TrendingUp,
+  Calendar,
+  X,
+} from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function AchievementsPage() {
   const router = useRouter();
@@ -13,10 +22,10 @@ export default function AchievementsPage() {
   const [achievements, setAchievements] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAchievement, setNewAchievement] = useState({
-    title: '',
-    description: '',
-    category: 'tournaments',
-    earnedDate: new Date().toISOString().split('T')[0],
+    title: "",
+    description: "",
+    category: "tournaments",
+    earnedDate: new Date().toISOString().split("T")[0],
   });
 
   useEffect(() => {
@@ -25,16 +34,16 @@ export default function AchievementsPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
       setUser(data.user);
       loadAchievements();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -45,75 +54,75 @@ export default function AchievementsPage() {
     const mockAchievements = [
       {
         id: 1,
-        title: 'First Tournament',
-        description: 'Participated in your first tournament',
-        icon: 'trophy',
+        title: "First Tournament",
+        description: "Participated in your first tournament",
+        icon: "trophy",
         earned: true,
-        earnedDate: '2025-11-15',
-        category: 'tournaments',
+        earnedDate: "2025-11-15",
+        category: "tournaments",
       },
       {
         id: 2,
-        title: 'Gold Medalist',
-        description: 'Won a gold medal in a tournament',
-        icon: 'medal',
+        title: "Gold Medalist",
+        description: "Won a gold medal in a tournament",
+        icon: "medal",
         earned: true,
-        earnedDate: '2025-12-10',
-        category: 'tournaments',
+        earnedDate: "2025-12-10",
+        category: "tournaments",
       },
       {
         id: 3,
-        title: 'Black Belt',
-        description: 'Achieved black belt rank',
-        icon: 'award',
+        title: "Black Belt",
+        description: "Achieved black belt rank",
+        icon: "award",
         earned: false,
         earnedDate: null,
-        category: 'training',
+        category: "training",
       },
       {
         id: 4,
-        title: 'Perfect Attendance',
-        description: 'Attended all classes for 3 months',
-        icon: 'star',
+        title: "Perfect Attendance",
+        description: "Attended all classes for 3 months",
+        icon: "star",
         earned: true,
-        earnedDate: '2026-01-05',
-        category: 'training',
+        earnedDate: "2026-01-05",
+        category: "training",
       },
       {
         id: 5,
-        title: '100 Training Hours',
-        description: 'Completed 100 hours of training',
-        icon: 'target',
+        title: "100 Training Hours",
+        description: "Completed 100 hours of training",
+        icon: "target",
         earned: true,
-        earnedDate: '2025-10-20',
-        category: 'training',
+        earnedDate: "2025-10-20",
+        category: "training",
       },
       {
         id: 6,
-        title: 'Tournament Champion',
-        description: 'Win a tournament championship',
-        icon: 'trophy',
+        title: "Tournament Champion",
+        description: "Win a tournament championship",
+        icon: "trophy",
         earned: false,
         earnedDate: null,
-        category: 'tournaments',
+        category: "tournaments",
       },
       {
         id: 7,
-        title: 'Rising Star',
-        description: 'Promoted 3 belt levels in one year',
-        icon: 'trending-up',
+        title: "Rising Star",
+        description: "Promoted 3 belt levels in one year",
+        icon: "trending-up",
         earned: false,
         earnedDate: null,
-        category: 'training',
+        category: "training",
       },
       {
         id: 8,
-        title: 'Community Leader',
-        description: 'Helped train 10 junior students',
-        icon: 'star',
+        title: "Community Leader",
+        description: "Helped train 10 junior students",
+        icon: "star",
         earned: true,
-        earnedDate: '2025-09-12',
-        category: 'community',
+        earnedDate: "2025-09-12",
+        category: "community",
       },
     ];
     setAchievements(mockAchievements);
@@ -121,7 +130,7 @@ export default function AchievementsPage() {
 
   const handleAddAchievement = () => {
     if (!newAchievement.title || !newAchievement.description) {
-      showToast('Please fill in all required fields', 'warning');
+      showToast("Please fill in all required fields", "warning");
       return;
     }
 
@@ -129,7 +138,12 @@ export default function AchievementsPage() {
       id: achievements.length + 1,
       title: newAchievement.title,
       description: newAchievement.description,
-      icon: newAchievement.category === 'tournaments' ? 'trophy' : newAchievement.category === 'training' ? 'award' : 'star',
+      icon:
+        newAchievement.category === "tournaments"
+          ? "trophy"
+          : newAchievement.category === "training"
+            ? "award"
+            : "star",
       earned: true,
       earnedDate: newAchievement.earnedDate,
       category: newAchievement.category,
@@ -139,34 +153,36 @@ export default function AchievementsPage() {
     setAchievements([...achievements, achievement]);
     setShowAddModal(false);
     setNewAchievement({
-      title: '',
-      description: '',
-      category: 'tournaments',
-      earnedDate: new Date().toISOString().split('T')[0],
+      title: "",
+      description: "",
+      category: "tournaments",
+      earnedDate: new Date().toISOString().split("T")[0],
     });
   };
 
   const handleDeleteAchievement = (achievementId: number) => {
-    if (confirm('Are you sure you want to delete this achievement?')) {
-      const updatedAchievements = achievements.filter(a => a.id !== achievementId);
+    if (confirm("Are you sure you want to delete this achievement?")) {
+      const updatedAchievements = achievements.filter(
+        (a) => a.id !== achievementId,
+      );
       setAchievements(updatedAchievements);
     }
   };
 
   const getIcon = (iconName: string, earned: boolean) => {
-    const className = `w-8 h-8 ${earned ? 'text-yellow-500' : 'text-gray-400'}`;
+    const className = `w-8 h-8 ${earned ? "text-yellow-500" : "text-gray-400"}`;
     switch (iconName) {
-      case 'trophy':
+      case "trophy":
         return <Trophy className={className} />;
-      case 'medal':
+      case "medal":
         return <Medal className={className} />;
-      case 'award':
+      case "award":
         return <Award className={className} />;
-      case 'star':
+      case "star":
         return <Star className={className} />;
-      case 'target':
+      case "target":
         return <Target className={className} />;
-      case 'trending-up':
+      case "trending-up":
         return <TrendingUp className={className} />;
       default:
         return <Award className={className} />;
@@ -175,7 +191,7 @@ export default function AchievementsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -183,12 +199,12 @@ export default function AchievementsPage() {
 
   if (!user) return null;
 
-  const earnedCount = achievements.filter(a => a.earned).length;
+  const earnedCount = achievements.filter((a) => a.earned).length;
   const totalCount = achievements.length;
   const progressPercentage = (earnedCount / totalCount) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -198,11 +214,15 @@ export default function AchievementsPage() {
                 <Award className="w-8 h-8 text-yellow-600" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Achievements</h1>
-                <p className="text-gray-600 mt-1">Track your progress and milestones</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  My Achievements
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  Track your progress and milestones
+                </p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black transition"
             >
@@ -214,10 +234,14 @@ export default function AchievementsPage() {
 
         {/* Progress Overview */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Overall Progress</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Overall Progress
+          </h2>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-600">Achievements Earned</span>
-            <span className="text-sm font-semibold text-gray-900">{earnedCount} / {totalCount}</span>
+            <span className="text-sm font-semibold text-gray-900">
+              {earnedCount} / {totalCount}
+            </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
             <div
@@ -227,15 +251,21 @@ export default function AchievementsPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-yellow-50 rounded-lg">
-              <div className="text-3xl font-bold text-yellow-600">{earnedCount}</div>
+              <div className="text-3xl font-bold text-yellow-600">
+                {earnedCount}
+              </div>
               <div className="text-sm text-gray-600 mt-1">Earned</div>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-3xl font-bold text-gray-900">{totalCount - earnedCount}</div>
+            <div className="text-center p-4 bg-[#FEFEFE] rounded-lg">
+              <div className="text-3xl font-bold text-gray-900">
+                {totalCount - earnedCount}
+              </div>
               <div className="text-sm text-gray-600 mt-1">In Progress</div>
             </div>
             <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-3xl font-bold text-blue-600">{Math.round(progressPercentage)}%</div>
+              <div className="text-3xl font-bold text-blue-600">
+                {Math.round(progressPercentage)}%
+              </div>
               <div className="text-sm text-gray-600 mt-1">Completion</div>
             </div>
           </div>
@@ -248,8 +278,8 @@ export default function AchievementsPage() {
               key={achievement.id}
               className={`bg-white rounded-lg shadow-md p-6 transition-all relative ${
                 achievement.earned
-                  ? 'border-2 border-yellow-400 hover:shadow-xl'
-                  : 'border-2 border-gray-200 opacity-75'
+                  ? "border-2 border-yellow-400 hover:shadow-xl"
+                  : "border-2 border-gray-200 opacity-75"
               }`}
             >
               {achievement.userAdded && (
@@ -262,9 +292,11 @@ export default function AchievementsPage() {
                 </button>
               )}
               <div className="flex items-start space-x-4">
-                <div className={`p-3 rounded-lg ${
-                  achievement.earned ? 'bg-yellow-100' : 'bg-gray-100'
-                }`}>
+                <div
+                  className={`p-3 rounded-lg ${
+                    achievement.earned ? "bg-yellow-100" : "bg-gray-100"
+                  }`}
+                >
                   {getIcon(achievement.icon, achievement.earned)}
                 </div>
                 <div className="flex-1">
@@ -278,26 +310,34 @@ export default function AchievementsPage() {
                     <div className="flex items-center space-x-2 text-xs text-green-600">
                       <Calendar className="w-3 h-3" />
                       <span>
-                        Earned on {new Date(achievement.earnedDate).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
+                        Earned on{" "}
+                        {new Date(achievement.earnedDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          },
+                        )}
                       </span>
                     </div>
                   ) : (
-                    <div className="text-xs text-gray-500 italic">Not yet earned</div>
+                    <div className="text-xs text-gray-500 italic">
+                      Not yet earned
+                    </div>
                   )}
                 </div>
               </div>
               <div className="mt-4">
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${
-                  achievement.category === 'tournaments'
-                    ? 'bg-blue-100 text-blue-800'
-                    : achievement.category === 'training'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-purple-100 text-purple-800'
-                }`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${
+                    achievement.category === "tournaments"
+                      ? "bg-blue-100 text-blue-800"
+                      : achievement.category === "training"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-purple-100 text-purple-800"
+                  }`}
+                >
                   {achievement.category}
                 </span>
               </div>
@@ -309,7 +349,9 @@ export default function AchievementsPage() {
         {showAddModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Achievement</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Add Achievement
+              </h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -318,7 +360,12 @@ export default function AchievementsPage() {
                   <input
                     type="text"
                     value={newAchievement.title}
-                    onChange={(e) => setNewAchievement({ ...newAchievement, title: e.target.value })}
+                    onChange={(e) =>
+                      setNewAchievement({
+                        ...newAchievement,
+                        title: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                     placeholder="Achievement title"
                   />
@@ -330,7 +377,12 @@ export default function AchievementsPage() {
                   <textarea
                     rows={3}
                     value={newAchievement.description}
-                    onChange={(e) => setNewAchievement({ ...newAchievement, description: e.target.value })}
+                    onChange={(e) =>
+                      setNewAchievement({
+                        ...newAchievement,
+                        description: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                     placeholder="What did you achieve?"
                   />
@@ -341,7 +393,12 @@ export default function AchievementsPage() {
                   </label>
                   <select
                     value={newAchievement.category}
-                    onChange={(e) => setNewAchievement({ ...newAchievement, category: e.target.value })}
+                    onChange={(e) =>
+                      setNewAchievement({
+                        ...newAchievement,
+                        category: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   >
                     <option value="tournaments">Tournaments</option>
@@ -356,7 +413,12 @@ export default function AchievementsPage() {
                   <input
                     type="date"
                     value={newAchievement.earnedDate}
-                    onChange={(e) => setNewAchievement({ ...newAchievement, earnedDate: e.target.value })}
+                    onChange={(e) =>
+                      setNewAchievement({
+                        ...newAchievement,
+                        earnedDate: e.target.value,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                   />
                 </div>
@@ -366,10 +428,10 @@ export default function AchievementsPage() {
                   onClick={() => {
                     setShowAddModal(false);
                     setNewAchievement({
-                      title: '',
-                      description: '',
-                      category: 'tournaments',
-                      earnedDate: new Date().toISOString().split('T')[0],
+                      title: "",
+                      description: "",
+                      category: "tournaments",
+                      earnedDate: new Date().toISOString().split("T")[0],
                     });
                   }}
                   className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
@@ -390,4 +452,3 @@ export default function AchievementsPage() {
     </div>
   );
 }
-

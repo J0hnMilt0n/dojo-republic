@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { User, Trophy } from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { User, Trophy } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function CreatePlayerProfilePage() {
   const router = useRouter();
@@ -13,15 +13,15 @@ export default function CreatePlayerProfilePage() {
   const [submitting, setSubmitting] = useState(false);
   const [dojos, setDojos] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    age: '',
-    dateOfBirth: '',
-    gender: 'male',
-    beltCategory: '',
-    dojoId: '',
-    city: '',
-    country: '',
-    weight: '',
-    height: '',
+    age: "",
+    dateOfBirth: "",
+    gender: "male",
+    beltCategory: "",
+    dojoId: "",
+    city: "",
+    country: "",
+    weight: "",
+    height: "",
   });
 
   useEffect(() => {
@@ -31,34 +31,36 @@ export default function CreatePlayerProfilePage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      
+
       // Check if user is a player
-      if (data.user.role !== 'player') {
-        router.push('/dashboard');
+      if (data.user.role !== "player") {
+        router.push("/dashboard");
         return;
       }
 
       // Check if player profile already exists
-      const profileRes = await fetch('/api/players');
+      const profileRes = await fetch("/api/players");
       if (profileRes.ok) {
         const profileData = await profileRes.json();
-        const existingProfile = profileData.players.find((p: any) => p.userId === data.user.id);
+        const existingProfile = profileData.players.find(
+          (p: any) => p.userId === data.user.id,
+        );
         if (existingProfile) {
-          showToast('You already have a player profile', 'info');
-          router.push('/players/' + existingProfile.id);
+          showToast("You already have a player profile", "info");
+          router.push("/players/" + existingProfile.id);
           return;
         }
       }
 
       setUser(data.user);
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -66,13 +68,13 @@ export default function CreatePlayerProfilePage() {
 
   const fetchDojos = async () => {
     try {
-      const res = await fetch('/api/dojos');
+      const res = await fetch("/api/dojos");
       if (res.ok) {
         const data = await res.json();
         setDojos(data.dojos.filter((d: any) => d.isApproved));
       }
     } catch (error) {
-      console.error('Failed to fetch dojos:', error);
+      console.error("Failed to fetch dojos:", error);
     }
   };
 
@@ -81,9 +83,9 @@ export default function CreatePlayerProfilePage() {
     setSubmitting(true);
 
     try {
-      const res = await fetch('/api/players', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/players", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: user.name,
           age: parseInt(formData.age),
@@ -101,19 +103,21 @@ export default function CreatePlayerProfilePage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to create profile');
+        throw new Error(data.error || "Failed to create profile");
       }
 
-      showToast('Player profile created successfully!', 'success');
-      router.push('/players/' + data.player.id);
+      showToast("Player profile created successfully!", "success");
+      router.push("/players/" + data.player.id);
     } catch (error: any) {
-      showToast(error.message || 'Failed to create profile', 'error');
+      showToast(error.message || "Failed to create profile", "error");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -122,7 +126,7 @@ export default function CreatePlayerProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
       </div>
     );
@@ -131,7 +135,7 @@ export default function CreatePlayerProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -140,8 +144,12 @@ export default function CreatePlayerProfilePage() {
               <Trophy className="w-8 h-8 text-red-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Create Your Player Profile</h1>
-              <p className="text-gray-600 mt-1">Complete your profile to appear on the athletes page</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Create Your Player Profile
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Complete your profile to appear on the athletes page
+              </p>
             </div>
           </div>
         </div>
@@ -151,7 +159,9 @@ export default function CreatePlayerProfilePage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Personal Information</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                Personal Information
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -286,7 +296,9 @@ export default function CreatePlayerProfilePage() {
 
             {/* Dojo */}
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Dojo Affiliation</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                Dojo Affiliation
+              </h2>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Select Your Dojo *
@@ -315,7 +327,7 @@ export default function CreatePlayerProfilePage() {
             <div className="flex justify-end space-x-3 pt-4">
               <button
                 type="button"
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push("/dashboard")}
                 className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
               >
                 Skip for Now
@@ -325,7 +337,7 @@ export default function CreatePlayerProfilePage() {
                 disabled={submitting}
                 className="px-6 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Creating Profile...' : 'Create Profile'}
+                {submitting ? "Creating Profile..." : "Create Profile"}
               </button>
             </div>
           </form>

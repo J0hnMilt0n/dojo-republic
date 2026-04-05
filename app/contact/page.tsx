@@ -2,7 +2,7 @@ import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <section className="relative bg-linear-to-br from-[#0A0F2B] via-[#1F2A5C] to-[#0D1B3E] text-white py-24 overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-10">

@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Globe, 
-  Calendar, 
-  Clock, 
-  DollarSign, 
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Calendar,
+  Clock,
+  DollarSign,
   ArrowLeft,
-  Users
-} from 'lucide-react';
-import { Dojo } from '@/lib/types';
+  Users,
+} from "lucide-react";
+import { Dojo } from "@/lib/types";
 
 export default function DojoDetailPage() {
   const params = useParams();
@@ -32,22 +32,24 @@ export default function DojoDetailPage() {
   const fetchDojo = async () => {
     try {
       // Fetch all approved dojos and find the specific one
-      const res = await fetch('/api/dojos?approved=true');
+      const res = await fetch("/api/dojos?approved=true");
       if (!res.ok) {
-        throw new Error('Failed to fetch dojo');
+        throw new Error("Failed to fetch dojo");
       }
-      
+
       const data = await res.json();
-      const foundDojo = data.dojos.find((d: Dojo) => d.id === params.id || d.id === String(params.id));
-      
+      const foundDojo = data.dojos.find(
+        (d: Dojo) => d.id === params.id || d.id === String(params.id),
+      );
+
       if (foundDojo) {
         setDojo(foundDojo);
       } else {
-        setError('Dojo not found');
+        setError("Dojo not found");
       }
     } catch (err) {
-      console.error('Failed to fetch dojo:', err);
-      setError('Failed to load dojo details');
+      console.error("Failed to fetch dojo:", err);
+      setError("Failed to load dojo details");
     } finally {
       setLoading(false);
     }
@@ -55,7 +57,7 @@ export default function DojoDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-gray-900"></div>
           <p className="mt-4 text-gray-600">Loading dojo details...</p>
@@ -66,10 +68,10 @@ export default function DojoDetailPage() {
 
   if (error || !dojo) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            {error || 'Dojo not found'}
+            {error || "Dojo not found"}
           </h2>
           <Link
             href="/dojos"
@@ -83,10 +85,18 @@ export default function DojoDetailPage() {
     );
   }
 
-  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       {/* Header Section */}
       <section className="bg-linear-to-r from-gray-900 to-black text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -109,7 +119,9 @@ export default function DojoDetailPage() {
             {/* About Section */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
-              <p className="text-gray-600 leading-relaxed">{dojo.description}</p>
+              <p className="text-gray-600 leading-relaxed">
+                {dojo.description}
+              </p>
             </div>
 
             {/* Martial Arts Offered */}
@@ -135,21 +147,28 @@ export default function DojoDetailPage() {
                 <Calendar className="w-6 h-6 mr-2" />
                 Class Schedule
               </h2>
-              
+
               {dojo.schedule.length > 0 ? (
                 <div className="space-y-4">
                   {daysOfWeek.map((day) => {
-                    const daySchedule = dojo.schedule.filter((s) => s.day === day);
+                    const daySchedule = dojo.schedule.filter(
+                      (s) => s.day === day,
+                    );
                     if (daySchedule.length === 0) return null;
 
                     return (
-                      <div key={day} className="border-b border-gray-200 pb-4 last:border-b-0">
-                        <h3 className="font-semibold text-gray-900 mb-2">{day}</h3>
+                      <div
+                        key={day}
+                        className="border-b border-gray-200 pb-4 last:border-b-0"
+                      >
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          {day}
+                        </h3>
                         <div className="space-y-2">
                           {daySchedule.map((schedule, idx) => (
                             <div
                               key={idx}
-                              className="flex items-start justify-between bg-gray-50 p-3 rounded-lg"
+                              className="flex items-start justify-between bg-[#FEFEFE] p-3 rounded-lg"
                             >
                               <div>
                                 <p className="font-medium text-gray-900">
@@ -181,7 +200,7 @@ export default function DojoDetailPage() {
                 <DollarSign className="w-6 h-6 mr-2" />
                 Pricing Plans
               </h2>
-              
+
               {dojo.pricing.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {dojo.pricing.map((plan, idx) => (
@@ -189,7 +208,9 @@ export default function DojoDetailPage() {
                       key={idx}
                       className="border border-gray-200 rounded-lg p-4 hover:border-gray-900 transition"
                     >
-                      <h3 className="font-semibold text-gray-900 mb-2">{plan.name}</h3>
+                      <h3 className="font-semibold text-gray-900 mb-2">
+                        {plan.name}
+                      </h3>
                       <p className="text-3xl font-bold text-gray-900 mb-2">
                         ₹{plan.price}
                         <span className="text-base font-normal text-gray-600">
@@ -197,13 +218,17 @@ export default function DojoDetailPage() {
                         </span>
                       </p>
                       {plan.description && (
-                        <p className="text-sm text-gray-600">{plan.description}</p>
+                        <p className="text-sm text-gray-600">
+                          {plan.description}
+                        </p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">No pricing information available</p>
+                <p className="text-gray-500">
+                  No pricing information available
+                </p>
               )}
             </div>
           </div>
@@ -212,8 +237,10 @@ export default function DojoDetailPage() {
           <div className="space-y-6">
             {/* Contact Card */}
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h2>
-              
+              <h2 className="text-xl font-bold text-gray-900 mb-4">
+                Contact Information
+              </h2>
+
               <div className="space-y-4">
                 {/* Address */}
                 <div className="flex items-start">
@@ -261,7 +288,9 @@ export default function DojoDetailPage() {
                   <div className="flex items-start">
                     <Globe className="w-5 h-5 text-gray-400 mr-3 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Website</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        Website
+                      </p>
                       <a
                         href={dojo.website}
                         target="_blank"

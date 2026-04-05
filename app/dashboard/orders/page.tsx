@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ClipboardList, Search, Package, Truck, CheckCircle, XCircle } from 'lucide-react';
-import { useToast } from '@/components/ToastProvider';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ClipboardList,
+  Search,
+  Package,
+  Truck,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -12,8 +19,8 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     checkAuth();
@@ -22,14 +29,15 @@ export default function OrdersPage() {
   useEffect(() => {
     let filtered = orders;
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(order => order.status === statusFilter);
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((order) => order.status === statusFilter);
     }
 
     if (searchTerm) {
-      filtered = filtered.filter(order =>
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customerName?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (order) =>
+          order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.customerName?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -38,20 +46,20 @@ export default function OrdersPage() {
 
   const checkAuth = async () => {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch("/api/auth/me");
       if (!res.ok) {
-        router.push('/auth/login');
+        router.push("/auth/login");
         return;
       }
       const data = await res.json();
-      if (data.user.role !== 'seller' && data.user.role !== 'admin') {
-        router.push('/dashboard');
+      if (data.user.role !== "seller" && data.user.role !== "admin") {
+        router.push("/dashboard");
         return;
       }
       setUser(data.user);
       await fetchOrders();
     } catch (error) {
-      router.push('/auth/login');
+      router.push("/auth/login");
     } finally {
       setLoading(false);
     }
@@ -60,7 +68,7 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     try {
       // Note: You'll need to create this API endpoint
-      const res = await fetch('/api/orders?myOrders=true');
+      const res = await fetch("/api/orders?myOrders=true");
       if (res.ok) {
         const data = await res.json();
         setOrders(data.orders || []);
@@ -71,7 +79,7 @@ export default function OrdersPage() {
         setFilteredOrders([]);
       }
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error("Error fetching orders:", error);
       setOrders([]);
       setFilteredOrders([]);
     }
@@ -79,15 +87,15 @@ export default function OrdersPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'pending':
+      case "pending":
         return <Package className="w-5 h-5 text-yellow-600" />;
-      case 'confirmed':
+      case "confirmed":
         return <CheckCircle className="w-5 h-5 text-blue-600" />;
-      case 'shipped':
+      case "shipped":
         return <Truck className="w-5 h-5 text-purple-600" />;
-      case 'delivered':
+      case "delivered":
         return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'cancelled':
+      case "cancelled":
         return <XCircle className="w-5 h-5 text-red-600" />;
       default:
         return <Package className="w-5 h-5 text-gray-600" />;
@@ -96,31 +104,31 @@ export default function OrdersPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'confirmed':
-        return 'bg-blue-100 text-blue-800';
-      case 'shipped':
-        return 'bg-purple-100 text-purple-800';
-      case 'delivered':
-        return 'bg-green-100 text-green-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "confirmed":
+        return "bg-blue-100 text-blue-800";
+      case "shipped":
+        return "bg-purple-100 text-purple-800";
+      case "delivered":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -130,9 +138,7 @@ export default function OrdersPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
-              <p className="text-gray-600 mt-1">
-                Manage your customer orders
-              </p>
+              <p className="text-gray-600 mt-1">Manage your customer orders</p>
             </div>
           </div>
         </div>
@@ -169,24 +175,26 @@ export default function OrdersPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Total Orders</div>
-            <div className="text-3xl font-bold text-gray-900">{orders.length}</div>
+            <div className="text-3xl font-bold text-gray-900">
+              {orders.length}
+            </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Pending</div>
             <div className="text-3xl font-bold text-yellow-600">
-              {orders.filter(o => o.status === 'pending').length}
+              {orders.filter((o) => o.status === "pending").length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Shipped</div>
             <div className="text-3xl font-bold text-purple-600">
-              {orders.filter(o => o.status === 'shipped').length}
+              {orders.filter((o) => o.status === "shipped").length}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="text-sm text-gray-600 mb-1">Delivered</div>
             <div className="text-3xl font-bold text-green-600">
-              {orders.filter(o => o.status === 'delivered').length}
+              {orders.filter((o) => o.status === "delivered").length}
             </div>
           </div>
         </div>
@@ -204,7 +212,7 @@ export default function OrdersPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-[#FEFEFE]">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Order ID
@@ -228,24 +236,28 @@ export default function OrdersPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredOrders.map((order, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
+                    <tr key={index} className="hover:bg-[#FEFEFE]">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
                           #{order.id?.substring(0, 8)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{order.customerName || 'N/A'}</div>
+                        <div className="text-sm text-gray-900">
+                          {order.customerName || "N/A"}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          ₹{order.totalAmount?.toFixed(2) || '0.00'}
+                          ₹{order.totalAmount?.toFixed(2) || "0.00"}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
                           {getStatusIcon(order.status)}
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
+                          <span
+                            className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}
+                          >
                             {order.status}
                           </span>
                         </div>

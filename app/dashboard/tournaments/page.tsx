@@ -164,7 +164,7 @@ export default function DashboardTournamentsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FEFEFE] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-red-600"></div>
       </div>
     );
@@ -173,7 +173,7 @@ export default function DashboardTournamentsPage() {
   // Show parent view for viewing children's tournament participation
   if (user?.role === "parent") {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#FEFEFE]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -296,7 +296,7 @@ export default function DashboardTournamentsPage() {
 
   // Show coach/dojo_owner view for managing tournaments
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#FEFEFE]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">

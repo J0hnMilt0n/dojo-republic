@@ -1,13 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { Upload, Play, AlertCircle, CheckCircle, TrendingUp, Activity, Shield, Lightbulb, X, ExternalLink } from 'lucide-react';
+import { useState, useRef } from "react";
+import {
+  Upload,
+  Play,
+  AlertCircle,
+  CheckCircle,
+  TrendingUp,
+  Activity,
+  Shield,
+  Lightbulb,
+  X,
+  ExternalLink,
+} from "lucide-react";
 
 interface AnalysisResult {
   score: number;
   issues: string[];
   injury_risk: {
-    level: 'Low' | 'Medium' | 'High';
+    level: "Low" | "Medium" | "High";
     area: string;
     reason: string;
     risk_type: string;
@@ -30,16 +41,16 @@ export default function MartialMindPage() {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.type.startsWith('video/')) {
+      if (file.type.startsWith("video/")) {
         setSelectedFile(file);
         setError(null);
         setResult(null);
-        
+
         // Create preview URL
         const url = URL.createObjectURL(file);
         setPreviewUrl(url);
       } else {
-        setError('Please select a valid video file');
+        setError("Please select a valid video file");
         setSelectedFile(null);
         setPreviewUrl(null);
       }
@@ -48,7 +59,7 @@ export default function MartialMindPage() {
 
   const handleAnalyze = async () => {
     if (!selectedFile) {
-      setError('Please select a video file first');
+      setError("Please select a video file first");
       return;
     }
 
@@ -65,10 +76,10 @@ export default function MartialMindPage() {
 
       // For smaller files, use the Next.js API route
       const formData = new FormData();
-      formData.append('video', selectedFile);
+      formData.append("video", selectedFile);
 
-      const response = await fetch('/api/martialmind/analyze', {
-        method: 'POST',
+      const response = await fetch("/api/martialmind/analyze", {
+        method: "POST",
         body: formData,
       });
 
@@ -76,22 +87,27 @@ export default function MartialMindPage() {
         if (response.status === 413) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            errorData.message || 'Video file is too large. Please upload a video under 100MB.'
+            errorData.message ||
+              "Video file is too large. Please upload a video under 100MB.",
           );
         }
         if (response.status === 504) {
-          throw new Error('Analysis timed out. Please try with a shorter video.');
+          throw new Error(
+            "Analysis timed out. Please try with a shorter video.",
+          );
         }
         if (response.status === 503) {
-          throw new Error('AI service is temporarily unavailable. Please try again later.');
+          throw new Error(
+            "AI service is temporarily unavailable. Please try again later.",
+          );
         }
-        throw new Error('Analysis failed. Please try again.');
+        throw new Error("Analysis failed. Please try again.");
       }
 
       const data: AnalysisResult = await response.json();
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setIsProcessing(false);
     }
@@ -99,19 +115,20 @@ export default function MartialMindPage() {
 
   const uploadDirectToBackend = async () => {
     if (!selectedFile) {
-      setError('Please select a video file first');
+      setError("Please select a video file first");
       return;
     }
 
     // Direct upload to AI backend (bypasses Vercel's 4.5MB limit)
-    const AI_BACKEND_URL = process.env.NEXT_PUBLIC_MARTIALMIND_API_URL || 
-                           'https://martialmind-backend-production.up.railway.app';
-    
+    const AI_BACKEND_URL =
+      process.env.NEXT_PUBLIC_MARTIALMIND_API_URL ||
+      "https://martialmind-backend-production.up.railway.app";
+
     const formData = new FormData();
-    formData.append('video', selectedFile);
+    formData.append("video", selectedFile);
 
     const response = await fetch(`${AI_BACKEND_URL}/analyze-video`, {
-      method: 'POST',
+      method: "POST",
       body: formData,
       // Set a longer timeout for large file uploads
       signal: AbortSignal.timeout(300000), // 5 minutes timeout
@@ -119,12 +136,14 @@ export default function MartialMindPage() {
 
     if (!response.ok) {
       if (response.status === 413) {
-        throw new Error('Video file is too large. Maximum size is 100MB.');
+        throw new Error("Video file is too large. Maximum size is 100MB.");
       }
       if (response.status === 504) {
-        throw new Error('Analysis timed out. Please try with a shorter video.');
+        throw new Error("Analysis timed out. Please try with a shorter video.");
       }
-      throw new Error(`AI analysis failed with status ${response.status}. Please try again.`);
+      throw new Error(
+        `AI analysis failed with status ${response.status}. Please try again.`,
+      );
     }
 
     const data: AnalysisResult = await response.json();
@@ -133,21 +152,21 @@ export default function MartialMindPage() {
 
   const getRiskColor = (level: string) => {
     switch (level) {
-      case 'Low':
-        return 'text-green-600 bg-green-50 border-green-200';
-      case 'Medium':
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'High':
-        return 'text-red-600 bg-red-50 border-red-200';
+      case "Low":
+        return "text-green-600 bg-green-50 border-green-200";
+      case "Medium":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+      case "High":
+        return "text-red-600 bg-red-50 border-red-200";
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return "text-gray-600 bg-[#FEFEFE] border-gray-200";
     }
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 8) return 'text-green-600';
-    if (score >= 6) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 8) return "text-green-600";
+    if (score >= 6) return "text-yellow-600";
+    return "text-red-600";
   };
 
   const clearAnalysis = () => {
@@ -159,7 +178,7 @@ export default function MartialMindPage() {
       setPreviewUrl(null);
     }
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -173,7 +192,8 @@ export default function MartialMindPage() {
             <h1 className="text-2xl md:text-3xl font-bold">MartialMind AI</h1>
           </div>
           <p className="text-center text-base md:text-lg text-red-100 max-w-3xl mx-auto">
-            AI-powered performance analysis and injury risk detection for combat sports athletes
+            AI-powered performance analysis and injury risk detection for combat
+            sports athletes
           </p>
           <div className="flex justify-center space-x-8 mt-8">
             <div className="text-center">
@@ -204,13 +224,15 @@ export default function MartialMindPage() {
 
             <div className="space-y-6">
               {/* File Input */}
-              <div 
-                className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-red-500 transition-colors cursor-pointer bg-gray-50"
+              <div
+                className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-red-500 transition-colors cursor-pointer bg-[#FEFEFE]"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                 <p className="text-gray-600 mb-2">
-                  {selectedFile ? selectedFile.name : 'Click to select video file'}
+                  {selectedFile
+                    ? selectedFile.name
+                    : "Click to select video file"}
                 </p>
                 <p className="text-sm text-gray-400">
                   Supported formats: MP4, MOV, AVI
@@ -247,8 +269,8 @@ export default function MartialMindPage() {
                 disabled={!selectedFile || isProcessing}
                 className={`w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 flex items-center justify-center space-x-2 ${
                   !selectedFile || isProcessing
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 shadow-lg hover:shadow-red-500/50 hover:scale-105 transform'
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 shadow-lg hover:shadow-red-500/50 hover:scale-105 transform"
                 }`}
               >
                 {isProcessing ? (
@@ -309,15 +331,23 @@ export default function MartialMindPage() {
                 {/* Performance Score */}
                 <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">Performance Score</h3>
-                    <div className={`text-4xl font-bold ${getScoreColor(result.score)}`}>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Performance Score
+                    </h3>
+                    <div
+                      className={`text-4xl font-bold ${getScoreColor(result.score)}`}
+                    >
                       {result.score.toFixed(1)}
                     </div>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3 mt-3">
                     <div
                       className={`h-3 rounded-full transition-all duration-500 ${
-                        result.score >= 8 ? 'bg-green-500' : result.score >= 6 ? 'bg-yellow-500' : 'bg-red-500'
+                        result.score >= 8
+                          ? "bg-green-500"
+                          : result.score >= 6
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
                       }`}
                       style={{ width: `${(result.score / 10) * 100}%` }}
                     />
@@ -325,7 +355,9 @@ export default function MartialMindPage() {
                 </div>
 
                 {/* Injury Risk */}
-                <div className={`rounded-xl p-6 border-2 ${getRiskColor(result.injury_risk.level)}`}>
+                <div
+                  className={`rounded-xl p-6 border-2 ${getRiskColor(result.injury_risk.level)}`}
+                >
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold flex items-center">
                       <Shield className="w-5 h-5 mr-2" />
@@ -336,9 +368,15 @@ export default function MartialMindPage() {
                     </span>
                   </div>
                   <div className="space-y-2 text-sm">
-                    <p><strong>Area:</strong> {result.injury_risk.area}</p>
-                    <p><strong>Reason:</strong> {result.injury_risk.reason}</p>
-                    <p><strong>Type:</strong> {result.injury_risk.risk_type}</p>
+                    <p>
+                      <strong>Area:</strong> {result.injury_risk.area}
+                    </p>
+                    <p>
+                      <strong>Reason:</strong> {result.injury_risk.reason}
+                    </p>
+                    <p>
+                      <strong>Type:</strong> {result.injury_risk.risk_type}
+                    </p>
                   </div>
                 </div>
 
@@ -351,7 +389,10 @@ export default function MartialMindPage() {
                     </h3>
                     <ul className="space-y-2">
                       {result.issues.map((issue, index) => (
-                        <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
+                        <li
+                          key={index}
+                          className="flex items-start space-x-2 text-sm text-gray-700"
+                        >
                           <span className="text-orange-600 font-bold">•</span>
                           <span>{issue}</span>
                         </li>
@@ -369,7 +410,10 @@ export default function MartialMindPage() {
                     </h3>
                     <ul className="space-y-2">
                       {result.drills.map((drill, index) => (
-                        <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
+                        <li
+                          key={index}
+                          className="flex items-start space-x-2 text-sm text-gray-700"
+                        >
                           <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                           <span>{drill}</span>
                         </li>
@@ -387,7 +431,10 @@ export default function MartialMindPage() {
                     </h3>
                     <ul className="space-y-2">
                       {result.prevention_advice.map((advice, index) => (
-                        <li key={index} className="flex items-start space-x-2 text-sm text-gray-700">
+                        <li
+                          key={index}
+                          className="flex items-start space-x-2 text-sm text-gray-700"
+                        >
                           <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
                           <span>{advice}</span>
                         </li>
@@ -410,27 +457,36 @@ export default function MartialMindPage() {
               <div className="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Upload className="w-8 h-8 text-red-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Video</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Upload Video
+              </h3>
               <p className="text-gray-600 text-sm">
-                Upload your training video of kicks, punches, or sparring sessions
+                Upload your training video of kicks, punches, or sparring
+                sessions
               </p>
             </div>
             <div className="text-center">
               <div className="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Activity className="w-8 h-8 text-red-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Analysis</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                AI Analysis
+              </h3>
               <p className="text-gray-600 text-sm">
-                Our AI analyzes your technique, biomechanics, and movement patterns
+                Our AI analyzes your technique, biomechanics, and movement
+                patterns
               </p>
             </div>
             <div className="text-center">
               <div className="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-red-600" />
               </div>
-              <h3 className="text-lg font-semblold text-gray-900 mb-2">Get Insights</h3>
+              <h3 className="text-lg font-semblold text-gray-900 mb-2">
+                Get Insights
+              </h3>
               <p className="text-gray-600 text-sm">
-                Receive performance scores, injury risk assessment, and personalized drills
+                Receive performance scores, injury risk assessment, and
+                personalized drills
               </p>
             </div>
           </div>
